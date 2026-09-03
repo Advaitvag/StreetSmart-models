@@ -1,0 +1,13 @@
+# Model weights and training checkpoints via Git LFS.
+*.pt   filter=lfs diff=lfs merge=lfs -text
+*.pth  filter=lfs diff=lfs merge=lfs -text
+*.ckpt filter=lfs diff=lfs merge=lfs -text
+
+# Training plots / sample batches (kept under runs/ and models/).
+*.png  filter=lfs diff=lfs merge=lfs -text
+*.jpg  filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.JPG  filter=lfs diff=lfs merge=lfs -text
+
+# TensorBoard event files.
+events.out.tfevents.* filter=lfs diff=lfs merge=lfs -text

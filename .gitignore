@@ -1,0 +1,43 @@
+# --- environment ---
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# --- large local data, not for GitHub ---
+datasets/
+cincinnati/
+labels/
+
+# --- videos (inference/demo clips) ---
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# --- stock weights (auto-downloaded by Ultralytics on first use) ---
+/yolo12n.pt
+/yolo26n.pt
+/yolo26s.pt
+/yolo26m.pt
+/yolov8n.pt
+/yolov8s.pt
+
+# --- papers / archives ---
+*.pdf
+*.zip
+
+# --- heavy RF-DETR checkpoints (only best_* is kept, see models/) ---
+runs/rfdetr_base/last.ckpt
+runs/rfdetr_base/checkpoint_9.ckpt
+runs/rfdetr_base/checkpoint_19.ckpt
+runs/rfdetr_base/checkpoint_29.ckpt
+
+# --- video-only run folders ---
+runs/dashcam_filtered/
+runs/pretrained_model/
+runs/compare/
+runs/benchmark_three/
+
+# loose copy — organized under models/pretrained/
+/pothole_yolov8_best.pt

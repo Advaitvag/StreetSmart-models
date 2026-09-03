@@ -1,0 +1,13 @@
+# Project venv: Python 3.12, NVIDIA CUDA 12.8 (RTX 50-series / Blackwell).
+#
+#   python3.12 -m venv .venv
+#   .venv/bin/pip install --upgrade pip
+#   .venv/bin/pip install -r requirements.txt
+#
+# torch / torchvision come from the CUDA 12.8 wheel index:
+--extra-index-url https://download.pytorch.org/whl/cu128
+
+torch==2.10.0
+torchvision==0.25.0
+ultralytics==8.4.9
+huggingface_hub[cli]>=1.29
