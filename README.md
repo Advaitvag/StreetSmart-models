@@ -53,6 +53,13 @@ Weights and training plots are stored with **Git LFS** — run
 `--help` lists every flag. Paths passed to `--model` / `--data` resolve
 against the repo root, so the script works from any working directory.
 
+### Overnight training window
+
+`scripts/night_train.sh` + the `systemd/streetsmart-night*` user timers train
+the best model (`yolo26m-combined`) every night from 23:00 to 08:30, resuming
+each night and sending a desktop notification with per-metric deltas at start
+and end. See [`docs/NIGHT_TRAINING.md`](docs/NIGHT_TRAINING.md).
+
 ## Dataset
 
 The combined dataset (~19.5k images, single `pothole` class) and the build

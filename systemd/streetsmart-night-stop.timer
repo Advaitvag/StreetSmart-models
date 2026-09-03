@@ -1,0 +1,10 @@
+[Unit]
+Description=Stop StreetSmart training at 08:30
+
+[Timer]
+OnCalendar=*-*-* 08:30:00
+AccuracySec=1min
+Unit=streetsmart-night-stop.service
+
+[Install]
+WantedBy=timers.target

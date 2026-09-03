@@ -1,0 +1,22 @@
+[Unit]
+Description=StreetSmart overnight training window (resume best model)
+After=graphical-session.target
+# Do not start if the dataset isn't present.
+ConditionPathExists=%h/potholes/datasets/combined_dataset/data.yaml
+
+[Service]
+Type=simple
+ExecStart=%h/potholes/scripts/night_train.sh
+WorkingDirectory=%h/potholes
+Environment=PYTHONUNBUFFERED=1
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
+# 08:30 stop: streetsmart-night-stop.timer runs `systemctl --user stop` on this
+# unit. SIGINT lets Ultralytics checkpoint last.pt before exiting.
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStopSec=300
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+# Triggered only by streetsmart-night.timer — intentionally no [Install].

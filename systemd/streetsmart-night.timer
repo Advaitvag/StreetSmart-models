@@ -1,0 +1,12 @@
+[Unit]
+Description=Start StreetSmart training at 23:00
+
+[Timer]
+OnCalendar=*-*-* 23:00:00
+AccuracySec=1min
+# No Persistent= : a run missed while the machine was off is NOT caught up.
+# The wrapper additionally refuses to start outside the 23:00-08:30 window.
+Unit=streetsmart-night.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=Stop StreetSmart training at 08:30
+
+[Service]
+Type=oneshot
+# No-op if the training service is already inactive.
+ExecStart=/usr/bin/systemctl --user stop streetsmart-night.service
