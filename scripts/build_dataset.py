@@ -173,7 +173,7 @@ class Builder:
             "# Combined Pothole Detection Dataset\n"
             f"# Built {datetime.now(timezone.utc).isoformat()} "
             f"(seed={self.seed}, train_ratio={self.train_ratio})\n"
-            f"path: {self.out}\n"
+            "path: .\n"
             "train: train/images\n"
             "val: val/images\n\n"
             "nc: 1\n"
