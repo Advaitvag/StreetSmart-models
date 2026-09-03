@@ -35,7 +35,7 @@ Publishing targets (later, not in this task):
 | Cincinnati images | **Not** published. `build_dataset.py` makes Cincinnati opt-in (`--cincinnati`, default off). Default build = HF-publishable. |
 | Paths in scripts | Relative only. Sources resolved against `--repo-root` (default `.`). |
 | Repo root | `/home/ad/potholes` with a strict `.gitignore`. |
-| Licenses | PothRGBD/PData = MIT. All other sources + the combined dataset = CC BY-SA 4.0. |
+| Licenses | Per-source, from each source's own README: `dataset/` = ODbL v1.0; `Pothole-detection-Yolov8/`, BharatPotHole, Curated RGB = CC BY 4.0; PothRGBD/PData = MIT; RDD2022 = CC BY-SA 4.0; HRP4K = unknown, assume CC BY-SA 4.0. Project-added files = CC BY-SA 4.0. |
 
 ## Repo layout
 
@@ -135,21 +135,24 @@ Fixes vs. the heredoc:
 Prose: prerequisites, expected `datasets/` layout, the one command to run,
 what gets written. Plus the credits table:
 
+Licenses are those stated in each source's own README/metadata; where none is
+stated, CC BY-SA 4.0 is assumed and marked as such.
+
 | Source | Attribution | License |
 | --- | --- | --- |
-| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian | CC BY-SA 4.0 |
-| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe `project-ssayl` | CC BY-SA 4.0 |
+| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian | ODbL v1.0 |
+| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe `project-ssayl` | CC BY 4.0 |
 | PothRGBD (`PData/`) | Yurdakul & Taşdemir, 2025 (arXiv:2505.04207) | MIT |
 | RDD2022 (`RDD_SPLIT/`) | Arya et al., Road Damage Detection | CC BY-SA 4.0 |
-| BharatPotHole | BharatPotHole authors | CC BY-SA 4.0 |
-| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY-SA 4.0 |
-| HRP4K | HRP4K authors | CC BY-SA 4.0 |
+| BharatPotHole | BharatPotHole authors | CC BY 4.0 |
+| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY 4.0 |
+| HRP4K | HRP4K authors | CC BY-SA 4.0 (not stated; assumed) |
 | Cincinnati 311 pothole imagery | City of Cincinnati / CAGIS | Not redistributed — excluded from the published dataset |
 
-Combined dataset released under **CC BY-SA 4.0** (MIT component is
-compatible). Where an upstream README states a different original license
-(ODbL for `dataset/`, CC BY 4.0 for `Pothole-detection-Yolov8/`), that is
-noted inline for compliance.
+The dataset is an aggregate — each source keeps its own license. The
+`dataset/` (Chitholian) portion is ODbL v1.0 and its share-alike terms
+continue to apply. Project-added files (split layout, `data.yaml`, manifests,
+`build_dataset.py`) are released under CC BY-SA 4.0.
 
 ## Models organization (`models/`)
 

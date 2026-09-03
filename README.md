@@ -87,5 +87,7 @@ and is excluded from the published dataset.
 ## Licenses
 
 - Code: MIT (`LICENSE`).
-- Combined dataset: CC BY-SA 4.0 (PothRGBD component is MIT). Full
-  attribution table in `docs/BUILDING_THE_DATASET.md`.
+- Combined dataset: aggregate of independently-licensed sources — ODbL v1.0,
+  CC BY 4.0, CC BY-SA 4.0 and MIT depending on the source; project-added files
+  (split layout, `data.yaml`, manifests) under CC BY-SA 4.0. Full per-source
+  table in `docs/BUILDING_THE_DATASET.md`.

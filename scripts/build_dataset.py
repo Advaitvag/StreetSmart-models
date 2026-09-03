@@ -216,18 +216,23 @@ class Builder:
 SOURCES_MD = """\
 # Dataset sources & credits
 
-The combined dataset is released under **CC BY-SA 4.0**. The PothRGBD
-component is MIT-licensed, which is compatible with redistribution here.
+This dataset is an **aggregate of independently-licensed source datasets**.
+Each source keeps its own license (table below). In particular the `dataset/`
+(Chitholian) portion is **ODbL v1.0**, and its share-alike terms continue to
+apply to that portion. The split layout, `data.yaml`, `build_manifest.json`
+and `build_dataset.py` added by this project are released under
+**CC BY-SA 4.0**. When redistributing, comply with every source license for
+the corresponding images and labels.
 
 | Source | Attribution | License |
 | --- | --- | --- |
-| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian | CC BY-SA 4.0 (orig. ODbL v1.0) |
-| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe `project-ssayl` | CC BY-SA 4.0 (orig. CC BY 4.0) |
+| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian | ODbL v1.0 |
+| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe `project-ssayl` | CC BY 4.0 |
 | PothRGBD (`PData/`) | Yurdakul & Taşdemir, 2025 — *An Enhanced YOLOv8 Model for Real-Time and Accurate Pothole Detection and Measurement* (arXiv:2505.04207) | MIT |
 | RDD2022 (`RDD_SPLIT/`, class `D40` pothole only) | Arya et al. — Road Damage Detection Challenge | CC BY-SA 4.0 |
-| BharatPotHole | BharatPotHole authors | CC BY-SA 4.0 |
-| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY-SA 4.0 |
-| HRP4K | HRP4K authors | CC BY-SA 4.0 |
+| BharatPotHole | BharatPotHole authors | CC BY 4.0 |
+| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY 4.0 |
+| HRP4K | HRP4K authors | CC BY-SA 4.0 (upstream license not stated; assumed) |
 | Cincinnati 311 pothole imagery | City of Cincinnati / CAGIS | Not redistributed — excluded from the published dataset |
 
 Cincinnati imagery is used only for the maintainer's local training runs

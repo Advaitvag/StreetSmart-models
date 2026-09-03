@@ -63,21 +63,24 @@ python scripts/build_dataset.py --cincinnati \
 
 ## 4. Sources & credits
 
-The combined dataset is released under **CC BY-SA 4.0**. The PothRGBD
-component is MIT-licensed (compatible with redistribution here). Where an
-upstream README states a different original license, it is noted for
-compliance.
+This dataset is an **aggregate of independently-licensed source datasets** —
+each source keeps its own license (below). The licenses shown are those stated
+in each source's own README / metadata; where a source states no license,
+CC BY-SA 4.0 is assumed and marked as such.
 
 | Source | Attribution | License |
 | --- | --- | --- |
-| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian ([Potholes-Detection](https://github.com/chitholian/Potholes-Detection)) | CC BY-SA 4.0 *(orig. ODbL v1.0)* |
-| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe workspace `project-ssayl`, project `potholes-detection-d4rma` | CC BY-SA 4.0 *(orig. CC BY 4.0)* |
+| Roboflow "Pothole" raw (`dataset/`) | Atikur Rahman Chitholian ([Potholes-Detection](https://github.com/chitholian/Potholes-Detection)) | ODbL v1.0 |
+| Roboflow "Potholes Detection" (`Pothole-detection-Yolov8/`) | Roboflow Universe workspace `project-ssayl`, project `potholes-detection-d4rma` | CC BY 4.0 |
 | PothRGBD (`PData/`) | M. Yurdakul & Ş. Taşdemir, *An Enhanced YOLOv8 Model for Real-Time and Accurate Pothole Detection and Measurement*, 2025 — [arXiv:2505.04207](https://arxiv.org/abs/2505.04207) | MIT |
 | RDD2022 (`RDD_SPLIT/`, class `D40` only) | D. Arya et al., Road Damage Detection Challenge / RDD2022 | CC BY-SA 4.0 |
-| BharatPotHole | BharatPotHole dataset authors | CC BY-SA 4.0 |
-| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY-SA 4.0 |
-| HRP4K | HRP4K dataset authors | CC BY-SA 4.0 |
+| BharatPotHole | BharatPotHole dataset authors | CC BY 4.0 |
+| A Curated RGB Dataset for Real-Time Road Damage Detection | dataset authors (Mendeley Data) | CC BY 4.0 |
+| HRP4K | HRP4K dataset authors | CC BY-SA 4.0 *(upstream license not stated; assumed)* |
 | Cincinnati 311 pothole imagery | City of Cincinnati / CAGIS open records | Not redistributed — excluded from the published dataset |
 
-If you redistribute the combined dataset, keep this attribution table and
-license it under CC BY-SA 4.0.
+When redistributing, comply with each source's license for the corresponding
+images and labels. The `dataset/` (Chitholian) portion is **ODbL v1.0** and
+its share-alike terms continue to apply to that portion. The split layout,
+`data.yaml`, `build_manifest.json` and `build_dataset.py` added by this
+project are released under **CC BY-SA 4.0**.
