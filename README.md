@@ -53,12 +53,16 @@ Weights and training plots are stored with **Git LFS** — run
 `--help` lists every flag. Paths passed to `--model` / `--data` resolve
 against the repo root, so the script works from any working directory.
 
-### Overnight training window
+### Overnight training sweep
 
 `scripts/night_train.sh` + the `systemd/streetsmart-night*` user timers train
-the best model (`yolo26m-combined`) every night from 23:00 to 08:30, resuming
-each night and sending a desktop notification with per-metric deltas at start
-and end. See [`docs/NIGHT_TRAINING.md`](docs/NIGHT_TRAINING.md).
+`yolo11s -> yolo26s -> yolo11m -> yolo26m` back-to-back on `combined_dataset`,
+every night from 23:00 to 08:30. Each model starts from stock COCO weights, runs
+to 300 epochs (resumed across nights), and only begins once its predecessor
+finishes. `notify-send` at every start/end with per-metric deltas; per-epoch
+history in `runs/night-<model>/results.csv`, session history in
+`runs/streetsmart_night_metrics.csv`. See
+[`docs/NIGHT_TRAINING.md`](docs/NIGHT_TRAINING.md).
 
 ## Dataset
 

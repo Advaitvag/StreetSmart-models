@@ -16,12 +16,18 @@ labels/
 *.mkv
 
 # --- stock weights (auto-downloaded by Ultralytics on first use) ---
+/yolo11n.pt
+/yolo11s.pt
+/yolo11m.pt
 /yolo12n.pt
 /yolo26n.pt
 /yolo26s.pt
 /yolo26m.pt
 /yolov8n.pt
 /yolov8s.pt
+
+# --- night sweep bookkeeping (regenerated) ---
+runs/.night_sweep_summary_sent
 
 # --- papers / archives ---
 *.pdf

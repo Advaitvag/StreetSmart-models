@@ -1,5 +1,5 @@
 [Unit]
-Description=StreetSmart overnight training window (resume best model)
+Description=StreetSmart overnight training sweep (yolo11s -> yolo26s -> yolo11m -> yolo26m)
 After=graphical-session.target
 # Do not start if the dataset isn't present.
 ConditionPathExists=%h/potholes/datasets/combined_dataset/data.yaml
