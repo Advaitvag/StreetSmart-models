@@ -48,3 +48,4 @@ runs/benchmark_three/
 # loose copy — organized under models/pretrained/
 /pothole_yolov8_best.pt
 /.directory
+/docs
