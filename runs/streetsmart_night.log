@@ -56,3 +56,95 @@
 2026-09-09T04:57:50-04:00  yolo26s complete (2/4) — advancing
 2026-09-09T04:57:51-04:00  [night training: yolo11m] fresh from stock yolo11m.pt (3/4) | epoch 0/300   batch 8
 2026-09-09T08:30:01-04:00  stop signal -> SIGINT yolo11m (31953)
+2026-09-10T02:06:52-04:00  yolo11s already complete (1/4), skipping
+2026-09-10T02:06:52-04:00  yolo26s already complete (2/4), skipping
+2026-09-10T02:06:52-04:00  [night training: yolo26m] fresh from stock yolo26m.pt (3/4) | epoch 0/300   batch 8
+2026-09-10T08:30:01-04:00  stop signal -> SIGINT yolo26m (241049)
+2026-09-10T18:15:18-04:00  outside 2300-0830 window (now=18:15); not starting
+2026-09-11T01:32:29-04:00  yolo11s already complete (1/4), skipping
+2026-09-11T01:32:29-04:00  yolo26s already complete (2/4), skipping
+2026-09-11T01:32:29-04:00  [night training: yolo26m] resuming (3/4)   epoch 51/300   batch 8 | precision 0.7529   recall 0.6338 | mAP50 0.7084   mAP50-95 0.4029
+2026-09-11T14:03:25-04:00  stop signal -> SIGINT yolo26m (395396)
+2026-09-11T14:04:35-04:00  [night training: yolo26m ended] epoch 51 -> 155 / 300   (12h32m, exit 143) | precision   0.7529 -> 0.8276   (Δ +0.0747) | recall      0.6338 -> 0.6705   (Δ +0.0367) | mAP50       0.7084 -> 0.7601   (Δ +0.0517) | mAP50-95    0.4029 -> 0.4757   (Δ +0.0728)
+2026-09-11T14:04:35-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-12T01:46:35-04:00  yolo11s already complete (1/4), skipping
+2026-09-12T01:46:35-04:00  yolo26s already complete (2/4), skipping
+2026-09-12T01:46:35-04:00  [night training: yolo26m] resuming (3/4)   epoch 155/300   batch 8 | precision 0.8276   recall 0.6705 | mAP50 0.7601   mAP50-95 0.4757
+2026-09-12T11:20:41-04:00  [night training: yolo26m ended] epoch 155 -> 222 / 300   (9h34m, exit 143) | precision   0.8276 -> 0.8426   (Δ +0.0150) | recall      0.6705 -> 0.6829   (Δ +0.0124) | mAP50       0.7601 -> 0.7626   (Δ +0.0025) | mAP50-95    0.4757 -> 0.4948   (Δ +0.0191)
+2026-09-12T11:20:41-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-12T22:47:30-04:00  outside 2300-0830 window (now=22:47); not starting
+2026-09-12T22:48:53-04:00  outside 2300-0830 window (now=22:48); not starting
+2026-09-12T22:49:17-04:00  outside 2300-0830 window (now=22:49); not starting
+2026-09-12T22:49:38-04:00  outside 2300-0830 window (now=22:49); not starting
+2026-09-12T22:50:11-04:00  outside 2300-0830 window (now=22:50); not starting
+2026-09-12T23:03:16-04:00  yolo11s already complete (1/4), skipping
+2026-09-12T23:03:16-04:00  yolo26s already complete (2/4), skipping
+2026-09-12T23:03:16-04:00  [night training: yolo26m] resuming (3/4)   epoch 222/300   batch 8 | precision 0.8426   recall 0.6829 | mAP50 0.7626   mAP50-95 0.4948
+2026-09-12T23:03:31-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:32-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:44-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:45-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:45-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:50-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:51-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:51-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:03:52-04:00  stop signal -> SIGINT yolo26m (10294)
+2026-09-12T23:04:27-04:00  yolo11s already complete (1/4), skipping
+2026-09-12T23:04:27-04:00  yolo26s already complete (2/4), skipping
+2026-09-12T23:04:27-04:00  [night training: yolo26m] resuming (3/4)   epoch 222/300   batch 8 | precision 0.8426   recall 0.6829 | mAP50 0.7626   mAP50-95 0.4948
+2026-09-12T23:04:36-04:00  [night training: yolo26m ended] epoch 222 -> 222 / 300   (0h00m, exit 120) | precision   0.8426 -> 0.8426   (Δ +0.0000) | recall      0.6829 -> 0.6829   (Δ +0.0000) | mAP50       0.7626 -> 0.7626   (Δ +0.0000) | mAP50-95    0.4948 -> 0.4948   (Δ +0.0000)
+2026-09-12T23:04:36-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-12T23:04:47-04:00  yolo11s already complete (1/4), skipping
+2026-09-12T23:04:47-04:00  yolo26s already complete (2/4), skipping
+2026-09-12T23:04:47-04:00  [night training: yolo26m] resuming (3/4)   epoch 222/300   batch 8 | precision 0.8426   recall 0.6829 | mAP50 0.7626   mAP50-95 0.4948
+2026-09-12T23:14:18-04:00  [night training: yolo26m ended] epoch 222 -> 222 / 300   (0h09m, exit 120) | precision   0.8426 -> 0.8426   (Δ +0.0000) | recall      0.6829 -> 0.6829   (Δ +0.0000) | mAP50       0.7626 -> 0.7626   (Δ +0.0000) | mAP50-95    0.4948 -> 0.4948   (Δ +0.0000)
+2026-09-12T23:14:18-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-12T23:47:31-04:00  yolo11s already complete (1/4), skipping
+2026-09-12T23:47:31-04:00  yolo26s already complete (2/4), skipping
+2026-09-12T23:47:31-04:00  [night training: yolo26m] resuming (3/4)   epoch 222/300   batch 8 | precision 0.8426   recall 0.6829 | mAP50 0.7626   mAP50-95 0.4948
+2026-09-12T23:57:03-04:00  [night training: yolo26m ended] epoch 222 -> 222 / 300   (0h09m, exit 120) | precision   0.8426 -> 0.8426   (Δ +0.0000) | recall      0.6829 -> 0.6829   (Δ +0.0000) | mAP50       0.7626 -> 0.7626   (Δ +0.0000) | mAP50-95    0.4948 -> 0.4948   (Δ +0.0000)
+2026-09-12T23:57:03-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-13T02:37:53-04:00  yolo11s already complete (1/4), skipping
+2026-09-13T02:37:53-04:00  yolo26s already complete (2/4), skipping
+2026-09-13T02:37:53-04:00  [night training: yolo26m] resuming (3/4)   epoch 222/300   batch 8 | precision 0.8426   recall 0.6829 | mAP50 0.7626   mAP50-95 0.4948
+2026-09-13T12:22:52-04:00  [night training: yolo26m ended] epoch 222 -> 291 / 300   (9h44m, exit 143) | precision   0.8426 -> 0.8477   (Δ +0.0051) | recall      0.6829 -> 0.6758   (Δ -0.0071) | mAP50       0.7626 -> 0.7552   (Δ -0.0074) | mAP50-95    0.4948 -> 0.5077   (Δ +0.0129)
+2026-09-13T12:22:52-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-14T00:28:40-04:00  yolo11s already complete (1/4), skipping
+2026-09-14T00:28:40-04:00  yolo26s already complete (2/4), skipping
+2026-09-14T00:28:40-04:00  [night training: yolo26m] resuming (3/4)   epoch 291/300   batch 8 | precision 0.8477   recall 0.6758 | mAP50 0.7552   mAP50-95 0.5077
+2026-09-14T00:45:12-04:00  [night training: yolo26m ended] epoch 291 -> 292 / 300   (0h16m, exit 137) | precision   0.8477 -> 0.8435   (Δ -0.0042) | recall      0.6758 -> 0.6786   (Δ +0.0028) | mAP50       0.7552 -> 0.7553   (Δ +0.0001) | mAP50-95    0.5077 -> 0.5077   (Δ +0.0000)
+2026-09-14T00:45:12-04:00  yolo26m stopped before 300 epochs (3/4) — resume next window
+2026-09-14T00:48:52-04:00  yolo11s already complete (1/4), skipping
+2026-09-14T00:48:52-04:00  yolo26s already complete (2/4), skipping
+2026-09-14T00:48:52-04:00  [night training: yolo26m] resuming (3/4)   epoch 292/300   batch 8 | precision 0.8435   recall 0.6786 | mAP50 0.7553   mAP50-95 0.5077
+2026-09-14T02:02:47-04:00  [night training: yolo26m ended] epoch 292 -> 300 / 300   (1h13m, exit 0) | precision   0.8435 -> 0.8499   (Δ +0.0064) | recall      0.6786 -> 0.6732   (Δ -0.0054) | mAP50       0.7553 -> 0.7536   (Δ -0.0017) | mAP50-95    0.5077 -> 0.5064   (Δ -0.0013)
+2026-09-14T02:02:47-04:00  yolo26m complete (3/4) — advancing
+2026-09-14T02:02:48-04:00  [night training: yolo11m] resuming (4/4)   epoch 28/300   batch 8 | precision 0.6860   recall 0.5518 | mAP50 0.6131   mAP50-95 0.3278
+2026-09-14T12:14:06-04:00  [night training: yolo11m ended] epoch 28 -> 109 / 300   (10h11m, exit 143) | precision   0.6860 -> 0.7874   (Δ +0.1014) | recall      0.5518 -> 0.6773   (Δ +0.1255) | mAP50       0.6131 -> 0.7414   (Δ +0.1283) | mAP50-95    0.3278 -> 0.4462   (Δ +0.1184)
+2026-09-14T12:14:06-04:00  yolo11m stopped before 300 epochs (4/4) — resume next window
+2026-09-14T21:58:01-04:00  outside 2200-0830 window (now=21:58); not starting
+2026-09-14T21:58:26-04:00  outside 2200-0830 window (now=21:58); not starting
+2026-09-14T21:58:30-04:00  outside 2200-0830 window (now=21:58); not starting
+2026-09-14T21:58:46-04:00  outside 2300-0830 window (now=21:58); not starting
+2026-09-14T21:59:00-04:00  outside 2300-0830 window (now=21:59); not starting
+2026-09-14T23:00:18-04:00  yolo11s already complete (1/4), skipping
+2026-09-14T23:00:18-04:00  yolo26s already complete (2/4), skipping
+2026-09-14T23:00:18-04:00  yolo26m already complete (3/4), skipping
+2026-09-14T23:00:18-04:00  [night training: yolo11m] resuming (4/4)   epoch 109/300   batch 8 | precision 0.7874   recall 0.6773 | mAP50 0.7414   mAP50-95 0.4462
+2026-09-15T12:45:40-04:00  stop signal -> SIGINT yolo11m (75955)
+2026-09-15T12:46:30-04:00  [night training: yolo11m ended] epoch 109 -> 215 / 300   (13h46m, exit 143) | precision   0.7874 -> 0.8346   (Δ +0.0472) | recall      0.6773 -> 0.6823   (Δ +0.0050) | mAP50       0.7414 -> 0.7505   (Δ +0.0091) | mAP50-95    0.4462 -> 0.4792   (Δ +0.0330)
+2026-09-15T12:46:30-04:00  yolo11m stopped before 300 epochs (4/4) — resume next window
+2026-09-16T00:25:15-04:00  yolo11s already complete (1/4), skipping
+2026-09-16T00:25:15-04:00  yolo26s already complete (2/4), skipping
+2026-09-16T00:25:15-04:00  yolo26m already complete (3/4), skipping
+2026-09-16T00:25:15-04:00  [night training: yolo11m] resuming (4/4)   epoch 215/300   batch 8 | precision 0.8346   recall 0.6823 | mAP50 0.7505   mAP50-95 0.4792
+2026-09-16T04:26:14-04:00  stop signal -> SIGINT yolo11m (138413)
+2026-09-16T04:26:15-04:00  [night training: yolo11m ended] epoch 215 -> 254 / 300   (4h00m, exit 130) | precision   0.8346 -> 0.8278   (Δ -0.0068) | recall      0.6823 -> 0.6830   (Δ +0.0007) | mAP50       0.7505 -> 0.7441   (Δ -0.0064) | mAP50-95    0.4792 -> 0.4793   (Δ +0.0001)
+2026-09-16T04:26:15-04:00  yolo11m stopped before 300 epochs (4/4) — resume next window
+2026-09-16T07:20:47-04:00  yolo11s already complete (1/4), skipping
+2026-09-16T07:20:47-04:00  yolo26s already complete (2/4), skipping
+2026-09-16T07:20:47-04:00  yolo26m already complete (3/4), skipping
+2026-09-16T07:20:47-04:00  [night training: yolo11m] resuming (4/4)   epoch 254/300   batch 8 | precision 0.8278   recall 0.6830 | mAP50 0.7441   mAP50-95 0.4793
+2026-09-16T11:58:57-04:00  [night training: yolo11m ended] epoch 254 -> 300 / 300   (4h38m, exit 0) | precision   0.8278 -> 0.8269   (Δ -0.0009) | recall      0.6830 -> 0.6780   (Δ -0.0050) | mAP50       0.7441 -> 0.7306   (Δ -0.0135) | mAP50-95    0.4793 -> 0.4777   (Δ -0.0016)
+2026-09-16T11:58:57-04:00  yolo11m complete (4/4) — advancing
+2026-09-16T11:58:57-04:00  [night sweep complete] final metrics  ·  mAP50-95 / mAP50 (epoch) | yolo11s   0.4543 / 0.7225  (ep 300) | yolo26s   0.4677 / 0.7353  (ep 300) | yolo26m   0.5064 / 0.7536  (ep 300) | yolo11m   0.4777 / 0.7306  (ep 300)
