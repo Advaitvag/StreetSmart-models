@@ -24,13 +24,13 @@ Each team member will contribute to the project through a combination of technic
 
 ### Advait Vagerwal
 
-* Primary responsibilities:
-* Secondary responsibilities:
+* Primary responsibilities: Machine learning models training & testing, Architecture design
+* Secondary responsibilities: ML inference and pipeline, System testing, Server administration
 
 ### Sahil Thakare
 
-* Primary responsibilities:
-* Secondary responsibilities:
+* Primary responsibilities: Frontend development, UI/UX design, Backend testing
+* Secondary responsibilities: Status tracking, Documentation
 
 ### Raihan Rafeek
 
@@ -328,7 +328,7 @@ By approving this contract, team members agree to the responsibilities, communic
 | Name       | Signature / Approval | Date   |
 | ---------- | -------------------- | ------ |
 | Raihan Rafeek | RR           | 09/16/2026 |
-| Advait Vagerwal | [Approval]           | [DATE] |
+| Advait Vagerwal | AV           | 09/16/2026 |
 | Sahil Thakare | [Approval]           | [DATE] |
 
 **Advisor**
