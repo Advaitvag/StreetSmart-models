@@ -335,4 +335,4 @@ By approving this contract, team members agree to the responsibilities, communic
 
 | Name           | Signature / Approval | Date   |
 | -------------- | -------------------- | ------ |
-| Eric Jamison | [Approval]           | [DATE] |
+| Eric Jamison | _________           | _________ |
