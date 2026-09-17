@@ -329,7 +329,7 @@ By approving this contract, team members agree to the responsibilities, communic
 | ---------- | -------------------- | ------ |
 | Raihan Rafeek | RR           | 09/16/2026 |
 | Advait Vagerwal | AV           | 09/16/2026 |
-| Sahil Thakare | [Approval]           | [DATE] |
+| Sahil Thakare | SS           | 09/17/2026 |
 
 **Advisor**
 
