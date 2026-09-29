@@ -1,0 +1,31 @@
+2026-09-16T21:47:15-04:00  Starting StreetSmart clean training (excluding Cincinnati data)
+2026-09-16T21:47:15-04:00  Dataset: /home/ad/potholes/datasets/data_nocincinnati.yaml
+2026-09-16T21:47:15-04:00  Models: yolo26s yolo26m (Target epochs: 100 per model)
+2026-09-16T21:47:15-04:00  [clean training: yolo26s] fine-tuning from best.pt (1/2) | epoch 0/100   batch 16
+2026-09-16T21:48:03-04:00  [clean training: yolo26s ended] no results.csv (exit 137, 0h00m)
+2026-09-16T21:48:03-04:00  yolo26s paused before 100 epochs (1/2) — run again to resume
+2026-09-16T21:55:14-04:00  Starting StreetSmart clean training (excluding Cincinnati data)
+2026-09-16T21:55:14-04:00  Dataset: /home/ad/potholes/datasets/data_nocincinnati.yaml
+2026-09-16T21:55:14-04:00  Models: yolo26s yolo26m (Target epochs: 100 per model)
+2026-09-16T21:55:14-04:00  [clean training: yolo26s] fine-tuning from best.pt (1/2) | epoch 0/100   batch 16
+2026-09-16T22:00:14-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:16-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:17-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:17-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:17-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:17-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:18-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:18-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:18-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:18-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T22:00:18-04:00  stop signal -> SIGINT yolo26s (625047)
+2026-09-16T23:11:16-04:00  Starting StreetSmart clean training (excluding Cincinnati data)
+2026-09-16T23:11:16-04:00  Dataset: /home/ad/potholes/datasets/data_nocincinnati.yaml
+2026-09-16T23:11:16-04:00  Models: yolo26s yolo26m (Target epochs: 100 per model)
+2026-09-16T23:11:16-04:00  [clean training: yolo26s] resuming (1/2)   epoch 1/100   batch 16 | precision 0.8892   recall 0.7560 | mAP50 0.8356   mAP50-95 0.5756
+2026-09-17T05:03:54-04:00  [clean training: yolo26s ended] epoch 1 -> 100 / 100   (5h52m, exit 0) | precision   0.8892 -> 0.8656   (Δ -0.0236) | recall      0.7560 -> 0.7317   (Δ -0.0243) | mAP50       0.8356 -> 0.8048   (Δ -0.0308) | mAP50-95    0.5756 -> 0.5213   (Δ -0.0543)
+2026-09-17T05:03:54-04:00  yolo26s clean training complete (1/2) — advancing
+2026-09-17T05:03:54-04:00  [clean training: yolo26m] fine-tuning from best.pt (2/2) | epoch 0/100   batch 8
+2026-09-17T09:35:16-04:00  stop signal -> SIGINT yolo26m (659476)
+2026-09-17T09:35:16-04:00  stop signal -> SIGINT yolo26m (659476)
+2026-09-17T09:35:17-04:00  stop signal -> SIGINT yolo26m (659476)
