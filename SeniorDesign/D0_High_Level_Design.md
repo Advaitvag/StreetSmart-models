@@ -223,7 +223,6 @@ StreetSmart has two primary data flows: a model training flow that produces the 
 For the scope of senior design, StreetSmart is not required to perform inference in real time. Captured footage can be processed by the inference pipeline and converted into infrastructure records for later review. Processing and API response times will be evaluated during implementation and refined based on system performance.
 
 ---
-
 # 6. Architecture Pattern and Justification
 
 ## Selected Architecture Pattern(s)
@@ -231,17 +230,17 @@ For the scope of senior design, StreetSmart is not required to perform inference
 ### Pipeline
 
 **Used for:**
-TODO — Explain how footage moves through sequential ingestion, detection, and data-processing stages.
+Vehicle footage moves through a sequence of processing stages, beginning with video input and continuing through model inference, data ingestion, validation, and database storage. Each stage performs a specific task and passes its output to the next stage.
 
 ### Client-Server
 
 **Used for:**
-TODO — Explain the relationship between the map/client interface and StreetSmart backend.
+The Current Infrastructure Map acts as the client while the Backend API acts as the server. The client requests infrastructure data through the API rather than accessing the database directly. External city systems can also communicate with StreetSmart through API endpoints provided by the backend.
 
-### Layered / Other Pattern
+### Microservices
 
 **Used for:**
-TODO — Include only if actually applicable.
+The Backend API provides a separate service for retrieving infrastructure data from the PostgreSQL database and exposing it to the map interface and external city systems. Separate internal and external API endpoints allow the system to support the interactive map while also providing an integration point for existing or future city systems.
 
 ---
 
@@ -249,98 +248,34 @@ TODO — Include only if actually applicable.
 
 ### Fit to the Problem
 
-TODO
+The Pipeline pattern fits StreetSmart because infrastructure footage naturally moves through a sequence of processing stages from raw input to a stored infrastructure record. The Client-Server pattern separates the user-facing map and external-facing systems from the backend data and processing components. A separate set of internal APIs will be used to support the interactive map, while external-facing APIs provide an integration point for city systems. The Microservices pattern allows the backend API and data retrieval functionality to operate as a separate service, keeping API responsibilities separated from the model inference and data processing pipeline.
 
 ### Team Skills
 
-TODO
+The selected architecture aligns with the team's experience with machine learning, backend APIs, PostgreSQL, web applications, and REST interfaces. Separating the processing pipeline from the API also allows team members to work on different components independently. The architecture provides clear boundaries between machine learning, data processing, database access, and user-facing functionality.
 
 ### Performance and Timing
 
-TODO
+The pipeline allows computationally intensive model inference to operate independently from the API and map interface. Since real-time inference is not required for the senior design scope, footage can be processed and stored for later review. Separating the API from inference also prevents intensive model processing from directly affecting map data retrieval and user interaction.
 
 ### Scalability
 
-TODO
+The processing stages can be optimized independently. Additional inference processing can be added without changing the map or API, while the API can continue serving stored infrastructure records. Separating the backend API into its own service also allows additional API consumers, such as city systems, to be supported without requiring changes to the map interface or database structure.
 
 ### Hardware Constraints
 
-TODO
+A primary hardware constraint is obtaining accurate GPS coordinates associated with the recorded camera footage. The camera system must either provide location data directly or be paired with a separate GPS tracking module that records coordinates alongside the footage. The system must be able to associate GPS readings with the corresponding video timestamps so that detected infrastructure issues can be assigned geographic coordinates.
+
+Model inference is separated from the user-facing application so that computationally intensive processing does not need to occur on the user's device. The trained ONNX model can be deployed to the available processing hardware while the map and API remain lightweight.
 
 ---
 
 ## Rejected Alternative
 
-**Pattern considered:** TODO
+**Pattern considered:** Monolithic Architecture
 
 **Why it was considered:**
-TODO
+A monolithic architecture could combine the model inference, ingestion pipeline, database access, API endpoints, and map functionality into a single application. This would simplify initial deployment and reduce the number of separately managed components.
 
 **Why it was rejected:**
-TODO
-
----
-
-# 7. Decision Log
-
-| Decision                             | Alternatives Considered | Chosen Option | Reason |
-| ------------------------------------ | ----------------------- | ------------- | ------ |
-| D-01: How footage enters the system  | TODO                    | TODO          | TODO   |
-| D-02: Where damage detection occurs  | TODO                    | TODO          | TODO   |
-| D-03: How detected issues are stored | TODO                    | TODO          | TODO   |
-| D-04: How city users access results  | TODO                    | TODO          | TODO   |
-
-### Decision Details
-
-#### D-01 — TODO Decision
-
-**Decision:**
-TODO
-
-**Alternatives:**
-
-* Option A
-* Option B
-* Option C
-
-**Reason:**
-TODO
-
-#### D-02 — TODO Decision
-
-**Decision:**
-TODO
-
-**Alternatives:**
-
-* Option A
-* Option B
-
-**Reason:**
-TODO
-
-#### D-03 — TODO Decision
-
-**Decision:**
-TODO
-
-**Alternatives:**
-
-* Option A
-* Option B
-
-**Reason:**
-TODO
-
-#### D-04 — TODO Decision
-
-**Decision:**
-TODO
-
-**Alternatives:**
-
-* Option A
-* Option B
-
-**Reason:**
-TODO
+A monolithic architecture would make it more difficult to separate internal APIs used by the interactive map from external-facing APIs used for city system integration. It would also couple the computationally intensive inference and data processing components more closely with the API and user-facing functionality. Using a separate backend service provides clearer boundaries between these responsibilities and allows the API to be developed and scaled independently.
