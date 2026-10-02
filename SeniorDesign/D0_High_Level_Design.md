@@ -44,90 +44,51 @@ The D0 Block Diagram provides the highest-level structural view of the StreetSma
 
 ```mermaid
 flowchart TD
-    %% ==========================================
-    %% TITLE & GOAL BLOCK (Embedded on Diagram)
-    %% ==========================================
-    subgraph TitleBlock ["StreetSmart — High-Level System Block Diagram (Design D0)"]
+
+    subgraph TITLE_BOX ["Project: StreetSmart | High-Level System Block Diagram (Design D0)"]
         direction TB
-        TITLE["Project: StreetSmart | Goal: Detect, geotag, and persist road infrastructure damage from vehicle cameras for municipal review and GIS integration."]
+        T1["Goal: Automatically detect, geotag, and report road infrastructure damage from vehicle cameras"]
     end
 
-    %% ==========================================
-    %% LEGEND & CONVENTIONS (Embedded on Diagram)
-    %% ==========================================
-    subgraph LegendBlock ["Legend & Conventions"]
+    subgraph LEGEND ["Conventions and Legend"]
         direction TB
-        L_COMP["Internal Component (Built by Team)"]:::compStyle
-        L_EXT(["External System / Hardware Dependency"]):::extStyle
-        L_DB[("Persistent Database / Model Storage")]:::dbStyle
-        L_DATA[/Input / Output Data Artifact/]:::dataStyle
+        L_INT["Internal Component (Built by Team)"]
+        L_EXT("External System or Hardware Dependency")
+        L_DB[("Persistent Database or Model Storage")]
+        L_DATA[/Input or Output Data Artifact/]
+        L_SOLID["Solid Line: Internal Core Data Flow (I1-I9)"]
+        L_DASH["Dashed Line: External System Integration (I10)"]
     end
 
-    %% ==========================================
-    %% EXTERNAL SYSTEMS & HARDWARE
-    %% ==========================================
-    EXT_DATA[/Labeled Training Data
-(RDD2022 / Roboflow)/]:::extStyle
-    EXT_CAM(["Vehicle Camera Hardware
-(1080p MP4/H.264)"]):::extStyle
-    EXT_GPS(["Vehicle GPS Receiver
-(NMEA 0183 Track)"]):::extStyle
-    EXT_CITY(["City Systems & Municipal GIS
-(Cincinnati DTO / OPDA / CAGIS)"]):::extStyle
+    %% External Systems and Hardware
+    TRAIN_DATA[/Labeled Training Data/]
+    CAM("Vehicle Camera Hardware")
+    GPS("Vehicle GPS Receiver")
+    CITY("City Systems and Municipal GIS")
 
-    %% ==========================================
-    %% INTERNAL STREETSMART COMPONENTS
-    %% ==========================================
-    subgraph ModelSubsystem ["Machine Learning Subsystem"]
-        direction LR
-        COMP_TRAIN["Model Training
-(Advait Vagerwal)"]:::compStyle
-        COMP_MSTORE[("Trained Model Storage
-(Advait Vagerwal)")]:::dbStyle
-        COMP_INFER["Model Inference
-(Raihan Rafeek)"]:::compStyle
-    end
+    %% Internal Components
+    TRAIN["Model Training"]
+    MODEL[("Trained Model Storage")]
+    INFER["Model Inference"]
+    INGEST["Ingestion Pipeline"]
+    DB[("PostgreSQL Database")]
+    API["Backend API"]
+    MAP["Current Infrastructure Map"]
 
-    subgraph CoreBackend ["Ingestion & Persistence Tier"]
-        direction TB
-        COMP_INGEST["Ingestion Pipeline
-(Sahil Thakare)"]:::compStyle
-        COMP_DB[("PostgreSQL Database
-(Raihan Rafeek)")]:::dbStyle
-        COMP_API["Backend API
-(Raihan Rafeek)"]:::compStyle
-    end
+    %% Connections with Interface IDs
+    TRAIN_DATA -->|I1: Training Dataset| TRAIN
+    TRAIN -->|I2: Model Weights| MODEL
+    MODEL -->|I3: Trained Model| INFER
 
-    subgraph PresentationTier ["Presentation Dashboard"]
-        direction TB
-        COMP_MAP["Current Infrastructure Map
-(Sahil Thakare)"]:::compStyle
-    end
+    CAM -->|I4: Video Stream| INFER
+    GPS -->|I5: Location Stream| INGEST
 
-    %% ==========================================
-    %% SUBSYSTEM & COMPONENT INTERFACES
-    %% ==========================================
-    EXT_DATA -->|I1: Training Dataset| COMP_TRAIN
-    COMP_TRAIN -->|I2: Exported Model Weights| COMP_MSTORE
-    COMP_MSTORE -->|I3: Loaded ONNX Session| COMP_INFER
+    INFER -->|I6: Damage Detections| INGEST
+    INGEST -->|I7: Geotagged Records| DB
+    DB -->|I8: Infrastructure Records| API
 
-    EXT_CAM -->|I4: Video Frames Stream| COMP_INFER
-    EXT_GPS -->|I5: Spatial Coordinates Track| COMP_INGEST
-
-    COMP_INFER -->|I6: Damage Detections| COMP_INGEST
-    COMP_INGEST -->|I7: Geotagged Damage Records| COMP_DB
-    COMP_DB -->|I8: Infrastructure Records Query| COMP_API
-
-    COMP_API -->|I9: Geospatial Damage Data| COMP_MAP
-    COMP_API -.->|I10: Standardized GeoJSON Integration| EXT_CITY
-
-    %% ==========================================
-    %% MERMAID STYLING CLASSES
-    %% ==========================================
-    classDef compStyle fill:#e7f5ff,stroke:#1971c2,stroke-width:2px,color:#1864ab;
-    classDef extStyle fill:#fff4e6,stroke:#d9480f,stroke-width:2px,stroke-dasharray: 5 5,color:#d9480f;
-    classDef dbStyle fill:#ebfbee,stroke:#2b8a3e,stroke-width:2px,color:#2b8a3e;
-    classDef dataStyle fill:#f3f0ff,stroke:#6741d9,stroke-width:2px,color:#5f3dc4;
+    API -->|I9: Infrastructure Data| MAP
+    API -.->|I10: Municipal GIS Integration| CITY
 ```
 
 ### Component Overview
@@ -279,108 +240,69 @@ The data-flow architecture illustrates how information transitions through succe
 
 ```mermaid
 flowchart LR
-    subgraph Flow1Title ["Flow 1: Model Training & Model Deployment Flow (Offline)"]
+
+    subgraph TITLE_F1 ["Flow 1: Model Training Flow (Offline)"]
         direction TB
-        F1_T["Project: StreetSmart | Goal: Transform raw labeled road damage imagery into an optimized, deployable ONNX model artifact."]
+        T_F1["Goal: Train and export road damage detection model into an optimized ONNX artifact"]
     end
 
-    subgraph Flow1Legend ["Conventions & Forms"]
+    subgraph LEGEND_F1 ["Conventions and Forms"]
         direction TB
-        F1_L1[/Data State: Name [Form]/]:::dataStyle
-        F1_L2["Processing Component"]:::compStyle
-        F1_L3[("Model Artifact Storage")]:::dbStyle
+        LF1_DATA[/"Data: Name (Form)"/]
+        LF1_PROC["Processing Component"]
+        LF1_STORE[("Model Storage")]
     end
 
-    F1_A[/Labeled Training Imagery
-[raw dataset: JPEG + YOLO txt]/]:::dataStyle
-    F1_B["Model Training
-(Advait Vagerwal)
-PyTorch Training & Val"]:::compStyle
-    F1_C[("Trained Model Storage
-(Advait Vagerwal)
-[production artifact: ONNX]")]:::dbStyle
+    A[/Labeled Training Data/]
+    B["Model Training"]
+    C[("Trained ONNX Model")]
 
-    F1_A -->|"Training images & bounding boxes
-[raw dataset]"| F1_B
-    F1_B -->|"Trained weights & execution graph
-[production artifact: ONNX]"| F1_C
-
-    classDef compStyle fill:#e7f5ff,stroke:#1971c2,stroke-width:2px,color:#1864ab;
-    classDef extStyle fill:#fff4e6,stroke:#d9480f,stroke-width:2px,stroke-dasharray: 5 5,color:#d9480f;
-    classDef dbStyle fill:#ebfbee,stroke:#2b8a3e,stroke-width:2px,color:#2b8a3e;
-    classDef dataStyle fill:#f3f0ff,stroke:#6741d9,stroke-width:2px,color:#5f3dc4;
+    A -->|"Labeled images and annotations (raw dataset)"| B
+    B -->|"Trained model weights (production artifact)"| C
 ```
 
 ## Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow
 
 ```mermaid
 flowchart TD
-    subgraph Flow2Title ["Flow 2: Runtime Ingestion, Detection, Storage, & Geospatial Visualization Flow"]
+
+    subgraph TITLE_F2 ["Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow"]
         direction TB
-        F2_T["Project: StreetSmart | Goal: Continuous transformation of raw video and GPS readings into validated database records, map pins, and GIS exports."]
+        T_F2["Goal: Continuous transformation of raw video and GPS readings into validated records, map pins, and GIS exports"]
     end
 
-    subgraph Flow2Legend ["Data Forms & Timing Budgets"]
+    subgraph LEGEND_F2 ["Conventions and Timing Budgets"]
         direction TB
-        F2_L1[/Sensor Input: [raw reading]/]:::extStyle
-        F2_L2["Processing Stage"]:::compStyle
-        F2_L3[("Database: [stored row]")]:::dbStyle
-        F2_L4["Timing Budget Annotation"]:::budgetStyle
+        LF2_INPUT[/"Sensor Input: raw reading"/]
+        LF2_STAGE["Processing Stage"]
+        LF2_DB[("Database: stored row")]
+        LF2_EXT("External System: export file")
+        B1["Inference Budget: under 1200s for 60 min video (AC-01.1)"]
+        B2["Location Error Quarantine: under 3.0s (AC-01.2)"]
+        B3["GIS Export Budget: under 5.0s for 500 records (AC-02.1)"]
+        B4["Validation Error Rejection: under 1.0s (AC-02.2)"]
+        B5["Map Viewport Query: under 2.0s"]
     end
 
-    %% SENSOR INPUTS
-    S_CAM[/Vehicle Camera Footage
-[raw reading: H.264 stream]/]:::extStyle
-    S_GPS[/Vehicle GPS Receiver
-[raw reading: NMEA sentences]/]:::extStyle
+    VIDEO[/Vehicle Camera Footage/]
+    GPS[/Vehicle GPS Receiver/]
 
-    %% STAGES
-    STAGE_INFER["Model Inference
-(Raihan Rafeek)
-Frame Extraction & Detection
-<b>Timing Budget: < 1,200s for 60 min video (AC-01.1)</b>"]:::compStyle
-    STAGE_INGEST["Ingestion Pipeline
-(Sahil Thakare)
-GPS Sync, Validation, & PII Redaction
-<b>Location Error Budget: < 3.0s (AC-01.2)</b>"]:::compStyle
-    STAGE_DB[("PostgreSQL Database
-(Raihan Rafeek)
-Spatial Data Store
-[stored row]")]:::dbStyle
-    STAGE_API["Backend API
-(Raihan Rafeek)
-Spatial Query & Export Serialization
-<b>Export Budget: < 5.0s (AC-02.1)</b>
-<b>Validation Rejection: < 1.0s (AC-02.2)</b>"]:::compStyle
-    STAGE_MAP["Current Infrastructure Map
-(Sahil Thakare)
-Interactive Geospatial Dashboard
-<b>Viewport Query: < 2.0s</b>"]:::compStyle
-    STAGE_CITY(["City Systems / Municipal GIS
-(CAGIS / DTO / OPDA)
-[export file: RFC 7946 GeoJSON]"]):::extStyle
+    INFER["Model Inference"]
+    INGEST["Ingestion Pipeline"]
+    DB[("PostgreSQL Database")]
+    API["Backend API"]
+    MAP["Current Infrastructure Map"]
+    CITY("City Systems / Municipal GIS")
 
-    %% FLOW ARROWS WITH DATA AND FORM
-    S_CAM -->|"Decoded video frames
-[raw reading]"| STAGE_INFER
-    S_GPS -->|"Timestamped geographic track
-[raw reading]"| STAGE_INGEST
-    STAGE_INFER -->|"Damage classes, confidence & bounding boxes
-[in-memory detection]"| STAGE_INGEST
-    STAGE_INGEST -->|"Geotagged & PII-redacted damage records
-[validated record]"| STAGE_DB
-    STAGE_DB -->|"Queried spatial damage rows
-[stored row]"| STAGE_API
-    STAGE_API -->|"Damage locations, severity, & image URLs
-[map pin / JSON]"| STAGE_MAP
-    STAGE_API -.->|"RFC 7946 Standardized FeatureCollection
-[export file / GeoJSON]"| STAGE_CITY
+    VIDEO -->|"Decoded video frames (raw reading)"| INFER
+    GPS -->|"Timestamped geographic track (raw reading)"| INGEST
 
-    classDef compStyle fill:#e7f5ff,stroke:#1971c2,stroke-width:2px,color:#1864ab;
-    classDef extStyle fill:#fff4e6,stroke:#d9480f,stroke-width:2px,stroke-dasharray: 5 5,color:#d9480f;
-    classDef dbStyle fill:#ebfbee,stroke:#2b8a3e,stroke-width:2px,color:#2b8a3e;
-    classDef dataStyle fill:#f3f0ff,stroke:#6741d9,stroke-width:2px,color:#5f3dc4;
-    classDef budgetStyle fill:#fff3e0,stroke:#e65100,stroke-width:1px,color:#bf360c;
+    INFER -->|"Damage classes, confidence, and bounding boxes (in-memory detection)"| INGEST
+    INGEST -->|"Geotagged and PII-redacted damage records (validated record)"| DB
+    DB -->|"Queried spatial damage rows (stored row)"| API
+
+    API -->|"Damage locations, severity, and image URLs (map pin)"| MAP
+    API -.->|"RFC 7946 Standardized FeatureCollection (export file)"| CITY
 ```
 
 ### Detailed Stage-by-Stage Walkthrough
@@ -411,7 +333,11 @@ Interactive Geospatial Dashboard
 
 StreetSmart employs a hybrid architecture combining three classical patterns from the Week 5 syllabus:
 
-1. **Pipeline Architecture Pattern:** Governs the end-to-end data ingestion and computer vision processing flow. Data transitions unidirectionally through sequential, decoupled stages: Video Frame Decoding $ightarrow$ ONNX Computer Vision Inference $ightarrow$ GPS Spatial Correlation $ightarrow$ PII Privacy Redaction $ightarrow$ Database Persistence. Each stage operates with strict interface boundaries, ensuring processing errors in one stage (such as a dropped video frame) do not crash downstream stages.
+1. **Pipeline Architecture Pattern:** Governs the end-to-end data ingestion and computer vision processing flow. Data transitions unidirectionally through sequential, decoupled stages: Video Frame Decoding $
+ightarrow$ ONNX Computer Vision Inference $
+ightarrow$ GPS Spatial Correlation $
+ightarrow$ PII Privacy Redaction $
+ightarrow$ Database Persistence. Each stage operates with strict interface boundaries, ensuring processing errors in one stage (such as a dropped video frame) do not crash downstream stages.
 2. **Client-Server Architecture Pattern:** Governs user interaction and external system interoperability. The Current Infrastructure Map acts as a lightweight client running in municipal staff web browsers, while the Backend API operates as the central server exposing HTTPS endpoints. Client applications never connect directly to the database, enforcing security boundaries and query validation.
 3. **Layered / Microservice Architecture Pattern:** Governs internal system structuring by strictly separating the Presentation Layer (React Web Dashboard), Application/API Service Layer (FastAPI REST Service), Persistence Layer (PostgreSQL with PostGIS), and Compute Worker Layer (Inference Engine). Separating the computationally heavy inference engine from the web API prevents deep learning processing from monopolizing web server threads.
 
