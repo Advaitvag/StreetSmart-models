@@ -43,52 +43,68 @@ The table below specifies the graphical syntax and visual semantics utilized acr
 The D0 Block Diagram provides the highest-level structural view of the StreetSmart platform. It illustrates all seven internal major components, three external systems/dependencies, and the ten formal interfaces connecting them.
 
 ```mermaid
+flowchart LR
+    A[Training Data]
+    B[Model Training]
+    C[("Trained Model")]
+
+    A -->|I1| B
+    B -->|I2| C
+```
+
+```mermaid
 flowchart TD
 
-    subgraph TITLE_BOX ["Project: StreetSmart | High-Level System Block Diagram (Design D0)"]
-        direction TB
-        T1["Goal: Automatically detect, geotag, and report road infrastructure damage from vehicle cameras"]
-    end
+    %% =========================
+    %% RUNTIME INPUTS
+    %% =========================
 
-    subgraph LEGEND ["Conventions and Legend"]
-        direction TB
-        L_INT["Internal Component (Built by Team)"]
-        L_EXT("External System or Hardware Dependency")
-        L_DB[("Persistent Database or Model Storage")]
-        L_DATA[/Input or Output Data Artifact/]
-        L_SOLID["Solid Line: Internal Core Data Flow (I1-I9)"]
-        L_DASH["Dashed Line: External System Integration (I10)"]
-    end
+    VIDEO[/Vehicle Camera Footage/]
+    GPS[/GPS Data/]
 
-    %% External Systems and Hardware
-    TRAIN_DATA[/Labeled Training Data/]
-    CAM("Vehicle Camera Hardware")
-    GPS("Vehicle GPS Receiver")
-    CITY("City Systems and Municipal GIS")
+    %% =========================
+    %% STREETSMART COMPONENTS
+    %% =========================
 
-    %% Internal Components
-    TRAIN["Model Training"]
-    MODEL[("Trained Model Storage")]
-    INFER["Model Inference"]
-    INGEST["Ingestion Pipeline"]
-    DB[("PostgreSQL Database")]
+    MODEL[("Trained Model")]
+
+    INFERENCE["Model Inference"]
+
+    INGESTION["Ingestion Pipeline"]
+
+    DATABASE[("PG Database")]
+
     API["Backend API"]
+
     MAP["Current Infrastructure Map"]
 
-    %% Connections with Interface IDs
-    TRAIN_DATA -->|I1: Training Dataset| TRAIN
-    TRAIN -->|I2: Model Weights| MODEL
-    MODEL -->|I3: Trained Model| INFER
+    %% =========================
+    %% EXTERNAL SYSTEM
+    %% =========================
 
-    CAM -->|I4: Video Stream| INFER
-    GPS -->|I5: Location Stream| INGEST
+    CITY("City Systems")
 
-    INFER -->|I6: Damage Detections| INGEST
-    INGEST -->|I7: Geotagged Records| DB
-    DB -->|I8: Infrastructure Records| API
+    %% =========================
+    %% TRAINING FLOW
+    %% =========================
 
-    API -->|I9: Infrastructure Data| MAP
-    API -.->|I10: Municipal GIS Integration| CITY
+    MODEL -->|I3: Model| INFERENCE
+
+    %% =========================
+    %% RUNTIME FLOW
+    %% =========================
+
+    VIDEO -->|I4: Video| INFERENCE
+    GPS -->|I5: Location| INGESTION
+
+    INFERENCE -->|I6: Damage Detection| INGESTION
+    INGESTION -->|I7: Damage + Location| DATABASE
+
+    DATABASE -->|I8: Infrastructure Records| API
+
+    API -->|I9: Current Infrastructure Data| MAP
+
+    API -.->|I10: System Integration| CITY
 ```
 
 ### Component Overview
