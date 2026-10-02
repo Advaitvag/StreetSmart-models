@@ -304,7 +304,7 @@ flowchart TD
 #### Flow 1: Model Training and Model Deployment (Offline)
 1. **Dataset Preparation (`[raw dataset]`):** Labeled public datasets (RDD2022, Roboflow Pothole datasets) and locally annotated roadway imagery are structured into normalized image directories and YOLO text coordinate files.
 2. **Model Training & Evaluation:** The Model Training component fine-tunes a YOLO architecture across multiple epochs, calculating validation loss, precision, recall, and mean Average Precision (mAP@0.5).
-3. **Artifact Export (`[production artifact]`):** Upon reaching evaluation criteria (mAP > 0.75), the model graph is exported into an optimized ONNX binary file and persisted to Trained Model Storage with metadata specifying input tensor dimensions ($3 	imes 640 	imes 640$) and class labels.
+3. **Artifact Export (`[production artifact]`):** Upon reaching evaluation criteria (mAP > 0.75), the model graph is exported into an optimized ONNX binary file and persisted to Trained Model Storage with metadata specifying input tensor dimensions (3 × 640 × 640) and class labels.
 
 #### Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization (Runtime)
 1. **Raw Sensor Ingestion (`[raw reading]`):** Vehicle-mounted cameras record roadway video in 1080p MP4/H.264 format, while vehicle GPS modules capture continuous NMEA 0183 coordinate streams with UTC timestamps.
