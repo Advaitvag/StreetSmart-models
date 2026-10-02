@@ -40,7 +40,15 @@ StreetSmart is a system that uses vehicle-mounted camera footage to identify pub
 
 # 2. Block Diagram
 
-## D0 System Architecture
+```mermaid
+flowchart LR
+    A[Training Data]
+    B[Model Training]
+    C[("Trained Model")]
+
+    A -->|I1| B
+    B -->|I2| C
+```
 
 ```mermaid
 flowchart TD
@@ -49,7 +57,6 @@ flowchart TD
     %% TRAINING INPUTS
     %% =========================
 
-    TRAINING_DATA[/Labeled Training Data/]
 
     %% =========================
     %% RUNTIME INPUTS
@@ -62,7 +69,6 @@ flowchart TD
     %% STREETSMART COMPONENTS
     %% =========================
 
-    TRAINING["Model Training"]
 
     MODEL[("Trained Model")]
 
@@ -86,8 +92,6 @@ flowchart TD
     %% TRAINING FLOW
     %% =========================
 
-    TRAINING_DATA -->|I1: Labeled Data| TRAINING
-    TRAINING -->|I2: Trained Model| MODEL
     MODEL -->|I3: Model| INFERENCE
 
     %% =========================
