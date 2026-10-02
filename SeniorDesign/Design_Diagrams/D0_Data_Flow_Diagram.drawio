@@ -1,142 +1,110 @@
-<mxfile host="app.diagrams.net" modified="2026-10-02T12:00:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+<mxfile host="app.diagrams.net" modified="2026-10-02T12:30:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
   <diagram id="D0_Data_Flow_Diagram" name="D0 Data Flow Diagram">
     <mxGraphModel dx="1422" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1350" pageHeight="1150" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- TITLE AND GOAL BLOCK -->
-        <mxCell id="df_title_box" value="&lt;b style=&quot;font-size: 16px;&quot;&gt;StreetSmart — System Data-Flow Diagram (Design D0)&lt;/b&gt;&lt;br&gt;&lt;i&gt;Goal: Illustrate stage-by-stage data transformation from raw sensor readings to validated database rows, map pins, and GIS exports, specifying data forms and timing budgets.&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#495057;strokeWidth=2;align=center;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
-          <mxGeometry x="40" y="20" width="1270" height="60" as="geometry" />
+        <!-- FLOW 1: MODEL TRAINING -->
+        <mxCell id="f1_title" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;Flow 1: Model Training Flow (Offline)&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="400" height="30" as="geometry" />
         </mxCell>
 
-        <!-- LEGEND CONTAINER -->
-        <mxCell id="df_legend_group" value="&lt;b&gt;Data-Flow Conventions &amp; Legend&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#f1f3f5;strokeColor=#adb5bd;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="100" width="290" height="230" as="geometry" />
-        </mxCell>
-        <mxCell id="df_leg_proc" value="Processing Component / Stage" style="text;strokeColor=#1971c2;fillColor=#e7f5ff;html=1;align=center;verticalAlign=middle;fontColor=#1864ab;fontStyle=1;spacing=4;" vertex="1" parent="df_legend_group">
-          <mxGeometry y="26" width="290" height="34" as="geometry" />
-        </mxCell>
-        <mxCell id="df_leg_store" value="Data Store / Persistent Registry" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ebfbee;strokeColor=#2b8a3e;fontColor=#2b8a3e;fontStyle=1;align=center;" vertex="1" parent="df_legend_group">
-          <mxGeometry y="60" width="290" height="38" as="geometry" />
-        </mxCell>
-        <mxCell id="df_leg_data" value="Data State &amp; Form: Data [Form]" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f3f0ff;strokeColor=#6741d9;fontColor=#5f3dc4;fontStyle=1;" vertex="1" parent="df_legend_group">
-          <mxGeometry y="98" width="290" height="34" as="geometry" />
-        </mxCell>
-        <mxCell id="df_leg_time" value="Timing Budget: &lt; 1,200s, &lt; 5s, etc." style="text;strokeColor=#d9480f;fillColor=#fff4e6;html=1;align=center;verticalAlign=middle;fontColor=#d9480f;fontStyle=1;spacing=4;" vertex="1" parent="df_legend_group">
-          <mxGeometry y="132" width="290" height="34" as="geometry" />
-        </mxCell>
-        <mxCell id="df_leg_arrow" value="—— Labeled Arrow: Data Crossing &amp; Form" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="df_legend_group">
-          <mxGeometry y="166" width="290" height="64" as="geometry" />
+        <mxCell id="f1_data" value="&lt;b&gt;Labeled Training Data&lt;/b&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <!-- FLOW 1: MODEL TRAINING FLOW -->
-        <mxCell id="flow1_header" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;FLOW 1: Model Training &amp; Model Deployment Flow (Offline)&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontColor=#212529;" vertex="1" parent="1">
-          <mxGeometry x="40" y="95" width="500" height="30" as="geometry" />
+        <mxCell id="f1_train" value="&lt;b&gt;Model Training&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="200" height="50" as="geometry" />
         </mxCell>
 
-        <mxCell id="f1_data_raw" value="&lt;b&gt;Labeled Training Data&lt;/b&gt;&lt;br&gt;[raw dataset]" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff4e6;strokeColor=#d9480f;strokeWidth=2;fontColor=#d9480f;" vertex="1" parent="1">
-          <mxGeometry x="40" y="140" width="220" height="50" as="geometry" />
+        <mxCell id="f1_model" value="&lt;b&gt;Trained ONNX Model&lt;/b&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="760" y="60" width="200" height="70" as="geometry" />
         </mxCell>
 
-        <mxCell id="f1_train" value="&lt;b&gt;Model Training&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Advait Vagerwal&lt;br&gt;YOLO Training &amp; Eval&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
-          <mxGeometry x="380" y="140" width="200" height="50" as="geometry" />
-        </mxCell>
-
-        <mxCell id="f1_model_store" value="&lt;b&gt;Trained Model Storage&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Advait Vagerwal&lt;br&gt;[production artifact]&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ebfbee;strokeColor=#2b8a3e;strokeWidth=2;fontColor=#2b8a3e;" vertex="1" parent="1">
-          <mxGeometry x="720" y="130" width="190" height="70" as="geometry" />
-        </mxCell>
-
-        <mxCell id="f1_edge1" value="Labeled images &amp; bounding boxes&lt;br&gt;&lt;b&gt;[raw dataset]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f1_data_raw" target="f1_train" parent="1">
+        <mxCell id="e_f1_1" value="Labeled images + annotations&lt;br&gt;&lt;b&gt;[raw dataset]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f1_data" target="f1_train" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="f1_edge2" value="Trained ONNX weights &amp; metadata&lt;br&gt;&lt;b&gt;[production artifact]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f1_train" target="f1_model_store" parent="1">
+        <mxCell id="e_f1_2" value="Trained model artifact&lt;br&gt;&lt;b&gt;[production artifact]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f1_train" target="f1_model" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
         <!-- SEPARATOR -->
-        <mxCell id="flow_sep" value="" style="line;strokeWidth=1;strokeColor=#ced4da;html=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="240" width="1270" height="10" as="geometry" />
+        <mxCell id="sep" value="" style="line;strokeWidth=1;strokeColor=#cbd5e1;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="1000" height="10" as="geometry" />
         </mxCell>
 
-        <!-- FLOW 2: RUNTIME DETECTION & GEOSPATIAL FLOW -->
-        <mxCell id="flow2_header" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;FLOW 2: Runtime Ingestion, Detection, Storage, &amp; Geospatial Visualization Flow&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontColor=#212529;" vertex="1" parent="1">
-          <mxGeometry x="40" y="260" width="600" height="30" as="geometry" />
+        <!-- FLOW 2: RUNTIME DETECTION -->
+        <mxCell id="f2_title" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="190" width="600" height="30" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 1: INPUT SENSORS -->
-        <mxCell id="f2_camera" value="&lt;b&gt;Vehicle Camera Video&lt;/b&gt;&lt;br&gt;[raw reading: H.264 stream]" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff4e6;strokeColor=#d9480f;strokeWidth=2;dashed=1;fontColor=#d9480f;" vertex="1" parent="1">
-          <mxGeometry x="40" y="320" width="220" height="50" as="geometry" />
+        <!-- Input Streams Container -->
+        <mxCell id="c_inputs" value="Input Streams" style="swimlane;dashed=1;strokeColor=#94a3b8;fillColor=#f8fafc;startSize=24;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="120" y="230" width="680" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="f2_cam" value="&lt;b&gt;Vehicle Camera Footage&lt;/b&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="c_inputs">
+          <mxGeometry x="40" y="40" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="f2_gps" value="&lt;b&gt;GPS Location Stream&lt;/b&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="c_inputs">
+          <mxGeometry x="420" y="40" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <mxCell id="f2_gps" value="&lt;b&gt;Vehicle GPS Tracker&lt;/b&gt;&lt;br&gt;[raw reading: NMEA sentences]" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff4e6;strokeColor=#d9480f;strokeWidth=2;dashed=1;fontColor=#d9480f;" vertex="1" parent="1">
-          <mxGeometry x="40" y="460" width="220" height="50" as="geometry" />
+        <!-- Stages -->
+        <mxCell id="f2_infer" value="&lt;b&gt;Model Inference&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="160" y="410" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 2: INFERENCE -->
-        <mxCell id="f2_inference" value="&lt;b&gt;Model Inference&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Raihan Rafeek&lt;br&gt;Batch Video Frame Evaluation&lt;br&gt;&lt;b style=&quot;color:#d9480f;&quot;&gt;Budget: &amp;lt; 1,200s (AC-01.1)&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
-          <mxGeometry x="380" y="315" width="220" height="60" as="geometry" />
+        <mxCell id="f2_ingest" value="&lt;b&gt;Ingestion Pipeline&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="350" y="540" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 3: INGESTION PIPELINE -->
-        <mxCell id="f2_ingestion" value="&lt;b&gt;Ingestion Pipeline&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Sahil Thakare&lt;br&gt;GPS Sync, Validation, &amp; PII Redaction&lt;br&gt;&lt;b style=&quot;color:#d9480f;&quot;&gt;Location Error Quarantine: &amp;lt; 3.0s (AC-01.2)&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
-          <mxGeometry x="380" y="450" width="220" height="70" as="geometry" />
+        <mxCell id="f2_db" value="&lt;b&gt;PostgreSQL Database&lt;/b&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="360" y="660" width="200" height="70" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 4: DATABASE -->
-        <mxCell id="f2_db" value="&lt;b&gt;PostgreSQL Database&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Raihan Rafeek&lt;br&gt;PostGIS Spatial Store&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ebfbee;strokeColor=#2b8a3e;strokeWidth=2;fontColor=#2b8a3e;" vertex="1" parent="1">
-          <mxGeometry x="390" y="600" width="200" height="80" as="geometry" />
+        <mxCell id="f2_api" value="&lt;b&gt;Backend API&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="350" y="800" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 5: BACKEND API -->
-        <mxCell id="f2_api" value="&lt;b&gt;Backend API&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Raihan Rafeek&lt;br&gt;Query Execution &amp; GeoJSON Serializer&lt;br&gt;&lt;b style=&quot;color:#d9480f;&quot;&gt;Export Budget: &amp;lt; 5.0s (AC-02.1)&lt;br&gt;Validation Rejection: &amp;lt; 1.0s (AC-02.2)&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
-          <mxGeometry x="370" y="760" width="240" height="80" as="geometry" />
+        <!-- Output Consumers Container -->
+        <mxCell id="c_outputs" value="Geospatial Consumers" style="swimlane;dashed=1;strokeColor=#94a3b8;fillColor=#f8fafc;startSize=24;fontStyle=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="120" y="920" width="680" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="f2_map" value="&lt;b&gt;Current Infrastructure Map&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="c_outputs">
+          <mxGeometry x="40" y="40" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="f2_city" value="&lt;b&gt;City Systems / Municipal GIS&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;" vertex="1" parent="c_outputs">
+          <mxGeometry x="420" y="40" width="220" height="50" as="geometry" />
         </mxCell>
 
-        <!-- STAGE 6A: MAP UI -->
-        <mxCell id="f2_map" value="&lt;b&gt;Current Infrastructure Map&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Sahil Thakare&lt;br&gt;Interactive Geospatial Dashboard&lt;br&gt;&lt;b style=&quot;color:#d9480f;&quot;&gt;Viewport Query: &amp;lt; 2.0s&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
-          <mxGeometry x="780" y="770" width="240" height="60" as="geometry" />
-        </mxCell>
-
-        <!-- STAGE 6B: CITY GIS -->
-        <mxCell id="f2_city" value="&lt;b&gt;City Systems / Municipal GIS&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Downstream Consumer (CAGIS / OPDA)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#fff4e6;strokeColor=#d9480f;strokeWidth=2;fontColor=#d9480f;" vertex="1" parent="1">
-          <mxGeometry x="370" y="930" width="240" height="60" as="geometry" />
-        </mxCell>
-
-        <!-- RUNTIME DATA FLOW ARROWS -->
-        <!-- Video to Inference -->
-        <mxCell id="f2_edge1" value="Decoded Video Frames&lt;br&gt;&lt;b&gt;[raw reading]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_camera" target="f2_inference" parent="1">
+        <!-- Edges -->
+        <mxCell id="e_cam_infer" value="Raw video frames&lt;br&gt;&lt;b&gt;[raw reading]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_cam" target="f2_infer" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- GPS to Ingestion -->
-        <mxCell id="f2_edge2" value="Latitude, Longitude, Timestamp&lt;br&gt;&lt;b&gt;[raw reading]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_gps" target="f2_ingestion" parent="1">
+        <mxCell id="e_infer_ingest" value="Damage detections&lt;br&gt;&lt;b&gt;[in-memory detection]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_infer" target="f2_ingest" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Inference to Ingestion -->
-        <mxCell id="f2_edge3" value="Bounding Box, Class, Confidence &amp;gt; 0.70&lt;br&gt;&lt;b&gt;[in-memory detection]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_inference" target="f2_ingestion" parent="1">
+        <mxCell id="e_gps_ingest" value="Geographic coordinates&lt;br&gt;&lt;b&gt;[raw reading]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_gps" target="f2_ingest" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Ingestion to DB -->
-        <mxCell id="f2_edge4" value="Geotagged &amp; Redacted Damage Record&lt;br&gt;&lt;b&gt;[validated record]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_ingestion" target="f2_db" parent="1">
+        <mxCell id="e_ingest_db" value="Geotagged damage records&lt;br&gt;&lt;b&gt;[validated record]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_ingest" target="f2_db" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- DB to API -->
-        <mxCell id="f2_edge5" value="Queried Infrastructure Damage Records&lt;br&gt;&lt;b&gt;[stored row]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_db" target="f2_api" parent="1">
+        <mxCell id="e_db_api" value="Spatial query results&lt;br&gt;&lt;b&gt;[stored row]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_db" target="f2_api" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- API to Map UI -->
-        <mxCell id="f2_edge6" value="Geospatial Pothole Features&lt;br&gt;&lt;b&gt;[map pin / JSON]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" edge="1" source="f2_api" target="f2_map" parent="1">
+        <mxCell id="e_api_map" value="Map markers&lt;br&gt;&lt;b&gt;[map pin]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;" edge="1" source="f2_api" target="f2_map" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- API to City GIS -->
-        <mxCell id="f2_edge7" value="RFC 7946 Standardized FeatureCollection&lt;br&gt;&lt;b&gt;[export file / GeoJSON]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d9480f;strokeWidth=2;dashed=1;fontColor=#d9480f;" edge="1" source="f2_api" target="f2_city" parent="1">
+        <mxCell id="e_api_city" value="RFC 7946 GeoJSON&lt;br&gt;&lt;b&gt;[export file]&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1e293b;strokeWidth=1.5;dashed=1;" edge="1" source="f2_api" target="f2_city" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 

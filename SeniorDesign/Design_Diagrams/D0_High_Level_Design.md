@@ -256,69 +256,47 @@ The data-flow architecture illustrates how information transitions through succe
 
 ```mermaid
 flowchart LR
-
-    subgraph TITLE_F1 ["Flow 1: Model Training Flow (Offline)"]
-        direction TB
-        T_F1["Goal: Train and export road damage detection model into an optimized ONNX artifact"]
-    end
-
-    subgraph LEGEND_F1 ["Conventions and Forms"]
-        direction TB
-        LF1_DATA[/"Data: Name (Form)"/]
-        LF1_PROC["Processing Component"]
-        LF1_STORE[("Model Storage")]
-    end
-
     A[/Labeled Training Data/]
     B["Model Training"]
     C[("Trained ONNX Model")]
 
-    A -->|"Labeled images and annotations (raw dataset)"| B
-    B -->|"Trained model weights (production artifact)"| C
+    A -->|"Labeled images + annotations<br/>[raw dataset]"| B
+    B -->|"Trained model artifact<br/>[production artifact]"| C
 ```
 
 ## Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow
 
 ```mermaid
 flowchart TD
-
-    subgraph TITLE_F2 ["Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow"]
-        direction TB
-        T_F2["Goal: Continuous transformation of raw video and GPS readings into validated records, map pins, and GIS exports"]
+    subgraph S_IN ["Input Streams"]
+        direction LR
+        CAM[/Vehicle Camera Footage/]
+        GPS[/GPS Location Stream/]
     end
-
-    subgraph LEGEND_F2 ["Conventions and Timing Budgets"]
-        direction TB
-        LF2_INPUT[/"Sensor Input: raw reading"/]
-        LF2_STAGE["Processing Stage"]
-        LF2_DB[("Database: stored row")]
-        LF2_EXT("External System: export file")
-        B1["Inference Budget: under 1200s for 60 min video (AC-01.1)"]
-        B2["Location Error Quarantine: under 3.0s (AC-01.2)"]
-        B3["GIS Export Budget: under 5.0s for 500 records (AC-02.1)"]
-        B4["Validation Error Rejection: under 1.0s (AC-02.2)"]
-        B5["Map Viewport Query: under 2.0s"]
-    end
-
-    VIDEO[/Vehicle Camera Footage/]
-    GPS[/Vehicle GPS Receiver/]
 
     INFER["Model Inference"]
     INGEST["Ingestion Pipeline"]
     DB[("PostgreSQL Database")]
     API["Backend API"]
-    MAP["Current Infrastructure Map"]
-    CITY("City Systems / Municipal GIS")
 
-    VIDEO -->|"Decoded video frames (raw reading)"| INFER
-    GPS -->|"Timestamped geographic track (raw reading)"| INGEST
+    subgraph S_OUT ["Geospatial Consumers"]
+        direction LR
+        MAP["Current Infrastructure Map"]
+        CITY("City Systems / Municipal GIS")
+    end
 
-    INFER -->|"Damage classes, confidence, and bounding boxes (in-memory detection)"| INGEST
-    INGEST -->|"Geotagged and PII-redacted damage records (validated record)"| DB
-    DB -->|"Queried spatial damage rows (stored row)"| API
+    CAM -->|"Raw video frames<br/>[raw reading]"| INFER
+    INFER -->|"Damage detections<br/>[in-memory detection]"| INGEST
+    GPS -->|"Geographic coordinates<br/>[raw reading]"| INGEST
 
-    API -->|"Damage locations, severity, and image URLs (map pin)"| MAP
-    API -.->|"RFC 7946 Standardized FeatureCollection (export file)"| CITY
+    INGEST -->|"Geotagged damage records<br/>[validated record]"| DB
+    DB -->|"Spatial query results<br/>[stored row]"| API
+
+    API -->|"Map markers<br/>[map pin]"| MAP
+    API -.->|"RFC 7946 GeoJSON<br/>[export file]"| CITY
+
+    style S_IN fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4
+    style S_OUT fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4
 ```
 
 ### Detailed Stage-by-Stage Walkthrough
