@@ -59,6 +59,8 @@ backend/dist/
 .env.*
 *.onnx
 *.dll
+*.so
+*.so.*
 .idea/
 .vscode/
 Thumbs.db
