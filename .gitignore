@@ -31,6 +31,7 @@ runs/.night_sweep_summary_sent
 
 # --- papers / archives ---
 *.pdf
+!SeniorDesign/**/*.pdf
 *.zip
 
 # --- heavy RF-DETR checkpoints (only best_* is kept, see models/) ---

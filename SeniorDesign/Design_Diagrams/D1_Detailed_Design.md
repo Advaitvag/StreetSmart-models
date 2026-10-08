@@ -21,7 +21,7 @@ StreetSmart is an automated public infrastructure inspection system that analyze
 
 ## Scope
 
-This document details the PostgreSQL/PostGIS database and evidence-image storage, the pothole confidence aggregation algorithm, and the spatial pothole matching algorithm. The Model Training, Trained Model Storage, Model Inference, and Current Infrastructure Map components are deferred to D2.
+This document details the PostgreSQL Database, Ingestion Pipeline (confidence aggregation and spatial matching algorithms), and Backend API components; Model Training, Trained Model Storage, Model Inference, and Current Infrastructure Map are deferred to D2.
 
 ## Diagram Conventions
 
@@ -212,14 +212,13 @@ When the model detects a pothole, StreetSmart must decide whether it has already
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `observed_location` | Geographic point | GPS location associated with the new detection (lat in [-90, 90], lon in [-180, 180]). |
-| `existing_potholes` | List of pothole records | Existing potholes near the new detection. |
+| `observed_location` | `orb.Point` (`geometry(Point, 4326)`) | GPS location associated with the new detection (lat in [-90, 90], lon in [-180, 180]). |
+| `existing_potholes` | `[]PotholeCandidate` | Existing candidate pothole records within search radius retrieved via PostGIS GiST index. |
 | `matching_radius` | `float64` | Maximum geographic distance, in meters, for considering a pothole a potential match (default 5.0 meters). |
 
 Output:
 
-* The ID of an existing pothole if a match is found.
-* A new pothole record if no existing pothole is a suitable match.
+* `(matched_pothole_id *uuid.UUID, is_new bool, err error)`: Pointer to existing pothole UUID if a spatial match is found; newly generated pothole UUID with `is_new = true` if no match; or error if coordinates are invalid.
 
 ### Approach
 
@@ -341,7 +340,7 @@ If an image upload fails, the system reports the failure and avoids creating a b
 
 ## 5.4 Versioning
 
-The API uses the `/api/v1` prefix. Removing or renaming fields, changing field types or coordinate units, or adding mandatory request parameters constitutes a breaking change and requires incrementing the API version to `/api/v2`.
+The StreetSmart REST API is versioned via the URI path prefix (`/api/v1`), where removing or renaming fields, altering data types or coordinate units, or adding mandatory request parameters constitutes a breaking change requiring an increment to `/api/v2`.
 
 ---
 

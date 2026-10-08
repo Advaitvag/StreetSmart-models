@@ -21,7 +21,7 @@ StreetSmart is an automated public infrastructure inspection system that analyze
 
 ## Scope
 
-This document details the PostgreSQL/PostGIS database and evidence-image storage, the pothole confidence aggregation algorithm, and the spatial pothole matching algorithm. The Model Training, Trained Model Storage, Model Inference, and Current Infrastructure Map components are deferred to D2.
+This document details the PostgreSQL Database, Ingestion Pipeline (confidence aggregation and spatial matching algorithms), and Backend API components; Model Training, Trained Model Storage, Model Inference, and Current Infrastructure Map are deferred to D2.
 
 ## Diagram Conventions
 
@@ -153,7 +153,7 @@ Output:
 
 The aggregate confidence is calculated using a weighted linear equation:
 
-C_final = (1 - w) *C_model + w* C_repeat
+C_final = (1 - w) * C_model + w * C_repeat
 
 where:
 
@@ -170,7 +170,7 @@ where n is the number of accepted observations.
 For example, if the average model confidence is 0.90, there are three observations, and the repeat weight is 0.30, then:
 
 C_repeat = 3 / (3 + 1) = 0.75
-C_final = (0.70) *(0.90) + (0.30)* (0.75) = 0.630 + 0.225 = 0.855
+C_final = (0.70) * (0.90) + (0.30) * (0.75) = 0.630 + 0.225 = 0.855
 
 The model confidence contributes most of the score, while repeated observations provide additional evidence.
 
@@ -212,27 +212,24 @@ When the model detects a pothole, StreetSmart must decide whether it has already
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `observed_location` | Geographic point | GPS location associated with the new detection (lat in [-90, 90], lon in [-180, 180]). |
-| `existing_potholes` | List of pothole records | Existing potholes near the new detection. |
+| `observed_location` | `orb.Point` (`geometry(Point, 4326)`) | GPS location associated with the new detection (lat in [-90, 90], lon in [-180, 180]). |
+| `existing_potholes` | `[]PotholeCandidate` | Existing candidate pothole records within search radius retrieved via PostGIS GiST index. |
 | `matching_radius` | `float64` | Maximum geographic distance, in meters, for considering a pothole a potential match (default 5.0 meters). |
 
 Output:
 
-* The ID of an existing pothole if a match is found.
-* A new pothole record if no existing pothole is a suitable match.
+* `(matched_pothole_id *uuid.UUID, is_new bool, err error)`: Pointer to existing pothole UUID if a spatial match is found; newly generated pothole UUID with `is_new = true` if no match; or error if coordinates are invalid.
 
 ### Approach
 
 1. Receive a new detection and its GPS coordinates.
 2. Query PostGIS for existing potholes within the configured matching radius (5.0 meters):
-
    ```sql
    SELECT id, location, aggregated_confidence, observation_count
    FROM POTHOLE
    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography, 5.0)
    ORDER BY ST_Distance(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography) ASC;
    ```
-
 3. If no candidates are found, create a new pothole record.
 4. If one candidate is found, associate the detection with that pothole and update its observation count and aggregate confidence.
 5. If multiple candidates are found, check the distance to the closest candidates. If one is clearly closest (d1 < 2.0 m and d2 - d1 >= 1.5 m), associate with that record. If the candidates are equidistant (|d2 - d1| < 1.0 m), flag the match as ambiguous to avoid corrupting records.
@@ -343,7 +340,7 @@ If an image upload fails, the system reports the failure and avoids creating a b
 
 ## 5.4 Versioning
 
-The API uses the `/api/v1` prefix. Removing or renaming fields, changing field types or coordinate units, or adding mandatory request parameters constitutes a breaking change and requires incrementing the API version to `/api/v2`.
+The StreetSmart REST API is versioned via the URI path prefix (`/api/v1`), where removing or renaming fields, altering data types or coordinate units, or adding mandatory request parameters constitutes a breaking change requiring an increment to `/api/v2`.
 
 ---
 
@@ -401,7 +398,7 @@ Leaflet with vanilla JavaScript was considered as an alternative, but React with
 
 StreetSmart uses vehicle dashcam footage processed asynchronously on workstation hardware with Microsoft ONNX Runtime.
 
-**Team skill fit:** Advait has experience with training machine learning models and fine-tunes the YOLO detection model in PyTorch before exporting it to ONNX format. Raihan then connects the exported ONNX model into the Go inference pipeline.
+**Team skill fit:** Advait is experienced with training machine learning models and fine-tunes the YOLO detection model in PyTorch before exporting it to ONNX format. Raihan then connects the exported ONNX model into the Go inference pipeline.
 
 **Licensing:** ONNX Runtime is open-source under the MIT License.
 
@@ -417,7 +414,7 @@ Direct PyTorch model execution was considered as an alternative, but ONNX Runtim
 
 Supabase is used for managed database and image storage hosting, alongside Docker containers for backend services.
 
-**Team skill fit:** Sahil has experience with DevOps and Docker containerization, while Raihan manages database schema operations.
+**Team skill fit:** Sahil has experience with DevOps and Docker containerization, while Raihan manages database schema operations. This allows the team to package services consistently and deploy them cleanly.
 
 **Licensing:** Docker engine tools use the Apache-2.0 license, and Supabase's open-source stack is licensed under Apache-2.0 alongside its cloud platform terms.
 
