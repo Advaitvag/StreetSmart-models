@@ -5,7 +5,7 @@
 **Advisor:** Eric Jamison  
 **Assignment:** Assignment 6 — Detailed System Design, Part 1 (Design D1)  
 **Date:** October 8, 2026  
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 
 ---
 
@@ -44,6 +44,8 @@ The visual conventions for the D1 Entity-Relationship Diagram (Figure 1) are def
 ## 2.1 Entity-Relationship Diagram
 
 Figure 1 illustrates the core data model for StreetSmart. Physical roadway potholes are strictly decoupled from individual point detections. As an inspection vehicle drives over a road defect, the camera captures multiple consecutive frames; each observation is recorded as a `DETECTION`, while the canonical `POTHOLE` record aggregates the detection count, recalculates overall confidence, and maintains the estimated geographic location.
+
+![Figure 1: StreetSmart D1 Entity-Relationship Diagram](Design_Diagrams/D1_Data_Model_ERD.svg)
 
 ```mermaid
 erDiagram
@@ -105,10 +107,10 @@ erDiagram
 | **Separate `POTHOLE` and `DETECTION` Entities** | Entity vs. Attribute | A physical pothole appears in multiple consecutive frames of a single run and across multiple separate patrol dates. Collapsing detections into attributes on a pothole would lose historical sensor telemetry and prevent incremental confidence updates. Conversely, treating each detection as an independent pothole would produce hundreds of duplicate hazard pins for a single street defect. | **US-01, US-02, US-03, AC-01.1** |
 | **Separate `VIDEO_RUN` Entity** | Entity vs. Attribute | One video run produces hundreds of detections. Storing video container name, processing status, and run timestamps directly on each detection row would duplicate strings across thousands of rows. A dedicated `VIDEO_RUN` entity provides run-level lifecycle auditing, batch failure isolation, and performance monitoring. | **US-01, AC-01.1, AC-01.2** |
 | **Separate `EVIDENCE_IMAGE` Entity** | Entity vs. Attribute | Normalizes image storage metadata. Not every detection produces an evidence crop (e.g., distant low-resolution detections), and future extensions may store multiple crops (e.g., wide overview and zoomed-in texture). Decoupling image paths keeps detection rows narrow and simplifies independent redaction pipelines. | **US-04, AC-01.1** |
-| **`VIDEO_RUN` to `DETECTION` is 1-to-Many (`1:N`)** | Cardinality (`1:N` vs. `M:N`) | A single video processing run produces zero or many point detections, but every detected video frame originates from exactly one physical video file and ingest run. A many-to-many relationship is structurally invalid and unnecessary. | **US-01, AC-01.1** |
-| **`POTHOLE` to `DETECTION` is 1-to-Many (`1:N`)** | Cardinality (`1:N` vs. `M:N`) | A physical pothole groups one or more observations over time ($n \ge 1$), but each individual localized frame detection represents a single point in space and time that belongs to exactly one physical pothole entity. | **US-02, US-03, AC-01.1** |
-| **`DETECTION` to `EVIDENCE_IMAGE` is 1-to-Many (`1:N`)** | Cardinality (`1:N` vs. `M:N`) | A detection has zero or more associated image crops (typically one cropped bounding box), and each image file belongs to exactly one detection event. | **US-04, AC-01.1** |
-| **Relational Model (PostgreSQL/PostGIS) vs. Simpler Store** | Database Architecture | StreetSmart selects a relational model over NoSQL document stores or key-value stores. Relational tables enforce strict referential integrity across runs, detections, and evidence links. Furthermore, PostGIS provides native Open Geospatial Consortium (OGC) spatial operations (`ST_DWithin`, `ST_MakeEnvelope`) and R-tree spatial indexing (`GIST`), which are essential for $O(\log N)$ radius matching and RFC 7946 GeoJSON export. Simpler key-value or document stores lack native spatial indexing and require custom application-level joins and spatial filtering. | **US-01, US-02, US-05, AC-02.1** |
+| **`VIDEO_RUN` to `DETECTION` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A single video processing run produces zero or many point detections, but every detected video frame originates from exactly one physical video file and ingest run. A many-to-many relationship is structurally invalid and unnecessary. | **US-01, AC-01.1** |
+| **`POTHOLE` to `DETECTION` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A physical pothole groups one or more observations over time (n >= 1), but each individual localized frame detection represents a single point in space and time that belongs to exactly one physical pothole entity. | **US-02, US-03, AC-01.1** |
+| **`DETECTION` to `EVIDENCE_IMAGE` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A detection has zero or more associated image crops (typically one cropped bounding box), and each image file belongs to exactly one detection event. | **US-04, AC-01.1** |
+| **Relational Model (PostgreSQL/PostGIS) vs. Simpler Store** | Database Architecture | StreetSmart selects a relational model over NoSQL document stores or key-value stores. Relational tables enforce strict referential integrity across runs, detections, and evidence links. Furthermore, PostGIS provides native Open Geospatial Consortium (OGC) spatial operations (`ST_DWithin`, `ST_MakeEnvelope`) and R-tree spatial indexing (`GIST`), which are essential for O(log N) radius matching and RFC 7946 GeoJSON export. Simpler key-value or document stores lack native spatial indexing and require custom application-level joins and spatial filtering. | **US-01, US-02, US-05, AC-02.1** |
 
 ## 2.4 Indexing Decisions
 
@@ -116,18 +118,18 @@ To guarantee low-latency spatial queries and prevent performance degradation as 
 
 | Table | Indexed Field | Index Type | Rationale & Justification | Requirement Traceability |
 | :--- | :--- | :--- | :--- | :--- |
-| `POTHOLE` | `location` | `GIST` (Generalized Search Tree) | PostGIS spatial R-tree index. Enables sub-millisecond $O(\log N)$ bounding-box filtering (`ST_MakeEnvelope`) for map viewport rendering and radial distance searches (`ST_DWithin`) during pothole deduplication, avoiding a full table scan of tens of thousands of records. | **US-01, US-05, AC-02.1** |
-| `DETECTION` | `pothole_id` | `B-Tree` | Foreign key index. Accelerates $O(\log n)$ retrieval and aggregation of all historical observations belonging to a given pothole when re-evaluating aggregate confidence or displaying inspection history. | **US-02, AC-01.1** |
+| `POTHOLE` | `location` | `GIST` (Generalized Search Tree) | PostGIS spatial R-tree index. Enables sub-millisecond O(log N) bounding-box filtering (`ST_MakeEnvelope`) for map viewport rendering and radial distance searches (`ST_DWithin`) during pothole deduplication, avoiding a full table scan of tens of thousands of records. | **US-01, US-05, AC-02.1** |
+| `DETECTION` | `pothole_id` | `B-Tree` | Foreign key index. Accelerates O(log n) retrieval and aggregation of all historical observations belonging to a given pothole when re-evaluating aggregate confidence or displaying inspection history. | **US-02, AC-01.1** |
 | `DETECTION` | `video_run_id` | `B-Tree` | Foreign key index. Accelerates run-level batch queries, status auditing, and transactional cleanup of failed video processing runs. | **US-01, AC-01.2** |
-| `POTHOLE` | `aggregated_confidence` | `B-Tree` | Scalar index. Accelerates filtering queries requesting high-confidence roadway defects ($C \ge 0.70$) without scanning unconfirmed low-confidence candidates. | **US-02, AC-01.1, AC-02.1** |
+| `POTHOLE` | `aggregated_confidence` | `B-Tree` | Scalar index. Accelerates filtering queries requesting high-confidence roadway defects (confidence >= 0.70) without scanning unconfirmed low-confidence candidates. | **US-02, AC-01.1, AC-02.1** |
 | `POTHOLE` | `status` | `B-Tree` | Low-cardinality scalar index. Enables rapid filtering by municipal workflow status (`'UNRESOLVED'`, `'VERIFIED'`, `'REPAIRED'`) for maintenance work-order generation. | **US-01, US-03** |
 
 ## 2.5 Video and Evidence-Image Storage Lifecycle
 
 1. **Persistent Source Footage:** Raw vehicle dashcam video files remain on local persistent disk or staging volumes.
 2. **Incremental Frame Extraction:** The Go inference service decodes video streams incrementally into memory buffers (frame-by-frame), strictly avoiding loading entire multi-gigabyte video files into RAM.
-3. **Inference Execution:** Frames are preprocessed (scaled to $3 \times 640 \times 640$) and evaluated via ONNX Runtime.
-4. **Evidence Cropping & Redaction:** When a pothole is detected with confidence $\ge 0.70$, the pipeline extracts a cropped region of interest around the bounding box. The bounding box is rendered onto the image crop, and an automated privacy filter blurs any detected vehicle license plates or pedestrian faces (**US-04**).
+3. **Inference Execution:** Frames are preprocessed (scaled to 3 × 640 × 640) and evaluated via ONNX Runtime.
+4. **Evidence Cropping & Redaction:** When a pothole is detected with confidence >= 0.70, the pipeline extracts a cropped region of interest around the bounding box. The bounding box is rendered onto the image crop, and an automated privacy filter blurs any detected vehicle license plates or pedestrian faces (**US-04**).
 5. **Object Storage Upload:** The redacted JPEG image is uploaded to Supabase Storage via its REST API under path `/evidence/{run_id}/{detection_id}.jpg`.
 6. **Database Persistence:** PostgreSQL commits the `DETECTION` row and creates an associated `EVIDENCE_IMAGE` row recording the storage path.
 7. **Failure Isolation:** If an image upload fails (e.g., network timeout), the transaction logs an error and rolls back the evidence reference, preventing broken image links from entering the database.
@@ -144,52 +146,68 @@ Single-frame computer vision detections suffer from transient uncertainty caused
 ### 2. Inputs and Outputs with Exact Types
 
 **Inputs:**
-* `current_avg_confidence`: `float64` — Average model confidence of existing accepted detections, range $[0.0, 1.0]$.
-* `current_observation_count`: `int32` — Number of previously accepted observations ($n \ge 0$).
-* `new_model_confidence`: `float64` — Model confidence of the newly matched detection, range $[0.0, 1.0]$.
-* `repeat_weight`: `float64` — Weight assigned to repeated detections ($w \in [0.0, 1.0]$, system default $w = 0.30$).
+* `current_avg_confidence`: `float64` — Average model confidence of existing accepted detections, range [0.0, 1.0].
+* `current_observation_count`: `int32` — Number of previously accepted observations (n >= 0).
+* `new_model_confidence`: `float64` — Model confidence of the newly matched detection, range [0.0, 1.0].
+* `repeat_weight`: `float64` — Weight assigned to repeated detections (w in [0.0, 1.0], system default w = 0.30).
 
 **Outputs:**
-* `updated_aggregated_confidence`: `float64` — Recalculated composite confidence score, range $[0.0, 1.0]$.
-* `updated_observation_count`: `int32` — Incremented count of observations ($n + 1$).
+* `updated_aggregated_confidence`: `float64` — Recalculated composite confidence score, range [0.0, 1.0].
+* `updated_observation_count`: `int32` — Incremented count of observations (n + 1).
 * `updated_avg_confidence`: `float64` — Updated mean model confidence across all accepted detections.
 
 **Mathematical Formulation:**
-The aggregate confidence score $C_{\text{final}}$ is computed via a weighted linear combination of the running mean model confidence $\bar{C}_{\text{model}}$ and a non-linear repeat score $C_{\text{repeat}}$:
+The aggregate confidence score C_final is calculated using a weighted linear combination of the running mean model confidence C_model and a non-linear repeat score C_repeat:
 
-$$C_{\text{final}} = (1 - w) \cdot \bar{C}_{\text{model}} + w \cdot C_{\text{repeat}}$$
+```
+C_final = (1 - w) * C_model + w * C_repeat
+```
 
-where the running average model confidence updates incrementally:
-$$\bar{C}_{\text{model}} = \frac{n_{\text{prev}} \cdot \bar{C}_{\text{prev}} + C_{\text{new}}}{n_{\text{prev}} + 1}$$
+where the running average model confidence updates incrementally with each new detection:
 
-and the repeat score implements diminishing marginal returns normalized to $[0, 1)$:
-$$C_{\text{repeat}} = \frac{n}{n + 1}$$
-where $n = n_{\text{prev}} + 1$ is the total observation count.
+```
+C_model(new) = (n_prev * C_model(prev) + C_new) / (n_prev + 1)
+```
 
-*Example:* A pothole is detected across 3 video frames with model confidences $0.90$, $0.92$, and $0.88$ ($\bar{C}_{\text{model}} = 0.90$, $n = 3$, $w = 0.30$).
-$$C_{\text{repeat}} = \frac{3}{3 + 1} = 0.75$$
-$$C_{\text{final}} = (0.70)(0.90) + (0.30)(0.75) = 0.630 + 0.225 = 0.855$$
-The visual confidence provides the baseline certainty, while multi-frame repetition reinforces the score.
+and the repeat score implements diminishing marginal returns normalized to the interval [0, 1):
+
+```
+C_repeat = n / (n + 1)
+```
+
+where `n = n_prev + 1` is the total count of accepted observations.
+
+**Worked Example:**
+If a pothole is observed across 3 consecutive frames with model confidences 0.90, 0.92, and 0.88 (giving average model confidence C_model = 0.90, observation count n = 3, and repeat weight w = 0.30):
+
+```
+C_repeat = 3 / (3 + 1) = 0.75
+C_final  = (1 - 0.30) * (0.90) + (0.30) * (0.75)
+         = (0.70) * (0.90) + (0.30) * (0.75)
+         = 0.630 + 0.225 = 0.855
+```
+
+The model confidence provides the primary foundation of the score (0.630), while physical multi-frame confirmation provides the corroborating boost (0.225).
 
 ### 3. Expected Complexity at Realistic Data Size and 100x Scale
-* **Realistic Data Size:** In a typical 60-minute municipal inspection run (approx. 10–20 miles), a dashcam captures footage at 30 fps (~108,000 frames). A single pothole remains in the camera's field of view across 3 to 15 keyframes ($n \approx 3\text{--}15$).
-* **Time Complexity:** Because the algorithm maintains a running sum and count, updating $\bar{C}_{\text{model}}$, $C_{\text{repeat}}$, and $C_{\text{final}}$ requires only 5 basic floating-point arithmetic operations, executing in $O(1)$ constant time ($< 0.05\ \mu\text{s}$). If calculated from scratch across all $n$ historical detections, time complexity is $O(n)$, executing in $\approx 0.1\ \mu\text{s}$ for $n = 10$.
-* **At 100x Data Size:** If a permanent pothole is observed across 100 vehicle passes over a year ($n = 1,000$), incremental updates remain strictly $O(1)$ ($< 0.05\ \mu\text{s}$). Recomputing from scratch would take $O(100n) = O(1,000)$, requiring $< 10\ \mu\text{s}$.
-* **Does the Difference Matter?** No. In both realistic ($n = 10$) and 100x ($n = 1,000$) scenarios, the calculation takes microseconds and is completely negligible compared to network I/O (~5 ms) and model inference (~15 ms).
-* **Space Complexity:** $O(1)$ auxiliary memory.
+* **Realistic Data Size:** In a typical 60-minute municipal inspection run (approx. 10–20 miles), a dashcam captures footage at 30 fps (~108,000 frames). A single pothole remains in the camera's field of view across 3 to 15 keyframes (n = 3 to 15).
+* **Time Complexity:** Because the algorithm maintains a running sum and observation count, updating C_model, C_repeat, and C_final requires only basic arithmetic operations, executing in O(1) constant time (< 0.05 microseconds). If calculated from scratch across all n historical detections, time complexity is O(n), executing in ~0.1 microseconds for n = 10.
+* **At 100x Data Size:** If a permanent pothole is observed across 100 vehicle passes over a year (n = 1,000 observations), incremental updates remain strictly O(1) (< 0.05 microseconds). Recomputing from scratch across all 1,000 records takes O(1,000), executing in < 10 microseconds.
+* **Does the Difference Matter?** No. In both realistic (n = 10) and 100x (n = 1,000) scenarios, the calculation completes in under 10 microseconds, which is completely negligible compared to network I/O (~5 ms) and ONNX model inference (~15 ms).
+* **Space Complexity:** O(1) auxiliary memory.
 
 ### 4. Why This Approach Rather than Alternatives
-* **Alternative 1: Simple Arithmetic Mean ($\bar{C} = \frac{1}{n} \sum C_i$):** Passed over because a single false-positive detection with high confidence (e.g., $0.91$ on an oil stain) would receive the exact same score as a genuine pothole verified across 10 frames with $0.91$ confidence. The simple average fails to reward physical confirmation over time.
-* **Alternative 2: Bayesian Probability Updating:** Passed over because Bayesian updating assumes independent evidence events. Consecutive video frames recorded 33 ms apart share identical lighting, viewing angles, and road geometry; assuming conditional independence causes the posterior probability to artificially saturate to $0.9999$ after only 3–4 frames.
-* **Alternative 3: Maximum Confidence ($\max(C_i)$):** Passed over because it is highly vulnerable to transient neural network misclassifications and sensor noise spikes.
-* **Why Chosen Option Won:** The weighted formulation explicitly balances visual certainty with observation count, provides intuitive parameter tuning via $w$, bounds output strictly to $[0.0, 1.0]$, and enforces diminishing returns via $\frac{n}{n+1}$.
+* **Alternative 1: Simple Arithmetic Mean (C_avg = (1/n) * sum(C_i)):** Passed over because a single false-positive detection with high confidence (e.g., 0.91 on an oil stain) would receive the exact same score as a genuine pothole verified across 10 frames with 0.91 confidence. The simple average fails to reward physical confirmation over time.
+* **Alternative 2: Bayesian Probability Updating:** Passed over because Bayesian updating assumes independent evidence events. Consecutive video frames recorded 33 ms apart share identical lighting, viewing angles, and road geometry; assuming conditional independence causes the posterior probability to artificially saturate to 0.9999 after only 3–4 frames.
+* **Alternative 3: Maximum Confidence (max(C_i)):** Passed over because it is highly vulnerable to transient neural network misclassifications and sensor noise spikes.
+* **Why Chosen Option Won:** The weighted formulation explicitly balances visual certainty with observation count, provides intuitive parameter tuning via w, bounds output strictly to [0.0, 1.0], and enforces diminishing returns via n / (n + 1).
 
 ### 5. Edge Cases
-* **First Observation ($n=0$):** Handled cleanly with $n=1$, $\bar{C}_{\text{model}} = C_{\text{new}}$, and $C_{\text{repeat}} = \frac{1}{2} = 0.50$. For a $0.90$ detection, $C_{\text{final}} = 0.7(0.9) + 0.3(0.5) = 0.78 \ge 0.70$. Directly satisfies **AC-01.1**.
-* **Out-of-Bounds Model Confidence:** Inputs where $C_{\text{new}} < 0.0$ or $C_{\text{new}} > 1.0$ are rejected by the Ingestion Pipeline validation layer with an error log, preventing corrupt numbers from entering calculations (Interfaces **I6**, **I7**).
+* **First Observation (n = 0):** Handled cleanly with n = 1, C_model = C_new, and C_repeat = 1 / (1 + 1) = 0.50. For a 0.90 detection with w = 0.30, C_final = 0.70 * 0.90 + 0.30 * 0.50 = 0.78 >= 0.70. Directly satisfies **AC-01.1**.
+* **Out-of-Bounds Model Confidence:** Inputs where C_new < 0.0 or C_new > 1.0 are rejected by the Ingestion Pipeline validation layer with an error log, preventing corrupt numbers from entering calculations (Interfaces **I6**, **I7**).
 * **Duplicate Frame Reprocessing:** If a frame with the same `(video_run_id, frame_index)` is retransmitted, the ingestion layer detects the duplicate key and skips the confidence calculation, avoiding artificial score inflation (**AC-01.1**).
-* **Observation Saturation ($n \to \infty$):** As $n$ grows large, $\frac{n}{n+1} \to 1.0$, preventing numeric overflow and capping repeat contribution to $w$.
-* **Decaying Confidence on Subsequent Passes:** If subsequent detections have lower confidence (e.g., a closer camera view reveals the defect is minor), $\bar{C}_{\text{model}}$ drops, appropriately reducing $C_{\text{final}}$ and preventing false-positive escalation (**US-02**).
+* **Observation Saturation (n -> infinity):** As n grows large, n / (n + 1) approaches 1.0 asymptotically, preventing numeric overflow and capping repeat contribution to w (0.30).
+* **Decaying Confidence on Subsequent Passes:** If subsequent detections have lower confidence (e.g., a closer camera view reveals the defect is minor), C_model drops, appropriately reducing C_final and preventing false-positive escalation (**US-02**).
 
 ---
 
@@ -201,8 +219,8 @@ As an inspection vehicle drives along a street at 25–35 mph, a pothole remains
 ### 2. Inputs and Outputs with Exact Types
 
 **Inputs:**
-* `observed_location`: `geometry(Point, 4326)` — Longitude and latitude of the incoming detection (`lat: float64` $\in [-90.0, 90.0]$, `lon: float64` $\in [-180.0, 180.0]$).
-* `matching_radius_meters`: `float64` — Search radius in meters ($R = 5.0\text{m}$, matching the GPS tolerance in AC-01.1).
+* `observed_location`: `geometry(Point, 4326)` — Longitude and latitude of the incoming detection (lat in [-90.0, 90.0], lon in [-180.0, 180.0]).
+* `matching_radius_meters`: `float64` — Search radius in meters (R = 5.0 meters, matching the GPS tolerance in AC-01.1).
 * `video_run_id`: `UUID` — Identifier of the active video run.
 * `detected_at`: `timestamptz` — Capture timestamp of the frame.
 
@@ -213,7 +231,7 @@ As an inspection vehicle drives along a street at 25–35 mph, a pothole remains
   * `distance_meters`: `float64` — Geodesic distance to matched centroid (meters).
 
 **Algorithmic Steps:**
-1. **Spatial Candidate Query:** Query PostGIS using the spatial index to find all existing potholes within radius $R = 5.0\text{m}$ using geodetic distance:
+1. **Spatial Candidate Query:** Query PostGIS using the spatial index to find all existing potholes within radius R = 5.0 meters using geodetic distance:
    ```sql
    SELECT id, location, aggregated_confidence, observation_count,
           ST_Distance(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography) AS dist_meters
@@ -221,35 +239,35 @@ As an inspection vehicle drives along a street at 25–35 mph, a pothole remains
    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography, 5.0)
    ORDER BY dist_meters ASC;
    ```
-2. **Case A (Zero Candidates, $k = 0$):** No existing potholes exist within 5 meters. Create a new `POTHOLE` record with a generated UUID, set `location = observed_location`, set `observation_count = 1`, and return `'CREATE_NEW'`.
-3. **Case B (Single Candidate, $k = 1$):** Exactly one existing pothole is within 5 meters. Match the detection to this pothole, associate the foreign key, update the pothole centroid location via a running weighted average, update temporal bounds (`last_detected_at`), and return `'MERGE_EXISTING'`.
-4. **Case C (Multiple Candidates, $k > 1$):** Multiple potholes exist within 5 meters (e.g., a pothole cluster).
-   * Evaluate the distance ratio between the nearest candidate ($d_1$) and the second-nearest candidate ($d_2$).
-   * If $d_1 < 2.0\text{m}$ and $d_2 - d_1 \ge 1.5\text{m}$, match unambiguously to candidate 1 (`'MERGE_EXISTING'`).
-   * If candidate distances are closely tied ($|d_2 - d_1| < 1.0\text{m}$), flag the match as ambiguous (`'FLAG_AMBIGUOUS'`), associate the detection with the nearest record, and log an audit warning to prevent corrupting cluster records.
+2. **Case A (Zero Candidates, k = 0):** No existing potholes exist within 5 meters. Create a new `POTHOLE` record with a generated UUID, set `location = observed_location`, set `observation_count = 1`, and return `'CREATE_NEW'`.
+3. **Case B (Single Candidate, k = 1):** Exactly one existing pothole is within 5 meters. Match the detection to this pothole, associate the foreign key, update the pothole centroid location via a running weighted average, update temporal bounds (`last_detected_at`), and return `'MERGE_EXISTING'`.
+4. **Case C (Multiple Candidates, k > 1):** Multiple potholes exist within 5 meters (e.g., a pothole cluster).
+   * Evaluate the distance ratio between the nearest candidate (d1) and the second-nearest candidate (d2).
+   * If d1 < 2.0 meters and d2 - d1 >= 1.5 meters, match unambiguously to candidate 1 (`'MERGE_EXISTING'`).
+   * If candidate distances are closely tied (|d2 - d1| < 1.0 meter), flag the match as ambiguous (`'FLAG_AMBIGUOUS'`), associate the detection with the nearest record, and log an audit warning to prevent corrupting cluster records.
 
 ### 3. Expected Complexity at Realistic Data Size and 100x Scale
-* **Realistic Data Size:** A medium-sized city like Cincinnati maintains approximately 10,000 to 25,000 active roadway defects across its road network at any given time ($N = 25,000$). In a localized 5-meter neighborhood, roadway density yields $k = 0$ to $2$ existing potholes.
+* **Realistic Data Size:** A medium-sized city like Cincinnati maintains approximately 10,000 to 25,000 active roadway defects across its road network at any given time (N = 25,000). In a localized 5-meter neighborhood, roadway density yields k = 0 to 2 existing potholes.
 * **Time Complexity:**
-  * *Without Index (Naive Scan):* Calculating Haversine distance across all $N$ potholes requires $O(N)$ comparisons. For $N = 25,000$, a linear scan requires 25,000 trigonometric distance evaluations per detection (~8 ms), which would consume significant compute during batch ingestion.
-  * *With PostGIS GiST Index:* The spatial R-tree index prunes bounding boxes hierarchically, executing candidates in $O(\log N)$ time, followed by exact geodetic distance evaluation on the candidate set of size $k$ ($O(k)$). For $N = 25,000$, $O(\log_2(25,000) + k) \approx 15 + 2 = 17$ checks, executing in $< 0.8\ \text{ms}$.
-* **At 100x Data Size:** At $N = 2,500,000$ potholes (representing a statewide or multi-year historical dataset):
-  * The GiST tree depth increases by only $\log_2(100) \approx 6.6$ levels ($O(\log(100N)) \approx 22$ checks), executing in $< 1.5\ \text{ms}$.
+  * *Without Index (Naive Scan):* Calculating Haversine distance across all N potholes requires O(N) comparisons. For N = 25,000, a linear scan requires 25,000 trigonometric distance evaluations per detection (~8 ms), which would consume significant compute during batch ingestion.
+  * *With PostGIS GiST Index:* The spatial R-tree index prunes bounding boxes hierarchically, executing candidates in O(log N) time, followed by exact geodetic distance evaluation on the candidate set of size k (O(k)). For N = 25,000, O(log N + k) requires approximately 17 tree-node checks, executing in < 0.8 ms.
+* **At 100x Data Size:** At N = 2,500,000 potholes (representing a statewide or multi-year historical dataset):
+  * The GiST tree depth increases by only log2(100) ≈ 6.6 levels (O(log(100N)) ≈ 22 checks), executing in < 1.5 ms.
   * In contrast, an unindexed linear scan would require 2,500,000 distance evaluations (~800 ms per detection), completely crashing the ingestion pipeline.
 * **Does the Difference Matter?** Yes! With the GiST spatial index, the 100x scale increase introduces virtually zero latency penalty, easily satisfying the 20-minute video ingestion budget (**AC-01.1**). Without the spatial index, the 100x scale would break the product.
-* **Space Complexity:** $O(N)$ memory for the spatial GiST index in PostgreSQL; $O(k)$ working memory for the candidate array in the Go service.
+* **Space Complexity:** O(N) memory for the spatial GiST index in PostgreSQL; O(k) working memory for the candidate array in the Go service.
 
 ### 4. Why This Approach Rather than Alternatives
-* **Alternative 1: Visual Feature Matching / Re-Identification (Re-ID Embeddings):** Passed over because asphalt road textures lack distinctive visual landmarks, lighting conditions shift between vehicle passes, and running a secondary deep neural network for feature extraction requires $>50\ \text{ms}$ per candidate, violating the batch processing timing budget of 1,200s for a 60-minute video (**AC-01.1**).
+* **Alternative 1: Visual Feature Matching / Re-Identification (Re-ID Embeddings):** Passed over because asphalt road textures lack distinctive visual landmarks, lighting conditions shift between vehicle passes, and running a secondary deep neural network for feature extraction requires > 50 ms per candidate, violating the batch processing timing budget of 1,200s for a 60-minute video (**AC-01.1**).
 * **Alternative 2: Fixed Spatial Tile Binning (Geohash or S2 Cells):** Passed over due to the "boundary problem": a pothole positioned 10 cm from a cell boundary will fail to match a detection 20 cm away in the adjacent cell unless complex multi-cell perimeter queries are executed.
-* **Why Chosen Option Won:** PostGIS geodetic radius matching (`ST_DWithin`) operates smoothly across arbitrary geographic boundaries, natively accounts for the ellipsoidal curvature of the Earth, leverages hardware-accelerated R-trees, and directly aligns with the $\pm 5\text{m}$ GPS accuracy specification in **AC-01.1**.
+* **Why Chosen Option Won:** PostGIS geodetic radius matching (`ST_DWithin`) operates smoothly across arbitrary geographic boundaries, natively accounts for the ellipsoidal curvature of the Earth, leverages hardware-accelerated R-trees, and directly aligns with the ±5 meter GPS accuracy specification in **AC-01.1**.
 
 ### 5. Edge Cases
-* **Missing or Unresolved GPS Fix:** If `observed_location` has null coordinates or $(0.0, 0.0)$, the spatial query cannot execute. The Ingestion Pipeline intercepts the detection, flags the record with `status: LOCATION_UNRESOLVED`, halts matching, and logs an HTTP 422 error within 3.0 seconds, directly fulfilling **AC-01.2** and Interfaces **I5**, **I7**.
-* **Zero Candidates ($k = 0$):** PostGIS returns an empty set. The system smoothly instantiates a new `POTHOLE` record with a new UUID and sets initial temporal bounds (**US-01, AC-01.1**).
-* **Equidistant Ambiguous Candidates ($k > 1$, $|d_1 - d_2| < 1.0\text{m}$):** Handled via the `'FLAG_AMBIGUOUS'` condition, preventing arbitrary record thrashing and preserving data integrity (**US-02**).
-* **Rapid Consecutive Frames in Same Run ($dt < 0.2\text{s}$):** Checked via `(pothole_id, video_run_id)`. Detections from adjacent frames merge into the active pothole and update its centroid without double-counting observation tallies (**AC-01.1**).
-* **GPS Multi-Path Reflection Jump:** If a vehicle GPS receiver experiences a momentary multipath reflection causing coordinates to jump $> 5.0\text{m}$, the detection is treated as an isolated candidate rather than erroneously shifting the existing pothole centroid (**US-02**).
+* **Missing or Unresolved GPS Fix:** If `observed_location` has null coordinates or (0.0, 0.0), the spatial query cannot execute. The Ingestion Pipeline intercepts the detection, flags the record with `status: LOCATION_UNRESOLVED`, halts matching, and logs an HTTP 422 error within 3.0 seconds, directly fulfilling **AC-01.2** and Interfaces **I5**, **I7**.
+* **Zero Candidates (k = 0):** PostGIS returns an empty set. The system smoothly instantiates a new `POTHOLE` record with a new UUID and sets initial temporal bounds (**US-01, AC-01.1**).
+* **Equidistant Ambiguous Candidates (k > 1, |d1 - d2| < 1.0 meter):** Handled via the `'FLAG_AMBIGUOUS'` condition, preventing arbitrary record thrashing and preserving data integrity (**US-02**).
+* **Rapid Consecutive Frames in Same Run (dt < 0.2 seconds):** Checked via `(pothole_id, video_run_id)`. Detections from adjacent frames merge into the active pothole and update its centroid without double-counting observation tallies (**AC-01.1**).
+* **GPS Multi-Path Reflection Jump:** If a vehicle GPS receiver experiences a momentary multipath reflection causing coordinates to jump > 5.0 meters, the detection is treated as an isolated candidate rather than erroneously shifting the existing pothole centroid (**US-02**).
 
 ---
 
@@ -313,12 +331,12 @@ Ingests an individual damage detection event generated by computer vision infere
 
 * **Inputs:**
   * `run_id`: `string` (Required, valid UUIDv4 string referencing active `VIDEO_RUN`).
-  * `frame_index`: `integer` (Required, integer $\ge 0$, sequential frame number in video).
+  * `frame_index`: `integer` (Required, integer >= 0, sequential frame number in video).
   * `detected_at`: `string` (Required, RFC 3339 UTC timestamp).
-  * `model_confidence`: `number` (Required, float in range $[0.0, 1.0]$).
+  * `model_confidence`: `number` (Required, float in range [0.0, 1.0]).
   * `damage_type`: `string` (Required, enum: `"pothole"`).
-  * `latitude`: `number` (Required, float in range $[-90.0, 90.0]$ degrees WGS84).
-  * `longitude`: `number` (Required, float in range $[-180.0, 180.0]$ degrees WGS84).
+  * `latitude`: `number` (Required, float in range [-90.0, 90.0] degrees WGS84).
+  * `longitude`: `number` (Required, float in range [-180.0, 180.0] degrees WGS84).
   * `image_path`: `string` (Optional, relative storage URI string, max 500 characters).
 * **Outputs:**
   * HTTP `201 Created`:
@@ -332,7 +350,7 @@ Ingests an individual damage detection event generated by computer vision infere
       "distance_to_centroid_meters": 1.42
     }
     ```
-    *Units:* `detection_id` and `pothole_id` are UUIDv4 strings; `match_action` is enum (`'CREATED'`, `'MERGED'`); `aggregated_confidence` is dimensionless float $[0.0, 1.0]$; `observation_count` is integer count; `distance_to_centroid_meters` is float distance in meters.
+    *Units:* `detection_id` and `pothole_id` are UUIDv4 strings; `match_action` is enum (`'CREATED'`, `'MERGED'`); `aggregated_confidence` is dimensionless float [0.0, 1.0]; `observation_count` is integer count; `distance_to_centroid_meters` is float distance in meters.
 * **Error Responses:**
   * HTTP `400 Bad Request`: Returned when JSON payload is malformed or numerical values fall outside valid bounds.
   * HTTP `404 Not Found`: Returned when `run_id` does not match any existing `VIDEO_RUN` record.
@@ -347,10 +365,10 @@ Ingests an individual damage detection event generated by computer vision infere
 Retrieves roadway potholes within a specified geographic bounding box, serialized as an RFC 7946 GeoJSON FeatureCollection for map rendering or municipal GIS export.
 
 * **Inputs (Query Parameters):**
-  * `bbox`: `string` (Required, comma-separated bounding box `min_lon,min_lat,max_lon,max_lat` in decimal degrees EPSG:4326; valid ranges: `min_lon, max_lon` in $[-180.0, 180.0]$, `min_lat, max_lat` in $[-90.0, 90.0]$ with `min_lon <= max_lon` and `min_lat <= max_lat`).
-  * `min_confidence`: `number` (Optional, float in range $[0.0, 1.0]$, default `0.70`).
+  * `bbox`: `string` (Required, comma-separated bounding box `min_lon,min_lat,max_lon,max_lat` in decimal degrees EPSG:4326; valid ranges: `min_lon, max_lon` in [-180.0, 180.0], `min_lat, max_lat` in [-90.0, 90.0] with `min_lon <= max_lon` and `min_lat <= max_lat`).
+  * `min_confidence`: `number` (Optional, float in range [0.0, 1.0], default `0.70`).
   * `status`: `string` (Optional, enum: `"UNRESOLVED"`, `"VERIFIED"`, `"REPAIRED"`, `"ALL"`, default `"ALL"`).
-  * `limit`: `integer` (Optional, integer in range $[1, 500]$, default `100`, max 500 per **AC-02.1**).
+  * `limit`: `integer` (Optional, integer in range [1, 500], default `100`, max 500 per **AC-02.1**).
 * **Outputs:**
   * HTTP `200 OK`: Standardized RFC 7946 GeoJSON FeatureCollection:
     ```json
@@ -379,7 +397,7 @@ Retrieves roadway potholes within a specified geographic bounding box, serialize
       "total_features": 1
     }
     ```
-    *Units:* `coordinates` are `[longitude, latitude]` in decimal degrees; `aggregated_confidence` is float $[0.0, 1.0]$; `observation_count` is integer; timestamps are RFC 3339 UTC.
+    *Units:* `coordinates` are `[longitude, latitude]` in decimal degrees; `aggregated_confidence` is float [0.0, 1.0]; `observation_count` is integer; timestamps are RFC 3339 UTC.
 * **Error Responses:**
   * HTTP `400 Bad Request`: Returned when `bbox` is missing, malformed, or coordinates violate WGS84 ranges, returning RFC 7807 problem details within 1.0s (**AC-02.2**).
   * HTTP `401 Unauthorized`: Returned when authentication token or API key is invalid or absent.
@@ -416,7 +434,7 @@ Retrieves detailed information and historical detection evidence for a specific 
       ]
     }
     ```
-    *Units:* `latitude` and `longitude` are decimal degrees; `aggregated_confidence` is float $[0.0, 1.0]$; timestamps are RFC 3339 UTC.
+    *Units:* `latitude` and `longitude` are decimal degrees; `aggregated_confidence` is float [0.0, 1.0]; timestamps are RFC 3339 UTC.
 * **Error Responses:**
   * HTTP `400 Bad Request`: Returned when path parameter `id` is not a syntactically valid UUID.
   * HTTP `404 Not Found`: Returned when no pothole record exists matching the specified UUID.
@@ -471,7 +489,7 @@ The StreetSmart API is versioned via URI path prefix (`/api/v1`), where any modi
 
 ## 6.1 Database: PostgreSQL and PostGIS
 
-PostgreSQL 16 with the PostGIS 3.4 spatial extension is the selected database platform for StreetSmart. **Team skill fit:** This selection directly leverages **Raihan's** core experience as a backend engineer specializing in database design and software development, allowing the team to design normalized relational schemas, configure foreign key constraints, write complex spatial SQL queries, and optimize spatial indexes without an exploratory learning curve. **Licensing:** PostgreSQL is distributed under the permissive open-source PostgreSQL License, and PostGIS is licensed under GNU GPL v2+, ensuring complete freedom from commercial licensing fees and full legal compliance for municipal deployment. **Community support:** Both projects possess massive global developer communities, comprehensive documentation, and dedicated spatial GIS support forums, guaranteeing rapid resolution of spatial query edge cases. **Performance:** PostGIS provides native R-tree Generalized Search Tree (`GIST`) indexing, which executes 5-meter radial proximity checks (`ST_DWithin`) and bounding-box queries in under 1 ms ($O(\log N)$), avoiding expensive table scans across tens of thousands of pothole records. **Cost and hosting:** PostgreSQL and PostGIS are completely free and open-source, deployable on low-cost managed cloud instances (Supabase free/pro tier) or zero-cost local developer environments. **Evaluated alternative:** The team evaluated MongoDB with 2dsphere indexing as an alternative; however, MongoDB was passed over because it lacks native Open Geospatial Consortium (OGC) standard spatial functions (`ST_DWithin`, `ST_MakeEnvelope`), cannot enforce relational foreign key integrity across runs, detections, and potholes, and incurs higher memory overhead for spatial joins.
+PostgreSQL 16 with the PostGIS 3.4 spatial extension is the selected database platform for StreetSmart. **Team skill fit:** This selection directly leverages **Raihan's** core experience as a backend engineer specializing in database design and software development, allowing the team to design normalized relational schemas, configure foreign key constraints, write complex spatial SQL queries, and optimize spatial indexes without an exploratory learning curve. **Licensing:** PostgreSQL is distributed under the permissive open-source PostgreSQL License, and PostGIS is licensed under GNU GPL v2+, ensuring complete freedom from commercial licensing fees and full legal compliance for municipal deployment. **Community support:** Both projects possess massive global developer communities, comprehensive documentation, and dedicated spatial GIS support forums, guaranteeing rapid resolution of spatial query edge cases. **Performance:** PostGIS provides native R-tree Generalized Search Tree (`GIST`) indexing, which executes 5-meter radial proximity checks (`ST_DWithin`) and bounding-box queries in under 1 ms (O(log N)), avoiding expensive table scans across tens of thousands of pothole records. **Cost and hosting:** PostgreSQL and PostGIS are completely free and open-source, deployable on low-cost managed cloud instances (Supabase free/pro tier) or zero-cost local developer environments. **Evaluated alternative:** The team evaluated MongoDB with 2dsphere indexing as an alternative; however, MongoDB was passed over because it lacks native Open Geospatial Consortium (OGC) standard spatial functions (`ST_DWithin`, `ST_MakeEnvelope`), cannot enforce relational foreign key integrity across runs, detections, and potholes, and incurs higher memory overhead for spatial joins.
 
 ## 6.2 Backend Language and Framework: Go with Gin
 

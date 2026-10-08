@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" width="100%" height="100%" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Shadow Filter -->
+    <filter id="drop-shadow" x="-4%" y="-4%" width="108%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.1" flood-color="#000000"/>
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1971c2" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2b8a3e" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#6741d9" />
+    </marker>
+    <marker id="circle-marker" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#1971c2" stroke-width="1.5" />
+    </marker>
+  </defs>
+
+  <!-- Title Card -->
+  <rect x="30" y="20" width="1120" height="60" rx="8" fill="#f8f9fa" stroke="#495057" stroke-width="1.5" filter="url(#drop-shadow)"/>
+  <text x="590" y="44" font-size="16" font-weight="bold" fill="#212529" text-anchor="middle">StreetSmart — Detailed Data Model (Design D1)</text>
+  <text x="590" y="65" font-size="12" font-style="italic" fill="#495057" text-anchor="middle">Entity-Relationship Diagram: Decoupled Video Runs, Potholes, Point Detections, and Evidence Images</text>
+
+  <!-- Legend Box -->
+  <g transform="translate(870, 100)" filter="url(#drop-shadow)">
+    <rect x="0" y="0" width="280" height="210" rx="6" fill="#f1f3f5" stroke="#adb5bd" stroke-width="1.5"/>
+    <rect x="0" y="0" width="280" height="28" rx="6" fill="#e9ecef" stroke="#adb5bd" stroke-width="1.5"/>
+    <text x="140" y="19" font-size="12" font-weight="bold" fill="#343a40" text-anchor="middle">ERD Conventions &amp; Legend</text>
+    
+    <text x="16" y="50" font-size="11" font-weight="bold" fill="#1864ab">PK</text>
+    <text x="45" y="50" font-size="11" fill="#495057">: Primary Key (UUIDv4 unique ID)</text>
+
+    <text x="16" y="75" font-size="11" font-weight="bold" fill="#d9480f">FK</text>
+    <text x="45" y="75" font-size="11" fill="#495057">: Foreign Key (Referential link)</text>
+
+    <text x="16" y="100" font-size="11" font-weight="bold" fill="#2b8a3e">GIST</text>
+    <text x="55" y="100" font-size="11" fill="#495057">: PostGIS Spatial R-Tree Index</text>
+
+    <text x="16" y="125" font-size="11" font-weight="bold" fill="#495057">BTREE</text>
+    <text x="65" y="125" font-size="11" fill="#495057">: Standard B-Tree Index</text>
+
+    <line x1="16" y1="145" x2="60" y2="145" stroke="#1971c2" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="70" y="149" font-size="11" fill="#495057">1 : N (One-to-Many Relationship)</text>
+
+    <text x="16" y="175" font-size="11" fill="#495057">CRS: WGS84 Geodetic (EPSG:4326)</text>
+    <text x="16" y="195" font-size="11" fill="#868e96">Images decoupled to Supabase Storage</text>
+  </g>
+
+  <!-- ENTITY 1: VIDEO_RUN -->
+  <g transform="translate(40, 110)" filter="url(#drop-shadow)">
+    <rect x="0" y="0" width="270" height="200" rx="6" fill="#ffffff" stroke="#1971c2" stroke-width="2"/>
+    <path d="M 0 6 Q 0 0 6 0 L 264 0 Q 270 0 270 6 L 270 34 L 0 34 Z" fill="#e7f5ff"/>
+    <text x="135" y="23" font-size="14" font-weight="bold" fill="#1864ab" text-anchor="middle">VIDEO_RUN</text>
+    <line x1="0" y1="34" x2="270" y2="34" stroke="#1971c2" stroke-width="1.5"/>
+
+    <text x="16" y="60" font-size="12" font-weight="bold" fill="#1864ab">+ id: uuid</text>
+    <rect x="210" y="47" width="45" height="18" rx="3" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+    <text x="232" y="60" font-size="10" font-weight="bold" fill="#1864ab" text-anchor="middle">PK</text>
+
+    <text x="16" y="90" font-size="12" fill="#212529">+ source_video_name: text</text>
+    <text x="16" y="120" font-size="12" fill="#212529">+ started_at: timestamptz</text>
+    <text x="16" y="150" font-size="12" fill="#212529">+ completed_at: timestamptz</text>
+    <text x="16" y="180" font-size="12" fill="#212529">+ processing_status: text</text>
+  </g>
+
+  <!-- ENTITY 2: POTHOLE -->
+  <g transform="translate(40, 390)" filter="url(#drop-shadow)">
+    <rect x="0" y="0" width="290" height="270" rx="6" fill="#ffffff" stroke="#2b8a3e" stroke-width="2"/>
+    <path d="M 0 6 Q 0 0 6 0 L 284 0 Q 290 0 290 6 L 290 34 L 0 34 Z" fill="#ebfbee"/>
+    <text x="145" y="23" font-size="14" font-weight="bold" fill="#2b8a3e" text-anchor="middle">POTHOLE (Canonical Hazard)</text>
+    <line x1="0" y1="34" x2="290" y2="34" stroke="#2b8a3e" stroke-width="1.5"/>
+
+    <text x="16" y="60" font-size="12" font-weight="bold" fill="#2b8a3e">+ id: uuid</text>
+    <rect x="230" y="47" width="45" height="18" rx="3" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1"/>
+    <text x="252" y="60" font-size="10" font-weight="bold" fill="#2b8a3e" text-anchor="middle">PK</text>
+
+    <text x="16" y="90" font-size="12" font-weight="bold" fill="#2b8a3e">+ location: geometry(Point, 4326)</text>
+    <rect x="228" y="77" width="48" height="18" rx="3" fill="#e6fcf5" stroke="#0ca678" stroke-width="1"/>
+    <text x="252" y="90" font-size="9" font-weight="bold" fill="#0ca678" text-anchor="middle">GIST</text>
+
+    <text x="16" y="120" font-size="12" fill="#212529">+ aggregated_confidence: float</text>
+    <rect x="228" y="107" width="48" height="18" rx="3" fill="#f1f3f5" stroke="#868e96" stroke-width="1"/>
+    <text x="252" y="120" font-size="9" font-weight="bold" fill="#495057" text-anchor="middle">BTREE</text>
+
+    <text x="16" y="150" font-size="12" fill="#212529">+ observation_count: integer</text>
+    
+    <text x="16" y="180" font-size="12" fill="#212529">+ status: text</text>
+    <rect x="228" y="167" width="48" height="18" rx="3" fill="#f1f3f5" stroke="#868e96" stroke-width="1"/>
+    <text x="252" y="180" font-size="9" font-weight="bold" fill="#495057" text-anchor="middle">BTREE</text>
+
+    <text x="16" y="210" font-size="12" fill="#212529">+ first_detected_at: timestamptz</text>
+    <text x="16" y="240" font-size="12" fill="#212529">+ last_detected_at: timestamptz</text>
+  </g>
+
+  <!-- ENTITY 3: DETECTION -->
+  <g transform="translate(450, 230)" filter="url(#drop-shadow)">
+    <rect x="0" y="0" width="310" height="280" rx="6" fill="#ffffff" stroke="#d9480f" stroke-width="2"/>
+    <path d="M 0 6 Q 0 0 6 0 L 304 0 Q 310 0 310 6 L 310 34 L 0 34 Z" fill="#fff4e6"/>
+    <text x="155" y="23" font-size="14" font-weight="bold" fill="#d9480f" text-anchor="middle">DETECTION (Observation Event)</text>
+    <line x1="0" y1="34" x2="310" y2="34" stroke="#d9480f" stroke-width="1.5"/>
+
+    <text x="16" y="60" font-size="12" font-weight="bold" fill="#d9480f">+ id: uuid</text>
+    <rect x="250" y="47" width="45" height="18" rx="3" fill="#fff4e6" stroke="#d9480f" stroke-width="1"/>
+    <text x="272" y="60" font-size="10" font-weight="bold" fill="#d9480f" text-anchor="middle">PK</text>
+
+    <text x="16" y="90" font-size="12" font-style="italic" fill="#1864ab">+ video_run_id: uuid</text>
+    <rect x="250" y="77" width="45" height="18" rx="3" fill="#e7f5ff" stroke="#1971c2" stroke-width="1"/>
+    <text x="272" y="90" font-size="10" font-weight="bold" fill="#1864ab" text-anchor="middle">FK</text>
+
+    <text x="16" y="120" font-size="12" font-style="italic" fill="#2b8a3e">+ pothole_id: uuid</text>
+    <rect x="250" y="107" width="45" height="18" rx="3" fill="#ebfbee" stroke="#2b8a3e" stroke-width="1"/>
+    <text x="272" y="120" font-size="10" font-weight="bold" fill="#2b8a3e" text-anchor="middle">FK</text>
+
+    <text x="16" y="150" font-size="12" fill="#212529">+ model_confidence: float</text>
+    <text x="16" y="180" font-size="12" fill="#212529">+ detected_at: timestamptz</text>
+    <text x="16" y="210" font-size="12" fill="#212529">+ frame_index: integer</text>
+    <text x="16" y="240" font-size="12" fill="#212529">+ observed_location: geometry(Point, 4326)</text>
+    <text x="16" y="265" font-size="11" fill="#868e96">Indexed: (video_run_id, frame_index) [UNIQUE]</text>
+  </g>
+
+  <!-- ENTITY 4: EVIDENCE_IMAGE -->
+  <g transform="translate(870, 410)" filter="url(#drop-shadow)">
+    <rect x="0" y="0" width="280" height="180" rx="6" fill="#ffffff" stroke="#6741d9" stroke-width="2"/>
+    <path d="M 0 6 Q 0 0 6 0 L 274 0 Q 280 0 280 6 L 280 34 L 0 34 Z" fill="#f3f0ff"/>
+    <text x="140" y="23" font-size="14" font-weight="bold" fill="#6741d9" text-anchor="middle">EVIDENCE_IMAGE</text>
+    <line x1="0" y1="34" x2="280" y2="34" stroke="#6741d9" stroke-width="1.5"/>
+
+    <text x="16" y="60" font-size="12" font-weight="bold" fill="#6741d9">+ id: uuid</text>
+    <rect x="220" y="47" width="45" height="18" rx="3" fill="#f3f0ff" stroke="#6741d9" stroke-width="1"/>
+    <text x="242" y="60" font-size="10" font-weight="bold" fill="#6741d9" text-anchor="middle">PK</text>
+
+    <text x="16" y="90" font-size="12" font-style="italic" fill="#d9480f">+ detection_id: uuid</text>
+    <rect x="220" y="77" width="45" height="18" rx="3" fill="#fff4e6" stroke="#d9480f" stroke-width="1"/>
+    <text x="242" y="90" font-size="10" font-weight="bold" fill="#d9480f" text-anchor="middle">FK</text>
+
+    <text x="16" y="120" font-size="12" fill="#212529">+ storage_path: text</text>
+    <text x="16" y="150" font-size="12" fill="#212529">+ created_at: timestamptz</text>
+  </g>
+
+  <!-- RELATIONSHIPS / CONNECTORS -->
+  <!-- 1. VIDEO_RUN (1) -> (0..N) DETECTION -->
+  <path d="M 310 210 L 380 210 L 380 300 L 450 300" fill="none" stroke="#1971c2" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <rect x="330" y="240" width="90" height="32" rx="4" fill="#ffffff" stroke="#1971c2" stroke-width="1"/>
+  <text x="375" y="254" font-size="10" font-weight="bold" fill="#1864ab" text-anchor="middle">produces (1:N)</text>
+  <text x="375" y="266" font-size="9" fill="#495057" text-anchor="middle">1 Run → 0..* Dets</text>
+
+  <!-- 2. POTHOLE (1) -> (0..N) DETECTION -->
+  <path d="M 330 520 L 390 520 L 390 430 L 450 430" fill="none" stroke="#2b8a3e" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <rect x="345" y="465" width="90" height="32" rx="4" fill="#ffffff" stroke="#2b8a3e" stroke-width="1"/>
+  <text x="390" y="479" font-size="10" font-weight="bold" fill="#2b8a3e" text-anchor="middle">groups (1:N)</text>
+  <text x="390" y="491" font-size="9" fill="#495057" text-anchor="middle">1 Pothole → 1..* Dets</text>
+
+  <!-- 3. DETECTION (1) -> (0..N) EVIDENCE_IMAGE -->
+  <path d="M 760 410 L 815 410 L 815 500 L 870 500" fill="none" stroke="#6741d9" stroke-width="2.5" marker-end="url(#arrow-purple)"/>
+  <rect x="785" y="445" width="80" height="32" rx="4" fill="#ffffff" stroke="#6741d9" stroke-width="1"/>
+  <text x="825" y="459" font-size="10" font-weight="bold" fill="#6741d9" text-anchor="middle">has (1:N)</text>
+  <text x="825" y="471" font-size="9" fill="#495057" text-anchor="middle">1 Det → 0..* Imgs</text>
+
+</svg>
