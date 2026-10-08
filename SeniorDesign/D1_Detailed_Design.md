@@ -1,41 +1,37 @@
-# StreetSmart: Detailed System Design, Part 1 (Design D1)
+# StreetSmart: Detailed Design (D1)
 
-**Team Members:** Advait Vagerwal, Sahil Thakare, Raihan Rafeek  
-**Course:** CS 5001 - Computer Science Senior Design  
-**Advisor:** Eric Jamison  
-**Assignment:** Assignment 6 — Detailed System Design, Part 1 (Design D1)  
-**Date:** October 8, 2026  
-**Document Version:** 1.1  
+**Team Members:** Advait Vagerwal, Sahil Thakare, Raihan Rafeek
+**Course:** CS 5001 - Computer Science Senior Design
+**Advisor:** Eric Jamison
+**Assignment:** Design D1 - Detailed Design
+**Date:** October 8, 2026
+**Document Version:** 1.0
 
 ---
 
 # 1. Header, Scope, and Conventions
 
-## 1.1 Project Title
+## Project Title
 
 **StreetSmart: Automated Public Infrastructure Damage Detection and Geospatial Reporting System**
 
-## 1.2 Goal Statement
+## Goal Statement
 
 StreetSmart is an automated public infrastructure inspection system that analyzes vehicle-mounted camera footage and synchronized GPS data to detect, geotag, and classify roadway damage such as potholes. The system provides municipal personnel and downstream city systems with a centralized geospatial database, interactive visualization dashboard, and standardized API integration to accelerate road maintenance and improve public transit safety.
 
-## 1.3 Scope
+## Scope
 
-This document details three D0 components: the **PostgreSQL Database** (including schema, spatial indexing, and evidence-image storage), the **Ingestion Pipeline** (focusing on its confidence aggregation algorithm, spatial pothole deduplication matching algorithm, and privacy redaction storage flow), and the **Backend API** (specifying REST endpoints, request/response contracts, and error handling); while **Model Training**, **Trained Model Storage**, **Model Inference**, and the **Current Infrastructure Map** are deferred to D2.
+This document details the PostgreSQL/PostGIS database and evidence-image storage, the pothole confidence aggregation algorithm, and the spatial pothole matching algorithm. The Model Training, Trained Model Storage, Model Inference, and Current Infrastructure Map components are deferred to D2.
 
-## 1.4 Diagram Conventions
+## Diagram Conventions
 
-The visual conventions for the D1 Entity-Relationship Diagram (Figure 1) are defined as follows:
-
-* **Entity Boxes:** Rectangular boxes represent database entities (PostgreSQL tables). Attributes are listed inside the box with their exact PostgreSQL/PostGIS data types.
-* **Key Designations:** Primary key attributes are annotated with `PK` and uniquely identify each record in the entity. Foreign key attributes are annotated with `FK` and enforce referential integrity by referencing the primary key of a parent entity.
-* **Connector Lines:** Solid lines represent foreign-key relationships and data associations between entities.
-* **Cardinality Notation:** Cardinality is drawn on both ends of every connector line using standard Crow's Foot notation:
-  * Exactly One (`||`): Indicates a mandatory singular parent record.
-  * Zero, One, or Many (`o{`): Indicates an optional child relationship where a parent record may be associated with zero or multiple child records.
-  * For example, `POTHOLE ||--o{ DETECTION` indicates that exactly one canonical `POTHOLE` record groups zero or more individual `DETECTION` records, and every `DETECTION` record references exactly one `POTHOLE`.
-* **Geospatial Reference:** Geographic point coordinates use longitude and latitude defined in the WGS84 spatial reference system (`EPSG:4326`).
-* **Binary Artifact Decoupling:** Large binary images (camera frame crops) are stored externally in Supabase Object Storage; PostgreSQL stores only relative URI paths to maintain low storage footprint and high query throughput.
+* Rectangular boxes represent database entities and their attributes.
+* `PK` identifies a primary key, which uniquely identifies a record.
+* `FK` identifies a foreign key, which references a record in another entity.
+* Solid connector lines represent relationships between entities.
+* Cardinality is drawn using standard crow's foot notation on both ends (`||--o{`), where `||` indicates exactly one and `o{` indicates zero, one, or many.
+* Geographic coordinates use latitude and longitude in EPSG:4326 (WGS84).
+* Image files are stored in Supabase Storage, and PostgreSQL stores the relative paths used to retrieve those images.
 
 ---
 
@@ -43,9 +39,7 @@ The visual conventions for the D1 Entity-Relationship Diagram (Figure 1) are def
 
 ## 2.1 Entity-Relationship Diagram
 
-Figure 1 illustrates the core data model for StreetSmart. Physical roadway potholes are strictly decoupled from individual point detections. As an inspection vehicle drives over a road defect, the camera captures multiple consecutive frames; each observation is recorded as a `DETECTION`, while the canonical `POTHOLE` record aggregates the detection count, recalculates overall confidence, and maintains the estimated geographic location.
-
-![Figure 1: StreetSmart D1 Entity-Relationship Diagram](Design_Diagrams/D1_Data_Model_ERD.svg)
+StreetSmart separates potholes from individual detections. A pothole can be detected across multiple frames or separate vehicle passes. Each detection records when and where it occurred, while the pothole record maintains the combined confidence score and overall location.
 
 ```mermaid
 erDiagram
@@ -57,7 +51,6 @@ erDiagram
         uuid id PK
         text source_video_name
         timestamptz started_at
-        timestamptz completed_at
         text processing_status
     }
 
@@ -89,369 +82,232 @@ erDiagram
     }
 ```
 
-*Figure 1: StreetSmart D1 Entity-Relationship Diagram.*
-
 ## 2.2 Entity Descriptions
 
-| Entity | Purpose & Behavioral Attributes |
-| :--- | :--- |
-| `VIDEO_RUN` | Represents a single video processing batch ingested by the system. Tracks the source video container name (`source_video_name`), execution start timestamp (`started_at`), completion timestamp (`completed_at`), and run state (`processing_status`, e.g., `'PROCESSING'`, `'COMPLETED'`, `'FAILED'`). |
-| `POTHOLE` | Represents a unique, physical roadway hazard. Maintains its centroid geographic coordinate (`location` as `GEOMETRY(Point, 4326)`), running aggregate confidence score (`aggregated_confidence`), total observation tally (`observation_count`), municipal workflow state (`status`, e.g., `'UNRESOLVED'`, `'VERIFIED'`, `'REPAIRED'`), and temporal bounds (`first_detected_at`, `last_detected_at`). |
-| `DETECTION` | Represents a single observation of roadway damage identified in a specific video keyframe. Contains the foreign key to the originating run (`video_run_id`), foreign key to the grouped pothole (`pothole_id`), raw neural network inference confidence (`model_confidence`), capture timestamp (`detected_at`), sequential frame offset (`frame_index`), and interpolated GPS coordinate (`observed_location`). |
-| `EVIDENCE_IMAGE` | Stores metadata references for redacted photographic evidence supporting a detection. Contains the foreign key to the detection (`detection_id`), object storage relative key (`storage_path`), and creation timestamp (`created_at`). |
+| Entity | Purpose |
+| --- | --- |
+| `VIDEO_RUN` | Tracks a video-processing run, its source video, and its processing status. |
+| `POTHOLE` | Represents a unique pothole, including its estimated location, aggregated confidence, observation count, and status. |
+| `DETECTION` | Represents one observation of a pothole in a video frame, including its confidence, timestamp, frame number, and GPS location. |
+| `EVIDENCE_IMAGE` | Stores the reference to an image of a detection, with the bounding box already rendered onto the image. |
 
 ## 2.3 Structural Decisions
 
-| Structural Decision | Decision Type | Rationale & Justification | Requirement Traceability |
-| :--- | :--- | :--- | :--- |
-| **Separate `POTHOLE` and `DETECTION` Entities** | Entity vs. Attribute | A physical pothole appears in multiple consecutive frames of a single run and across multiple separate patrol dates. Collapsing detections into attributes on a pothole would lose historical sensor telemetry and prevent incremental confidence updates. Conversely, treating each detection as an independent pothole would produce hundreds of duplicate hazard pins for a single street defect. | **US-01, US-02, US-03, AC-01.1** |
-| **Separate `VIDEO_RUN` Entity** | Entity vs. Attribute | One video run produces hundreds of detections. Storing video container name, processing status, and run timestamps directly on each detection row would duplicate strings across thousands of rows. A dedicated `VIDEO_RUN` entity provides run-level lifecycle auditing, batch failure isolation, and performance monitoring. | **US-01, AC-01.1, AC-01.2** |
-| **Separate `EVIDENCE_IMAGE` Entity** | Entity vs. Attribute | Normalizes image storage metadata. Not every detection produces an evidence crop (e.g., distant low-resolution detections), and future extensions may store multiple crops (e.g., wide overview and zoomed-in texture). Decoupling image paths keeps detection rows narrow and simplifies independent redaction pipelines. | **US-04, AC-01.1** |
-| **`VIDEO_RUN` to `DETECTION` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A single video processing run produces zero or many point detections, but every detected video frame originates from exactly one physical video file and ingest run. A many-to-many relationship is structurally invalid and unnecessary. | **US-01, AC-01.1** |
-| **`POTHOLE` to `DETECTION` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A physical pothole groups one or more observations over time (n >= 1), but each individual localized frame detection represents a single point in space and time that belongs to exactly one physical pothole entity. | **US-02, US-03, AC-01.1** |
-| **`DETECTION` to `EVIDENCE_IMAGE` is 1-to-Many (1:N)** | Cardinality (1:N vs. M:N) | A detection has zero or more associated image crops (typically one cropped bounding box), and each image file belongs to exactly one detection event. | **US-04, AC-01.1** |
-| **Relational Model (PostgreSQL/PostGIS) vs. Simpler Store** | Database Architecture | StreetSmart selects a relational model over NoSQL document stores or key-value stores. Relational tables enforce strict referential integrity across runs, detections, and evidence links. Furthermore, PostGIS provides native Open Geospatial Consortium (OGC) spatial operations (`ST_DWithin`, `ST_MakeEnvelope`) and R-tree spatial indexing (`GIST`), which are essential for O(log N) radius matching and RFC 7946 GeoJSON export. Simpler key-value or document stores lack native spatial indexing and require custom application-level joins and spatial filtering. | **US-01, US-02, US-05, AC-02.1** |
+| Decision | Rationale | Requirement IDs |
+| --- | --- | --- |
+| Separate `POTHOLE` and `DETECTION` entities | One physical pothole may appear in multiple frames or separate passes. Keeping detections separate preserves individual confidence scores and timestamps while updating the pothole's aggregate confidence. | US-01, US-02, US-03, AC-01.1 |
+| Separate `VIDEO_RUN` entity | One video run can produce many detections. Tracking run metadata separately avoids duplicating video names across rows and makes it possible to trace a detection back to its source video. | US-01, AC-01.1, AC-01.2 |
+| Separate `EVIDENCE_IMAGE` entity | A detection may have an associated evidence image. Storing the image reference separately keeps image metadata distinct from the detection record. | US-04, AC-01.1 |
+| `VIDEO_RUN` to `DETECTION` is one-to-many | A video run produces many detections, but each detected frame comes from exactly one video file. | US-01, AC-01.1 |
+| `POTHOLE` to `DETECTION` is one-to-many | A pothole groups multiple observations over time, but each observation belongs to only one physical pothole. | US-02, US-03, AC-01.1 |
+| `DETECTION` to `EVIDENCE_IMAGE` is one-to-many | A detection can have zero or more evidence images, and each image belongs to a specific detection event. | US-04, AC-01.1 |
+| Store rendered bounding boxes in evidence images | The bounding box is drawn directly onto the cropped image, so the system does not need to store the box coordinates separately for the prototype. | US-01, AC-01.1 |
+| Use PostgreSQL with PostGIS over a simpler store | A relational database enforces foreign-key relationships between runs, detections, and potholes. PostGIS provides standard spatial indexing and geometric distance queries needed for pothole matching, which simpler key-value or document stores do not support natively. | US-01, US-02, US-05, AC-02.1 |
+| Use Supabase Storage for images | Image files are stored separately from database records, reducing the amount of binary data stored directly in PostgreSQL rows. | US-04, AC-01.1 |
 
 ## 2.4 Indexing Decisions
 
-To guarantee low-latency spatial queries and prevent performance degradation as inspection datasets grow, the following indexes are defined:
+StreetSmart uses the following indexes to keep queries fast as data grows:
 
-| Table | Indexed Field | Index Type | Rationale & Justification | Requirement Traceability |
-| :--- | :--- | :--- | :--- | :--- |
-| `POTHOLE` | `location` | `GIST` (Generalized Search Tree) | PostGIS spatial R-tree index. Enables sub-millisecond O(log N) bounding-box filtering (`ST_MakeEnvelope`) for map viewport rendering and radial distance searches (`ST_DWithin`) during pothole deduplication, avoiding a full table scan of tens of thousands of records. | **US-01, US-05, AC-02.1** |
-| `DETECTION` | `pothole_id` | `B-Tree` | Foreign key index. Accelerates O(log n) retrieval and aggregation of all historical observations belonging to a given pothole when re-evaluating aggregate confidence or displaying inspection history. | **US-02, AC-01.1** |
-| `DETECTION` | `video_run_id` | `B-Tree` | Foreign key index. Accelerates run-level batch queries, status auditing, and transactional cleanup of failed video processing runs. | **US-01, AC-01.2** |
-| `POTHOLE` | `aggregated_confidence` | `B-Tree` | Scalar index. Accelerates filtering queries requesting high-confidence roadway defects (confidence >= 0.70) without scanning unconfirmed low-confidence candidates. | **US-02, AC-01.1, AC-02.1** |
-| `POTHOLE` | `status` | `B-Tree` | Low-cardinality scalar index. Enables rapid filtering by municipal workflow status (`'UNRESOLVED'`, `'VERIFIED'`, `'REPAIRED'`) for maintenance work-order generation. | **US-01, US-03** |
+* `POTHOLE.location`: PostGIS spatial index (GiST). Allows fast searches for potholes within a 5-meter radius during matching and supports bounding-box queries for the map dashboard without scanning every row (US-01, US-05, AC-02.1).
+* `DETECTION.pothole_id`: B-Tree index. Speeds up finding all detections for a specific pothole when recalculating aggregate confidence (US-02, AC-01.1).
+* `DETECTION.video_run_id`: B-Tree index. Speeds up run-level queries, status checks, and data cleanup (US-01, AC-01.2).
+* `POTHOLE.aggregated_confidence`: B-Tree index. Speeds up filtering potholes by minimum confidence threshold (such as 0.70) (US-02, AC-01.1, AC-02.1).
+* `POTHOLE.status`: B-Tree index. Allows fast filtering by status (such as unresolved vs. repaired) for maintenance reviews (US-01, US-03).
 
-## 2.5 Video and Evidence-Image Storage Lifecycle
+## 2.5 Video and Evidence-Image Storage
 
-1. **Persistent Source Footage:** Raw vehicle dashcam video files remain on local persistent disk or staging volumes.
-2. **Incremental Frame Extraction:** The Go inference service decodes video streams incrementally into memory buffers (frame-by-frame), strictly avoiding loading entire multi-gigabyte video files into RAM.
-3. **Inference Execution:** Frames are preprocessed (scaled to 3 × 640 × 640) and evaluated via ONNX Runtime.
-4. **Evidence Cropping & Redaction:** When a pothole is detected with confidence >= 0.70, the pipeline extracts a cropped region of interest around the bounding box. The bounding box is rendered onto the image crop, and an automated privacy filter blurs any detected vehicle license plates or pedestrian faces (**US-04**).
-5. **Object Storage Upload:** The redacted JPEG image is uploaded to Supabase Storage via its REST API under path `/evidence/{run_id}/{detection_id}.jpg`.
-6. **Database Persistence:** PostgreSQL commits the `DETECTION` row and creates an associated `EVIDENCE_IMAGE` row recording the storage path.
-7. **Failure Isolation:** If an image upload fails (e.g., network timeout), the transaction logs an error and rolls back the evidence reference, preventing broken image links from entering the database.
+1. The source video remains on persistent disk.
+2. The Go inference service reads the video incrementally, loading individual frames into RAM rather than loading the entire video into memory.
+3. Each frame is processed by the ONNX Runtime model.
+4. When a pothole is detected, the system creates an evidence image with the bounding box rendered onto the image.
+5. The system applies the required privacy redaction to faces and license plates before saving the evidence image.
+6. The redacted image is uploaded to Supabase Storage.
+7. PostgreSQL stores the detection details, associated pothole ID, and evidence-image storage path.
+
+If an image upload fails, the system reports the failure rather than saving an image reference that cannot be retrieved.
 
 ---
 
 # 3. Core Algorithms
 
-## 3.1 Algorithm A: Weighted Pothole Confidence Aggregation
+## 3.1 Algorithm A: Weighted Pothole Confidence
 
-### 1. Purpose and Problem Solved
-Single-frame computer vision detections suffer from transient uncertainty caused by motion blur, camera vibration, sun glare, and asphalt shadow patterns. Storing isolated raw detections creates duplicate hazard alerts and false positives. Algorithm A aggregates multiple consecutive observations of the same pothole into a single robust, monotonically calibrated confidence metric, balancing raw visual model certainty with physical recurrence frequency.
+### Purpose
 
-### 2. Inputs and Outputs with Exact Types
+A pothole may be detected multiple times as the vehicle moves along the road. This algorithm combines the model's confidence with the number of repeated detections to produce an overall confidence score for the pothole.
 
-**Inputs:**
-* `current_avg_confidence`: `float64` — Average model confidence of existing accepted detections, range [0.0, 1.0].
-* `current_observation_count`: `int32` — Number of previously accepted observations (n >= 0).
-* `new_model_confidence`: `float64` — Model confidence of the newly matched detection, range [0.0, 1.0].
-* `repeat_weight`: `float64` — Weight assigned to repeated detections (w in [0.0, 1.0], system default w = 0.30).
+### Inputs and Outputs
 
-**Outputs:**
-* `updated_aggregated_confidence`: `float64` — Recalculated composite confidence score, range [0.0, 1.0].
-* `updated_observation_count`: `int32` — Incremented count of observations (n + 1).
-* `updated_avg_confidence`: `float64` — Updated mean model confidence across all accepted detections.
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `model_confidence` | `float64` | Average model confidence across accepted detections, between 0 and 1. |
+| `observation_count` | `int` | Number of accepted detections associated with the pothole. |
+| `repeat_weight` | `float64` | Weight assigned to the number of repeats, between 0 and 1 (default 0.30). |
 
-**Mathematical Formulation:**
-The aggregate confidence score C_final is calculated using a weighted linear combination of the running mean model confidence C_model and a non-linear repeat score C_repeat:
+Output:
 
-```
-C_final = (1 - w) * C_model + w * C_repeat
-```
+* `aggregated_confidence`: `float64`, between 0 and 1.
 
-where the running average model confidence updates incrementally with each new detection:
+### Equation
 
-```
-C_model(new) = (n_prev * C_model(prev) + C_new) / (n_prev + 1)
-```
+The aggregate confidence is calculated using a weighted linear equation:
 
-and the repeat score implements diminishing marginal returns normalized to the interval [0, 1):
+C_final = (1 - w) *C_model + w* C_repeat
 
-```
+where:
+
+* C_model is the average model confidence across accepted detections.
+* C_repeat is the repeat score.
+* w is the weight assigned to repeated detections.
+
+For this prototype, the repeat score is the observation count normalized to the interval from 0 to 1:
+
 C_repeat = n / (n + 1)
-```
 
-where `n = n_prev + 1` is the total count of accepted observations.
+where n is the number of accepted observations.
 
-**Worked Example:**
-If a pothole is observed across 3 consecutive frames with model confidences 0.90, 0.92, and 0.88 (giving average model confidence C_model = 0.90, observation count n = 3, and repeat weight w = 0.30):
+For example, if the average model confidence is 0.90, there are three observations, and the repeat weight is 0.30, then:
 
-```
 C_repeat = 3 / (3 + 1) = 0.75
-C_final  = (1 - 0.30) * (0.90) + (0.30) * (0.75)
-         = (0.70) * (0.90) + (0.30) * (0.75)
-         = 0.630 + 0.225 = 0.855
-```
+C_final = (0.70) *(0.90) + (0.30)* (0.75) = 0.630 + 0.225 = 0.855
 
-The model confidence provides the primary foundation of the score (0.630), while physical multi-frame confirmation provides the corroborating boost (0.225).
+The model confidence contributes most of the score, while repeated observations provide additional evidence.
 
-### 3. Expected Complexity at Realistic Data Size and 100x Scale
-* **Realistic Data Size:** In a typical 60-minute municipal inspection run (approx. 10–20 miles), a dashcam captures footage at 30 fps (~108,000 frames). A single pothole remains in the camera's field of view across 3 to 15 keyframes (n = 3 to 15).
-* **Time Complexity:** Because the algorithm maintains a running sum and observation count, updating C_model, C_repeat, and C_final requires only basic arithmetic operations, executing in O(1) constant time (< 0.05 microseconds). If calculated from scratch across all n historical detections, time complexity is O(n), executing in ~0.1 microseconds for n = 10.
-* **At 100x Data Size:** If a permanent pothole is observed across 100 vehicle passes over a year (n = 1,000 observations), incremental updates remain strictly O(1) (< 0.05 microseconds). Recomputing from scratch across all 1,000 records takes O(1,000), executing in < 10 microseconds.
-* **Does the Difference Matter?** No. In both realistic (n = 10) and 100x (n = 1,000) scenarios, the calculation completes in under 10 microseconds, which is completely negligible compared to network I/O (~5 ms) and ONNX model inference (~15 ms).
-* **Space Complexity:** O(1) auxiliary memory.
+### Complexity
 
-### 4. Why This Approach Rather than Alternatives
-* **Alternative 1: Simple Arithmetic Mean (C_avg = (1/n) * sum(C_i)):** Passed over because a single false-positive detection with high confidence (e.g., 0.91 on an oil stain) would receive the exact same score as a genuine pothole verified across 10 frames with 0.91 confidence. The simple average fails to reward physical confirmation over time.
-* **Alternative 2: Bayesian Probability Updating:** Passed over because Bayesian updating assumes independent evidence events. Consecutive video frames recorded 33 ms apart share identical lighting, viewing angles, and road geometry; assuming conditional independence causes the posterior probability to artificially saturate to 0.9999 after only 3–4 frames.
-* **Alternative 3: Maximum Confidence (max(C_i)):** Passed over because it is highly vulnerable to transient neural network misclassifications and sensor noise spikes.
-* **Why Chosen Option Won:** The weighted formulation explicitly balances visual certainty with observation count, provides intuitive parameter tuning via w, bounds output strictly to [0.0, 1.0], and enforces diminishing returns via n / (n + 1).
+The algorithm takes O(n) time to calculate the average from n observations. If the system maintains a running sum and observation count, updating the average and aggregate confidence for a new detection takes O(1) time (< 0.05 microseconds).
 
-### 5. Edge Cases
-* **First Observation (n = 0):** Handled cleanly with n = 1, C_model = C_new, and C_repeat = 1 / (1 + 1) = 0.50. For a 0.90 detection with w = 0.30, C_final = 0.70 * 0.90 + 0.30 * 0.50 = 0.78 >= 0.70. Directly satisfies **AC-01.1**.
-* **Out-of-Bounds Model Confidence:** Inputs where C_new < 0.0 or C_new > 1.0 are rejected by the Ingestion Pipeline validation layer with an error log, preventing corrupt numbers from entering calculations (Interfaces **I6**, **I7**).
-* **Duplicate Frame Reprocessing:** If a frame with the same `(video_run_id, frame_index)` is retransmitted, the ingestion layer detects the duplicate key and skips the confidence calculation, avoiding artificial score inflation (**AC-01.1**).
-* **Observation Saturation (n -> infinity):** As n grows large, n / (n + 1) approaches 1.0 asymptotically, preventing numeric overflow and capping repeat contribution to w (0.30).
-* **Decaying Confidence on Subsequent Passes:** If subsequent detections have lower confidence (e.g., a closer camera view reveals the defect is minor), C_model drops, appropriately reducing C_final and preventing false-positive escalation (**US-02**).
+For a typical 60-minute drive, a pothole is visible across 3 to 15 frames (realistic size n = 10). At 100 times this size (n = 1,000 observations over a year of repeated passes), calculating the average from scratch takes O(1,000), which completes in under 10 microseconds. With incremental updates, it remains O(1). The difference does not matter in practice because microsecond calculations are negligible compared to video inference (~15 ms) and network requests.
+
+### Why This Approach
+
+A weighted linear equation is easy to implement, explain, and adjust during testing. Using model confidence alone ignores repeated observations, while using the number of observations alone ignores the model's prediction quality. The weighted equation incorporates both.
+
+Alternatives considered:
+
+* Simple average: Passed over because a single detection with high confidence would score the same as a pothole confirmed across 10 passes.
+* Bayesian updating: Passed over because consecutive video frames are not independent, which causes Bayesian probability to artificially jump to near 1.0 too quickly.
+* Maximum confidence: Passed over because it is vulnerable to occasional false-positive spikes from the model.
+
+### Edge Cases
+
+* **No observations (n = 0):** Do not calculate an aggregate score until at least one valid detection exists (AC-01.1).
+* **First observation (n = 1):** With n = 1, C_repeat = 0.50. For a 0.90 detection, C_final = 0.7(0.9) + 0.3(0.5) = 0.78, which cleanly passes the 0.70 threshold (AC-01.1).
+* **Invalid confidence:** Reject confidence values outside [0, 1] at the ingestion boundary (Interfaces I6, I7).
+* **Duplicate frames:** Avoid counting the same frame detection multiple times by checking (video_run_id, frame_index) (AC-01.1).
+* **Invalid weight:** Reject values of repeat_weight outside [0, 1].
+* **Observation saturation (n -> large):** As n increases, C_repeat approaches 1.0, keeping the score bounded within [0, 1] without overflow.
+* **Lower confidence on repeated passes:** If later observations have lower confidence, the average confidence drops, appropriately lowering the aggregate score (US-02).
 
 ---
 
-## 3.2 Algorithm B: Spatial Matching of Repeated Detections to Pothole Records
+## 3.2 Algorithm B: Match Repeated Detections to a Pothole
 
-### 1. Purpose and Problem Solved
-As an inspection vehicle drives along a street at 25–35 mph, a pothole remains in the camera's field of view across multiple frames over 0.5–2 seconds. Furthermore, municipal vehicles traverse the same street on subsequent patrol days. If every detection created a new database record, the system would produce hundreds of duplicate records for the same physical pothole. Algorithm B determines whether an incoming detection belongs to an existing pothole record or constitutes a newly discovered hazard.
+### Purpose
 
-### 2. Inputs and Outputs with Exact Types
+When the model detects a pothole, StreetSmart must decide whether it has already recorded that pothole or whether the detection represents a new pothole. Matching repeated detections prevents the system from creating a separate pothole record for every frame in which the same pothole appears.
 
-**Inputs:**
-* `observed_location`: `geometry(Point, 4326)` — Longitude and latitude of the incoming detection (lat in [-90.0, 90.0], lon in [-180.0, 180.0]).
-* `matching_radius_meters`: `float64` — Search radius in meters (R = 5.0 meters, matching the GPS tolerance in AC-01.1).
-* `video_run_id`: `UUID` — Identifier of the active video run.
-* `detected_at`: `timestamptz` — Capture timestamp of the frame.
+### Inputs and Outputs
 
-**Outputs:**
-* `match_decision`: `MatchResult` struct:
-  * `action`: `string` — Enum: `'MERGE_EXISTING'`, `'CREATE_NEW'`, or `'FLAG_AMBIGUOUS'`.
-  * `target_pothole_id`: `UUID` — Identifier of the matched or newly created pothole.
-  * `distance_meters`: `float64` — Geodesic distance to matched centroid (meters).
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `observed_location` | Geographic point | GPS location associated with the new detection (lat in [-90, 90], lon in [-180, 180]). |
+| `existing_potholes` | List of pothole records | Existing potholes near the new detection. |
+| `matching_radius` | `float64` | Maximum geographic distance, in meters, for considering a pothole a potential match (default 5.0 meters). |
 
-**Algorithmic Steps:**
-1. **Spatial Candidate Query:** Query PostGIS using the spatial index to find all existing potholes within radius R = 5.0 meters using geodetic distance:
+Output:
+
+* The ID of an existing pothole if a match is found.
+* A new pothole record if no existing pothole is a suitable match.
+
+### Approach
+
+1. Receive a new detection and its GPS coordinates.
+2. Query PostGIS for existing potholes within the configured matching radius (5.0 meters):
+
    ```sql
-   SELECT id, location, aggregated_confidence, observation_count,
-          ST_Distance(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography) AS dist_meters
+   SELECT id, location, aggregated_confidence, observation_count
    FROM POTHOLE
    WHERE ST_DWithin(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography, 5.0)
-   ORDER BY dist_meters ASC;
+   ORDER BY ST_Distance(location::geography, ST_SetSRID(ST_MakePoint($lon, $lat), 4326)::geography) ASC;
    ```
-2. **Case A (Zero Candidates, k = 0):** No existing potholes exist within 5 meters. Create a new `POTHOLE` record with a generated UUID, set `location = observed_location`, set `observation_count = 1`, and return `'CREATE_NEW'`.
-3. **Case B (Single Candidate, k = 1):** Exactly one existing pothole is within 5 meters. Match the detection to this pothole, associate the foreign key, update the pothole centroid location via a running weighted average, update temporal bounds (`last_detected_at`), and return `'MERGE_EXISTING'`.
-4. **Case C (Multiple Candidates, k > 1):** Multiple potholes exist within 5 meters (e.g., a pothole cluster).
-   * Evaluate the distance ratio between the nearest candidate (d1) and the second-nearest candidate (d2).
-   * If d1 < 2.0 meters and d2 - d1 >= 1.5 meters, match unambiguously to candidate 1 (`'MERGE_EXISTING'`).
-   * If candidate distances are closely tied (|d2 - d1| < 1.0 meter), flag the match as ambiguous (`'FLAG_AMBIGUOUS'`), associate the detection with the nearest record, and log an audit warning to prevent corrupting cluster records.
 
-### 3. Expected Complexity at Realistic Data Size and 100x Scale
-* **Realistic Data Size:** A medium-sized city like Cincinnati maintains approximately 10,000 to 25,000 active roadway defects across its road network at any given time (N = 25,000). In a localized 5-meter neighborhood, roadway density yields k = 0 to 2 existing potholes.
-* **Time Complexity:**
-  * *Without Index (Naive Scan):* Calculating Haversine distance across all N potholes requires O(N) comparisons. For N = 25,000, a linear scan requires 25,000 trigonometric distance evaluations per detection (~8 ms), which would consume significant compute during batch ingestion.
-  * *With PostGIS GiST Index:* The spatial R-tree index prunes bounding boxes hierarchically, executing candidates in O(log N) time, followed by exact geodetic distance evaluation on the candidate set of size k (O(k)). For N = 25,000, O(log N + k) requires approximately 17 tree-node checks, executing in < 0.8 ms.
-* **At 100x Data Size:** At N = 2,500,000 potholes (representing a statewide or multi-year historical dataset):
-  * The GiST tree depth increases by only log2(100) ≈ 6.6 levels (O(log(100N)) ≈ 22 checks), executing in < 1.5 ms.
-  * In contrast, an unindexed linear scan would require 2,500,000 distance evaluations (~800 ms per detection), completely crashing the ingestion pipeline.
-* **Does the Difference Matter?** Yes! With the GiST spatial index, the 100x scale increase introduces virtually zero latency penalty, easily satisfying the 20-minute video ingestion budget (**AC-01.1**). Without the spatial index, the 100x scale would break the product.
-* **Space Complexity:** O(N) memory for the spatial GiST index in PostgreSQL; O(k) working memory for the candidate array in the Go service.
+3. If no candidates are found, create a new pothole record.
+4. If one candidate is found, associate the detection with that pothole and update its observation count and aggregate confidence.
+5. If multiple candidates are found, check the distance to the closest candidates. If one is clearly closest (d1 < 2.0 m and d2 - d1 >= 1.5 m), associate with that record. If the candidates are equidistant (|d2 - d1| < 1.0 m), flag the match as ambiguous to avoid corrupting records.
+6. Update the pothole's observation count and aggregate confidence.
 
-### 4. Why This Approach Rather than Alternatives
-* **Alternative 1: Visual Feature Matching / Re-Identification (Re-ID Embeddings):** Passed over because asphalt road textures lack distinctive visual landmarks, lighting conditions shift between vehicle passes, and running a secondary deep neural network for feature extraction requires > 50 ms per candidate, violating the batch processing timing budget of 1,200s for a 60-minute video (**AC-01.1**).
-* **Alternative 2: Fixed Spatial Tile Binning (Geohash or S2 Cells):** Passed over due to the "boundary problem": a pothole positioned 10 cm from a cell boundary will fail to match a detection 20 cm away in the adjacent cell unless complex multi-cell perimeter queries are executed.
-* **Why Chosen Option Won:** PostGIS geodetic radius matching (`ST_DWithin`) operates smoothly across arbitrary geographic boundaries, natively accounts for the ellipsoidal curvature of the Earth, leverages hardware-accelerated R-trees, and directly aligns with the ±5 meter GPS accuracy specification in **AC-01.1**.
+### Complexity
 
-### 5. Edge Cases
-* **Missing or Unresolved GPS Fix:** If `observed_location` has null coordinates or (0.0, 0.0), the spatial query cannot execute. The Ingestion Pipeline intercepts the detection, flags the record with `status: LOCATION_UNRESOLVED`, halts matching, and logs an HTTP 422 error within 3.0 seconds, directly fulfilling **AC-01.2** and Interfaces **I5**, **I7**.
-* **Zero Candidates (k = 0):** PostGIS returns an empty set. The system smoothly instantiates a new `POTHOLE` record with a new UUID and sets initial temporal bounds (**US-01, AC-01.1**).
-* **Equidistant Ambiguous Candidates (k > 1, |d1 - d2| < 1.0 meter):** Handled via the `'FLAG_AMBIGUOUS'` condition, preventing arbitrary record thrashing and preserving data integrity (**US-02**).
-* **Rapid Consecutive Frames in Same Run (dt < 0.2 seconds):** Checked via `(pothole_id, video_run_id)`. Detections from adjacent frames merge into the active pothole and update its centroid without double-counting observation tallies (**AC-01.1**).
-* **GPS Multi-Path Reflection Jump:** If a vehicle GPS receiver experiences a momentary multipath reflection causing coordinates to jump > 5.0 meters, the detection is treated as an isolated candidate rather than erroneously shifting the existing pothole centroid (**US-02**).
+A straightforward implementation that checks every stored pothole takes O(N) time for N existing potholes. Using PostGIS to search within a geographic radius uses a spatial GiST index, which takes O(log N) time to find candidates, followed by checking the k returned candidates (O(k)).
+
+At a realistic city size of N = 25,000 potholes, PostGIS evaluates the spatial tree in roughly 15 checks (< 0.8 ms). At 100 times that size (N = 2,500,000 records across a state or multi-year dataset), the spatial index tree depth increases by only about 7 levels, taking < 1.5 ms. The difference does matter here: without the spatial index, checking 2,500,000 records sequentially would take hundreds of milliseconds per frame and break the 20-minute video processing budget (AC-01.1). With the GiST index, the lookup remains fast.
+
+### Why This Approach
+
+Geographic radius matching is straightforward to implement with PostGIS and directly matches the GPS accuracy specification of 5 meters (AC-01.1).
+
+Alternatives considered:
+
+* Visual feature re-identification: Passed over because asphalt road surfaces have low visual distinctiveness under varying sunlight, and running a secondary neural network for image matching adds 50+ ms per candidate, slowing down batch video processing.
+* Fixed grid binning (such as Geohash): Passed over because potholes located close to cell boundaries fail to match detections across the line unless adjacent cell queries are implemented.
+
+### Edge Cases
+
+* **Missing or unresolved GPS:** If coordinates are null or invalid, do not perform spatial matching. Flag the record as `LOCATION_UNRESOLVED` and return an HTTP 422 error within 3.0 seconds (AC-01.2, Interfaces I5, I7).
+* **No nearby potholes (k = 0):** Create a new pothole record with initial values (US-01, AC-01.1).
+* **Multiple nearby potholes / ties:** Select the closest only if clear. If ambiguous, flag as ambiguous to prevent incorrectly merging distinct nearby potholes (US-02).
+* **Consecutive frames in same run:** Merge detections from adjacent frames into the same pothole without double-counting observation tallies if the vehicle was stationary (AC-01.1).
+* **GPS jumps:** If a momentary GPS error displaces a point by more than 5 meters, it is treated as a separate record rather than distorting the true pothole location (US-02).
 
 ---
 
 # 4. Build-versus-Reuse Decisions
 
-Table 1 details the build-versus-reuse decisions for every significant piece of the detailed components, checking maturity, licensing, performance, and fit for every candidate library or service.
+| Component | Build or Reuse | Library or Service | License | Reason |
+| --- | --- | --- | --- | --- |
+| Relational database | Reuse | PostgreSQL 16 | PostgreSQL License | Provides reliable relational storage, ACID transactions, and structured queries. |
+| Geographic operations | Reuse | PostGIS 3.4 | GPL-2.0-or-later | Provides spatial distance calculations, radius queries, and GiST indexing. |
+| Database and image hosting | Reuse | Supabase | Apache-2.0 / Hosted Terms | Managed PostgreSQL and file storage reduces infrastructure setup for the prototype. |
+| Model inference | Reuse | ONNX Runtime (Go binding) | MIT License | Runs the trained model efficiently without building a custom inference engine. |
+| Video processing | Reuse | GoCV / OpenCV 4 | Apache-2.0 | Provides mature video decoding, frame extraction, and image manipulation. |
+| Web framework | Reuse | Gin Web Framework | MIT License | Provides fast HTTP routing and JSON serialization for REST API endpoints. |
+| GeoJSON handling | Reuse | `paulmach/orb` | MIT License | Provides geometry parsing and standard RFC 7946 GeoJSON serialization. |
+| Privacy redaction | Reuse | Haar Cascade / lightweight YOLO | MIT License | Redacts pedestrian faces and license plates before images are stored (US-04). |
+| Object storage client | Reuse | Supabase Go Storage SDK | MIT License | Handles multipart image uploads and signed URL generation. |
+| Date and math utilities | Reuse | Go standard library (`time`, `math`) | BSD-3-Clause | Uses standard RFC 3339 timestamp parsing and coordinate math. |
+| Inference orchestration | Build | Custom Go service (`internal/ingestion`) | Project License | Connects video frames, model inference, and detection output into the StreetSmart workflow. |
+| Confidence aggregation | Build | Custom Go module (`internal/scoring`) | Project License | Implements StreetSmart's weighted confidence equation. |
+| Pothole matching | Build using PostGIS | Custom Go module (`internal/matcher`) | Project License | Implements the 5-meter deduplication and matching rules using PostGIS queries. |
 
-| Component / Subsystem | Build or Reuse | Library or Service | License | Justification (Maturity, Licensing, Performance, and Fit) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Relational Database Engine** | Reuse | PostgreSQL 16 | PostgreSQL License | Highly mature ACID relational database with robust connection pooling and enterprise reliability; permissive license permits unrestricted municipal deployment. |
-| **Geospatial Engine** | Reuse | PostGIS 3.4 | GPL-2.0-or-later | Industry-standard spatial extension providing optimized R-tree GiST indexing and OGC-compliant geodetic operators for sub-millisecond radius matching. |
-| **Database & Blob Storage Hosting** | Reuse | Supabase Cloud | Apache-2.0 / Hosted Terms | Fully managed cloud PostgreSQL, PostGIS, and S3-compatible blob storage, eliminating complex database DevOps and infrastructure management for the prototype. |
-| **Deep Learning Inference Engine** | Reuse | Microsoft ONNX Runtime (Go binding) | MIT License | High-performance, mature cross-platform inference engine supporting hardware execution providers (CUDA/CPU) with minimal runtime overhead. |
-| **Video Decoding & Frame Extraction** | Reuse | GoCV / OpenCV 4.x (via Go bindings) | Apache-2.0 | Battle-tested, mature C++/Go library providing hardware-accelerated video demuxing, frame extraction, and image manipulation. |
-| **REST Web Framework & HTTP Router** | Reuse | Gin Web Framework (`gin-gonic/gin`) | MIT License | Mature, high-performance HTTP web framework in Go with low memory footprint (<30 MB RAM) and fast radix-tree routing for REST APIs. |
-| **Geospatial & GeoJSON Serialization** | Reuse | `paulmach/orb` / `go-geom` | MIT License | Mature Go geospatial library providing fast 2D geometry manipulation, WKB parsing, and standard RFC 7946 GeoJSON serialization. |
-| **Automated PII Privacy Redaction** | Reuse | Haar Cascade / Lightweight YOLOv8-Nano PII Model | MIT License | Fast, mature pre-persistence face and license plate blurring filter preventing PII storage in compliance with municipal mandates (**US-04**). |
-| **Object Storage Client SDK** | Reuse | `supabase-community/storage-go` | MIT License | Production-ready HTTP client SDK for multipart file uploads, signed URL generation, and error handling for image persistence. |
-| **Date/Time & Coordinate Validation** | Reuse | Go Standard Library (`time`, `math`) | BSD-3-Clause | Battle-tested standard library functions for RFC 3339 timestamp parsing and bounding-box validation, avoiding hand-rolled date routines. |
-| **Ingestion Orchestration Pipeline** | Build | Custom Go Service (`internal/ingestion`) | Team Project License | Implements StreetSmart's end-to-end ingestion pipeline, coordinating video frame reading, GPS correlation, and DB writes. |
-| **Confidence Aggregation Engine** | Build | Custom Go Module (`internal/scoring`) | Team Project License | Implements StreetSmart's weighted diminishing-returns confidence algorithm balancing model certainty and repeat detections. |
-| **Spatial Pothole Matching Module** | Build | Custom Go Module with PostGIS (`internal/matcher`) | Team Project License | Implements StreetSmart's 5-meter radius spatial deduplication and ambiguous cluster resolution logic using PostGIS. |
-
-*Table 1: Build-versus-Reuse Decisions for Detailed Components.*
+All candidate libraries have been checked for active maintenance, permissive licensing, and fit with the Go and PostgreSQL environment.
 
 ---
 
 # 5. API Contract
 
-The detailed components (Backend API and Ingestion Pipeline) expose four primary RESTful endpoints.
+The D0 architecture defines an interface between Model Inference and the Ingestion Pipeline, followed by an interface between ingestion and PostgreSQL. The following contract describes the key endpoints for the detailed components.
 
-## 5.1 Endpoint Specifications
+## 5.1 Key Endpoints
 
-### 1. `POST /api/v1/runs`
-Initializes a new video processing run batch in the system.
+| Method and Endpoint | Inputs | Success Response | Error Responses |
+| --- | --- | --- | --- |
+| `POST /api/v1/runs` | `source_video_name: string` (required, 1-255 chars); `started_at: string` (required, RFC 3339); optional `device_id: string` | `201 Created`: `{ "run_id": "UUID", "status": "QUEUED", "started_at": "RFC 3339" }` | `400` invalid input; `409` duplicate run name; `500` database error; `503` database unavailable. |
+| `POST /api/v1/detections` | `run_id: UUID` (required); `frame_index: int >= 0` (required); `detected_at: RFC 3339` (required); `model_confidence: float in [0, 1]` (required); `damage_type: string` ("pothole"); `latitude: float in [-90, 90]` (required); `longitude: float in [-180, 180]` (required); optional `image_path: string` | `201 Created`: `{ "detection_id": "UUID", "pothole_id": "UUID", "match_action": "MERGED", "aggregated_confidence": float in [0,1], "observation_count": int, "distance_to_centroid_meters": float }` | `400` malformed JSON; `404` unknown run ID; `409` duplicate frame index; `422` invalid or unresolved GPS (AC-01.2); `500` database error; `503` service unavailable. |
+| `GET /api/v1/potholes` | Required query `bbox: string` (`min_lon,min_lat,max_lon,max_lat` in EPSG:4326 degrees); optional `min_confidence: float in [0, 1]` (default 0.70); optional `status: string` (default "ALL"); optional `limit: int in [1, 500]` (default 100) | `200 OK`: RFC 7946 GeoJSON FeatureCollection with pothole features containing IDs, coordinates, aggregated confidence, observation count, status, dates, and evidence image URLs. | `400` invalid or out-of-range bbox coordinates (returned in < 1.0s, AC-02.2); `401` unauthorized; `503` database unavailable. |
+| `GET /api/v1/potholes/{id}` | `id: UUID` (required path parameter) | `200 OK`: `{ "id": "UUID", "location": { "latitude": float, "longitude": float }, "aggregated_confidence": float, "observation_count": int, "status": string, "first_detected_at": "RFC 3339", "last_detected_at": "RFC 3339", "evidence_images": [ { "image_id": "UUID", "storage_url": "string", "captured_at": "RFC 3339" } ] }` | `400` invalid UUID format; `404` pothole not found; `503` database unavailable. |
 
-* **Inputs:**
-  * `source_video_name`: `string` (Required, valid length 1–255 characters, filename format, e.g., `"route04_20261002.mp4"`).
-  * `started_at`: `string` (Required, ISO 8601 / RFC 3339 UTC timestamp, e.g., `"2026-10-02T14:00:00Z"`).
-  * `device_id`: `string` (Optional, alphanumeric string 1–64 characters, e.g., `"dashcam-unit-04"`).
-* **Outputs:**
-  * HTTP `201 Created`:
-    ```json
-    {
-      "run_id": "e32a71db-a9bf-4dc5-ae3d-57e16ed23c11",
-      "status": "QUEUED",
-      "started_at": "2026-10-02T14:00:00Z"
-    }
-    ```
-    *Units:* `run_id` is a UUIDv4 string; `status` is an enum string (`'QUEUED'`, `'PROCESSING'`); `started_at` is an RFC 3339 UTC timestamp.
-* **Error Responses:**
-  * HTTP `400 Bad Request`: Returned when required fields are missing or `started_at` is not a valid RFC 3339 timestamp.
-  * HTTP `409 Conflict`: Returned when `source_video_name` has already been submitted for processing.
-  * HTTP `500 Internal Server Error`: Returned when an unhandled database transaction exception occurs.
-  * HTTP `503 Service Unavailable`: Returned when PostgreSQL database connection pool is exhausted.
+## 5.2 Example Request and Response
 
----
-
-### 2. `POST /api/v1/detections`
-Ingests an individual damage detection event generated by computer vision inference, correlates it with an existing pothole or creates a new one, and updates aggregate metrics.
-
-* **Inputs:**
-  * `run_id`: `string` (Required, valid UUIDv4 string referencing active `VIDEO_RUN`).
-  * `frame_index`: `integer` (Required, integer >= 0, sequential frame number in video).
-  * `detected_at`: `string` (Required, RFC 3339 UTC timestamp).
-  * `model_confidence`: `number` (Required, float in range [0.0, 1.0]).
-  * `damage_type`: `string` (Required, enum: `"pothole"`).
-  * `latitude`: `number` (Required, float in range [-90.0, 90.0] degrees WGS84).
-  * `longitude`: `number` (Required, float in range [-180.0, 180.0] degrees WGS84).
-  * `image_path`: `string` (Optional, relative storage URI string, max 500 characters).
-* **Outputs:**
-  * HTTP `201 Created`:
-    ```json
-    {
-      "detection_id": "4a7f9218-c2b3-4f9e-a81d-6120531e21b0",
-      "pothole_id": "f71f1e42-9b8d-47c8-8ed8-3f35f023be18",
-      "match_action": "MERGED",
-      "aggregated_confidence": 0.855,
-      "observation_count": 3,
-      "distance_to_centroid_meters": 1.42
-    }
-    ```
-    *Units:* `detection_id` and `pothole_id` are UUIDv4 strings; `match_action` is enum (`'CREATED'`, `'MERGED'`); `aggregated_confidence` is dimensionless float [0.0, 1.0]; `observation_count` is integer count; `distance_to_centroid_meters` is float distance in meters.
-* **Error Responses:**
-  * HTTP `400 Bad Request`: Returned when JSON payload is malformed or numerical values fall outside valid bounds.
-  * HTTP `404 Not Found`: Returned when `run_id` does not match any existing `VIDEO_RUN` record.
-  * HTTP `409 Conflict`: Returned when a detection for `(run_id, frame_index)` has already been recorded.
-  * HTTP `422 Unprocessable Entity`: Returned when GPS coordinates are missing, corrupted, or unresolved (`status: LOCATION_UNRESOLVED`), satisfying **AC-01.2**.
-  * HTTP `500 Internal Server Error`: Returned when database query or PostGIS spatial evaluation fails.
-  * HTTP `503 Service Unavailable`: Returned when database or storage backend is unreachable.
-
----
-
-### 3. `GET /api/v1/potholes`
-Retrieves roadway potholes within a specified geographic bounding box, serialized as an RFC 7946 GeoJSON FeatureCollection for map rendering or municipal GIS export.
-
-* **Inputs (Query Parameters):**
-  * `bbox`: `string` (Required, comma-separated bounding box `min_lon,min_lat,max_lon,max_lat` in decimal degrees EPSG:4326; valid ranges: `min_lon, max_lon` in [-180.0, 180.0], `min_lat, max_lat` in [-90.0, 90.0] with `min_lon <= max_lon` and `min_lat <= max_lat`).
-  * `min_confidence`: `number` (Optional, float in range [0.0, 1.0], default `0.70`).
-  * `status`: `string` (Optional, enum: `"UNRESOLVED"`, `"VERIFIED"`, `"REPAIRED"`, `"ALL"`, default `"ALL"`).
-  * `limit`: `integer` (Optional, integer in range [1, 500], default `100`, max 500 per **AC-02.1**).
-* **Outputs:**
-  * HTTP `200 OK`: Standardized RFC 7946 GeoJSON FeatureCollection:
-    ```json
-    {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "id": "f71f1e42-9b8d-47c8-8ed8-3f35f023be18",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [-84.516028, 39.132145]
-          },
-          "properties": {
-            "aggregated_confidence": 0.855,
-            "observation_count": 3,
-            "status": "UNRESOLVED",
-            "first_detected_at": "2026-10-02T14:32:08Z",
-            "last_detected_at": "2026-10-02T14:32:10Z",
-            "evidence_image_urls": [
-              "https://storage.supabase.co/v1/object/public/evidence/route04/det01.jpg"
-            ]
-          }
-        }
-      ],
-      "total_features": 1
-    }
-    ```
-    *Units:* `coordinates` are `[longitude, latitude]` in decimal degrees; `aggregated_confidence` is float [0.0, 1.0]; `observation_count` is integer; timestamps are RFC 3339 UTC.
-* **Error Responses:**
-  * HTTP `400 Bad Request`: Returned when `bbox` is missing, malformed, or coordinates violate WGS84 ranges, returning RFC 7807 problem details within 1.0s (**AC-02.2**).
-  * HTTP `401 Unauthorized`: Returned when authentication token or API key is invalid or absent.
-  * HTTP `503 Service Unavailable`: Returned when database query times out or PostgreSQL is unreachable.
-
----
-
-### 4. `GET /api/v1/potholes/{id}`
-Retrieves detailed information and historical detection evidence for a specific pothole record.
-
-* **Inputs:**
-  * `id`: `string` (Required, path parameter, valid UUIDv4 string format).
-* **Outputs:**
-  * HTTP `200 OK`:
-    ```json
-    {
-      "id": "f71f1e42-9b8d-47c8-8ed8-3f35f023be18",
-      "location": {
-        "latitude": 39.132145,
-        "longitude": -84.516028
-      },
-      "aggregated_confidence": 0.855,
-      "observation_count": 3,
-      "status": "UNRESOLVED",
-      "first_detected_at": "2026-10-02T14:32:08Z",
-      "last_detected_at": "2026-10-02T14:32:10Z",
-      "evidence_images": [
-        {
-          "image_id": "9b12a34c-d56e-78f9-0123-456789abcdef",
-          "detection_id": "4a7f9218-c2b3-4f9e-a81d-6120531e21b0",
-          "storage_url": "https://storage.supabase.co/v1/object/public/evidence/route04/det01.jpg",
-          "captured_at": "2026-10-02T14:32:10Z"
-        }
-      ]
-    }
-    ```
-    *Units:* `latitude` and `longitude` are decimal degrees; `aggregated_confidence` is float [0.0, 1.0]; timestamps are RFC 3339 UTC.
-* **Error Responses:**
-  * HTTP `400 Bad Request`: Returned when path parameter `id` is not a syntactically valid UUID.
-  * HTTP `404 Not Found`: Returned when no pothole record exists matching the specified UUID.
-  * HTTP `503 Service Unavailable`: Returned when database is unreachable.
-
----
-
-## 5.2 Example Request and Response Code Block
-
-The code block below demonstrates an authenticated detection ingestion request (`POST /api/v1/detections`) and the corresponding success response:
+Example request:
 
 ```http
-POST /api/v1/detections HTTP/1.1
-Host: streetsmart.internal:8080
+POST /api/v1/detections
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
+```json
 {
   "run_id": "e32a71db-a9bf-4dc5-ae3d-57e16ed23c11",
   "frame_index": 14280,
@@ -460,15 +316,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "model_confidence": 0.942,
   "latitude": 39.132145,
   "longitude": -84.516028,
-  "image_path": "evidence/e32a71db/4a7f9218.jpg"
+  "image_path": "runs/example-run/detections/example-detection.jpg"
 }
 ```
 
-```http
-HTTP/1.1 201 Created
-Content-Type: application/json
-Location: /api/v1/detections/4a7f9218-c2b3-4f9e-a81d-6120531e21b0
+Example success response:
 
+```json
 {
   "detection_id": "4a7f9218-c2b3-4f9e-a81d-6120531e21b0",
   "pothole_id": "f71f1e42-9b8d-47c8-8ed8-3f35f023be18",
@@ -479,9 +333,17 @@ Location: /api/v1/detections/4a7f9218-c2b3-4f9e-a81d-6120531e21b0
 }
 ```
 
-## 5.3 Versioning and Breaking Change Policy
+The values are illustrative. The implementation generates the identifiers and calculates the aggregate confidence and observation count.
 
-The StreetSmart API is versioned via URI path prefix (`/api/v1`), where any modification that renames or removes response fields, alters existing field data types or coordinate units, adds mandatory request parameters, or changes HTTP status code behavior constitutes a breaking change requiring an increment to `/api/v2`.
+## 5.3 Evidence-Image Handling
+
+Evidence images are uploaded to Supabase Storage after the bounding box is rendered and required privacy redaction is applied. The corresponding storage path is then associated with the detection in PostgreSQL. The API returns the image reference rather than embedding raw image bytes in the response.
+
+If an image upload fails, the system reports the failure and avoids creating a broken evidence reference in the database.
+
+## 5.4 Versioning
+
+The API uses the `/api/v1` prefix. Removing or renaming fields, changing field types or coordinate units, or adding mandatory request parameters constitutes a breaking change and requires incrementing the API version to `/api/v2`.
 
 ---
 
@@ -489,20 +351,80 @@ The StreetSmart API is versioned via URI path prefix (`/api/v1`), where any modi
 
 ## 6.1 Database: PostgreSQL and PostGIS
 
-PostgreSQL 16 with the PostGIS 3.4 spatial extension is the selected database platform for StreetSmart. **Team skill fit:** This selection directly leverages **Raihan's** core experience as a backend engineer specializing in database design and software development, allowing the team to design normalized relational schemas, configure foreign key constraints, write complex spatial SQL queries, and optimize spatial indexes without an exploratory learning curve. **Licensing:** PostgreSQL is distributed under the permissive open-source PostgreSQL License, and PostGIS is licensed under GNU GPL v2+, ensuring complete freedom from commercial licensing fees and full legal compliance for municipal deployment. **Community support:** Both projects possess massive global developer communities, comprehensive documentation, and dedicated spatial GIS support forums, guaranteeing rapid resolution of spatial query edge cases. **Performance:** PostGIS provides native R-tree Generalized Search Tree (`GIST`) indexing, which executes 5-meter radial proximity checks (`ST_DWithin`) and bounding-box queries in under 1 ms (O(log N)), avoiding expensive table scans across tens of thousands of pothole records. **Cost and hosting:** PostgreSQL and PostGIS are completely free and open-source, deployable on low-cost managed cloud instances (Supabase free/pro tier) or zero-cost local developer environments. **Evaluated alternative:** The team evaluated MongoDB with 2dsphere indexing as an alternative; however, MongoDB was passed over because it lacks native Open Geospatial Consortium (OGC) standard spatial functions (`ST_DWithin`, `ST_MakeEnvelope`), cannot enforce relational foreign key integrity across runs, detections, and potholes, and incurs higher memory overhead for spatial joins.
+PostgreSQL with PostGIS is the chosen database for StreetSmart to store pothole records, individual detections, and image references while supporting geographic queries.
 
-## 6.2 Backend Language and Framework: Go with Gin
+**Team skill fit:** Raihan has experience with database design, software development, and backend engineering. This allows the team to design the relational schema, write spatial queries, and configure PostGIS indexes without an unnecessary learning curve.
 
-Go 1.22 combined with the Gin Web Framework is the selected backend language and application framework for the Ingestion Pipeline and Backend API services. **Team skill fit:** Go directly matches **Raihan's** software development and backend engineering background, while **Sahil's** DevOps experience enables efficient containerization of single-binary Go binaries into minimal Docker images and automated CI/CD deployment pipelines. **Licensing:** Go is distributed under the permissive BSD-3-Clause license, and Gin is open-source under the MIT License, imposing zero restrictive commercial obligations or proprietary royalties. **Community support:** Go and Gin boast extensive industry adoption, mature documentation, and a robust ecosystem of production-grade libraries for HTTP routing, JSON marshaling, and high-performance database drivers (`pgx`). **Performance:** Go compiles to native standalone machine code with an ultra-lightweight goroutine concurrency model, delivering sub-millisecond HTTP routing latency, minimal memory usage (<30 MB RAM per microservice), and high throughput for streaming video frame buffers and concurrent GPS coordinate ingestion. **Cost and hosting:** Due to Go's minimal CPU and memory footprints, the entire backend service can be hosted on economical entry-level Linux VPS instances (e.g., $5/month virtual servers or university-provided virtual machines) without requiring costly multi-core server tiers. **Evaluated alternative:** The team evaluated Python with FastAPI as an alternative; however, Python was passed over because its Global Interpreter Lock (GIL) and significant memory overhead create performance bottlenecks during concurrent high-throughput video frame ingestion, whereas Go provides native multi-core concurrency and single-binary deployment.
+**Licensing:** PostgreSQL is licensed under the PostgreSQL License, and PostGIS is licensed under GPL-2.0-or-later. Both allow the team and municipality to use the software without commercial license fees.
 
-## 6.3 Front End: React with TypeScript and MapLibre GL
+**Community support:** Both tools have mature documentation, extensive tutorials, and active communities for spatial database issues.
 
-React 18 with TypeScript and MapLibre GL is the chosen technology stack for the Current Infrastructure Map dashboard. **Team skill fit:** This selection directly aligns with **Sahil's** dedicated specialization in frontend development, UI/UX design, and web engineering, allowing Sahil to craft a responsive, accessible (WCAG 2.1 AA), and interactive geospatial inspection portal for municipal staff. **Licensing:** React and TypeScript are licensed under the permissive MIT License, and MapLibre GL is open-source under the BSD-3-Clause license, ensuring complete freedom from commercial restrictions and eliminating proprietary map tile vendor lock-in. **Community support:** React is the most widely adopted frontend library in the world, backed by extensive documentation, comprehensive UI component libraries, and active developer forums, while MapLibre GL has strong open-source backing from the MapLibre community. **Performance:** React's virtual DOM reconciliation combined with MapLibre GL's WebGL hardware-accelerated vector tile rendering smoothly displays hundreds of interactive pothole markers and cluster layers at 60 FPS without browser UI freezing. **Cost and hosting:** The compiled frontend bundle consists of static HTML, CSS, and JavaScript assets that can be hosted entirely free of charge on platforms such as Vercel, Netlify, or GitHub Pages, eliminating recurring web server hosting fees. **Evaluated alternative:** The team evaluated Leaflet.js with vanilla JavaScript as an alternative; however, Leaflet was passed over because its DOM-based SVG marker rendering suffers severe frame rate drops when displaying dense spatial clusters, and vanilla JavaScript lacks TypeScript's static type safety for complex RFC 7946 GeoJSON schema validation.
+**Performance:** PostGIS spatial indexes (GiST) allow the system to search for nearby potholes within a 5-meter radius in O(log N) time instead of checking every stored pothole.
 
-## 6.4 Messaging or Hardware Platform: Workstation / Dashcam Hardware with In-Memory IPC & ONNX Runtime
+**Cost and hosting:** PostgreSQL and PostGIS can run locally during development or on Supabase's hosted tier, keeping deployment costs low.
 
-StreetSmart utilizes standard vehicle-mounted dashcams with local workstation/server hardware, coordinating frame execution via in-memory IPC and Microsoft ONNX Runtime. **Team skill fit:** This selection directly leverages **Advait's** specialized expertise in training and optimizing deep learning computer vision models, allowing Advait to train YOLO detection networks in PyTorch, quantize model weights, and export production-ready ONNX artifacts that seamlessly integrate with **Raihan's** Go inference ingestion runtime. **Licensing:** Microsoft ONNX Runtime is open-source under the permissive MIT License, allowing unrestricted deployment and execution across development and production environments. **Community support:** ONNX Runtime is actively maintained by Microsoft, Intel, AMD, and NVIDIA, providing exhaustive multi-language documentation, pre-built cross-platform binaries, and broad hardware acceleration provider support. **Performance:** ONNX Runtime provides optimized graph execution and hardware acceleration (utilizing CUDA/TensorRT on NVIDIA GPUs or vectorized AVX-512 on multi-core CPUs), executing frame inference in ~15 ms per frame to satisfy the **AC-01.1** budget of processing a 60-minute video run in under 1,200 seconds (20 minutes). **Cost and hosting:** Utilizing standard vehicle dashcams with asynchronous post-drive workstation processing leverages existing municipal depot infrastructure and student development machines (NVIDIA RTX GPUs), completely eliminating costly per-vehicle edge compute hardware ($800–$1,500 per vehicle) and expensive cellular streaming data subscriptions. **Evaluated alternative:** The team evaluated direct embedded PyTorch inference running on vehicle-mounted edge modules (e.g., NVIDIA Jetson); however, embedded PyTorch was passed over due to its heavy runtime dependency footprint (>2.5 GB), high vehicle hardware costs, and vulnerability to in-cab thermal and vibration failures.
+MongoDB was considered as an alternative, but PostgreSQL/PostGIS was chosen because it enforces relational foreign keys between runs, detections, and potholes, and provides standardized spatial query functions that MongoDB lacks.
 
-## 6.5 Hosting: Supabase Cloud and Containerized Docker Deployment
+## 6.2 Backend Language and Framework: Go and Gin
 
-StreetSmart selects Supabase Cloud for managed database and object storage hosting, paired with containerized Docker deployment for application compute services. **Team skill fit:** This architecture combines **Sahil's** DevOps expertise in Docker containerization and CI/CD pipelines with **Raihan's** backend database administration skills, ensuring consistent local development and automated deployment workflows. **Licensing:** Docker engine components are open-source under Apache-2.0, and Supabase provides open-source backend tools under Apache-2.0 alongside its cloud service terms, ensuring freedom from proprietary platform lock-in. **Community support:** Docker and Supabase both maintain massive global user communities, extensive documentation, and active developer forums, providing proven deployment patterns and troubleshooting resources. **Performance:** Containerization guarantees consistent runtime dependencies and sub-second container startup times across environments, while Supabase provides co-located managed PostgreSQL and edge object storage with low-latency connection pooling (`pgbouncer`). **Cost and hosting:** Supabase provides a generous free tier including 500 MB PostgreSQL database storage and 1 GB object storage, which easily accommodates the prototype phase, while containerized Docker services can run on low-cost virtual servers ($5–$10/month VPS) or university-provided virtual machine infrastructure, keeping recurring operational expenses near zero. **Evaluated alternative:** The team evaluated AWS Enterprise Cloud (RDS PostgreSQL, S3, ECS Fargate, and Application Load Balancers) as an alternative; however, AWS was passed over because its complex configuration overhead, egress bandwidth charges, and steep monthly subscription fees would rapidly exceed the senior design student budget.
+Go using the Gin framework is the chosen language and backend framework for the ingestion pipeline and REST API.
+
+**Team skill fit:** Raihan is an experienced backend engineer and software developer, making Go a natural fit for writing the ingestion pipeline and database integrations. Sahil's DevOps background also helps with building containerized Go binaries for deployment.
+
+**Licensing:** Go uses a BSD-3-Clause license and Gin uses the MIT License, both of which are permissive open-source licenses.
+
+**Community support:** Go and Gin have extensive documentation, strong standard libraries for HTTP and JSON handling, and active developer support.
+
+**Performance:** Go compiles to a native binary and uses lightweight goroutines, allowing the service to handle incoming video frames and concurrent GPS data efficiently with low memory usage.
+
+**Cost and hosting:** Go binaries have small resource footprints and can run on low-cost virtual servers or university-provided Linux machines without requiring expensive hardware.
+
+Python with FastAPI was considered as an alternative. While Python is popular for machine learning, Go was chosen for the ingestion service because of its lower memory overhead and simpler deployment as a single compiled binary.
+
+## 6.3 Front End: React with TypeScript
+
+React with TypeScript is the chosen frontend framework for the Current Infrastructure Map dashboard.
+
+**Team skill fit:** Sahil specializes in frontend development and UI/UX design. This experience allows Sahil to design an accessible, user-friendly interface that lets municipal staff view detected damage and filter potholes easily.
+
+**Licensing:** React and TypeScript are both licensed under the MIT License, allowing unrestricted academic and municipal use.
+
+**Community support:** React is one of the most widely used web frameworks, with extensive component libraries, tutorials, and mature mapping packages such as MapLibre GL.
+
+**Performance:** React's component model and virtual DOM render updates smoothly, and map vector rendering can load potholes within the active viewport rather than loading all records across the city at once.
+
+**Cost and hosting:** The compiled frontend is composed of static files that can be hosted for free on platforms like Vercel or GitHub Pages, eliminating extra hosting expenses.
+
+Leaflet with vanilla JavaScript was considered as an alternative, but React with TypeScript was chosen to provide compile-time type safety for API data models and a cleaner component structure for the dashboard.
+
+## 6.4 Hardware and Model Runtime: Dashcam Footage with ONNX Runtime
+
+StreetSmart uses vehicle dashcam footage processed asynchronously on workstation hardware with Microsoft ONNX Runtime.
+
+**Team skill fit:** Advait has experience with training machine learning models and fine-tunes the YOLO detection model in PyTorch before exporting it to ONNX format. Raihan then connects the exported ONNX model into the Go inference pipeline.
+
+**Licensing:** ONNX Runtime is open-source under the MIT License.
+
+**Community support:** ONNX Runtime is actively maintained by Microsoft and supported by major hardware vendors, offering clear documentation and pre-built binaries across platforms.
+
+**Performance:** ONNX Runtime optimizes model execution on available hardware (CUDA on NVIDIA GPUs or vectorized CPU execution), enabling the pipeline to process a 60-minute video in under 20 minutes to meet AC-01.1.
+
+**Cost and hosting:** Processing dashcam footage in batch on local workstation GPUs avoids purchasing expensive edge computing modules (such as NVIDIA Jetson units) for each municipal vehicle and eliminates ongoing cellular data streaming costs.
+
+Direct PyTorch model execution was considered as an alternative, but ONNX Runtime was chosen because it decouples model training from the inference runtime and avoids installing the full PyTorch framework in production.
+
+## 6.5 Hosting: Supabase and Docker
+
+Supabase is used for managed database and image storage hosting, alongside Docker containers for backend services.
+
+**Team skill fit:** Sahil has experience with DevOps and Docker containerization, while Raihan manages database schema operations.
+
+**Licensing:** Docker engine tools use the Apache-2.0 license, and Supabase's open-source stack is licensed under Apache-2.0 alongside its cloud platform terms.
+
+**Community support:** Both Docker and Supabase have large developer communities, clear setup guides, and active support channels.
+
+**Performance:** Docker ensures consistent runtime environments across developer machines and servers, while Supabase provides co-located PostgreSQL storage and connection pooling for low-latency queries.
+
+**Cost and hosting:** Supabase provides a free tier that covers the database and storage requirements for the prototype, and Docker containers can be hosted on a low-cost virtual private server (around $5/month) or free university servers.
+
+Full enterprise AWS deployment (RDS, S3, ECS) was considered as an alternative, but Supabase and Docker were chosen to avoid excessive configuration complexity and high recurring cloud bills for the project prototype.
