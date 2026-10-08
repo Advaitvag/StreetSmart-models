@@ -1,0 +1,144 @@
+<mxfile host="app.diagrams.net" modified="2026-10-08T12:00:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="D1_Data_Model_ERD" name="D1 Entity-Relationship Diagram">
+    <mxGraphModel dx="1422" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1350" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE BLOCK -->
+        <mxCell id="title_box" value="&lt;b style=&quot;font-size: 16px;&quot;&gt;StreetSmart — Detailed Data Model (Design D1)&lt;/b&gt;&lt;br&gt;&lt;i&gt;Entity-Relationship Diagram: Decoupled Pothole Clusters, Detections, Video Runs, and Evidence Images&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#495057;strokeWidth=2;align=center;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1270" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- CONVENTIONS & LEGEND -->
+        <mxCell id="legend_group" value="&lt;b&gt;ERD Diagram Conventions&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#f1f3f5;strokeColor=#adb5bd;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="100" width="290" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_pk" value="PK: Primary Key (Unique record ID)" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;fontStyle=1;" vertex="1" parent="legend_group">
+          <mxGeometry y="26" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_fk" value="FK: Foreign Key (Referential link)" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#495057;fontStyle=2;" vertex="1" parent="legend_group">
+          <mxGeometry y="56" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_card1" value="|| : Exactly One (Mandatory)" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1971c2;" vertex="1" parent="legend_group">
+          <mxGeometry y="86" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_card2" value="o{ : Zero, One, or Many (Crow's Foot)" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1971c2;" vertex="1" parent="legend_group">
+          <mxGeometry y="116" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_geo" value="EPSG:4326: WGS84 Geodetic Point" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#2b8a3e;" vertex="1" parent="legend_group">
+          <mxGeometry y="146" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_storage" value="Supabase Storage: External Image Blob" style="text;strokeColor=none;fillColor=none;html=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#d9480f;" vertex="1" parent="legend_group">
+          <mxGeometry y="176" width="290" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- ENTITY 1: VIDEO_RUN -->
+        <mxCell id="ent_video_run" value="&lt;b&gt;VIDEO_RUN&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#e7f5ff;strokeColor=#1971c2;strokeWidth=2;fontColor=#1864ab;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="260" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="vr_f1" value="+ id: uuid [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;fontStyle=1;" vertex="1" parent="ent_video_run">
+          <mxGeometry y="30" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vr_f2" value="+ source_video_name: text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_video_run">
+          <mxGeometry y="60" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vr_f3" value="+ started_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_video_run">
+          <mxGeometry y="90" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vr_f4" value="+ completed_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_video_run">
+          <mxGeometry y="120" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vr_f5" value="+ processing_status: text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_video_run">
+          <mxGeometry y="150" width="260" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ENTITY 2: POTHOLE -->
+        <mxCell id="ent_pothole" value="&lt;b&gt;POTHOLE&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#ebfbee;strokeColor=#2b8a3e;strokeWidth=2;fontColor=#2b8a3e;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="280" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f1" value="+ id: uuid [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;fontStyle=1;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="30" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f2" value="+ location: geometry(Point, 4326) [GIST]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#2b8a3e;fontStyle=1;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="60" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f3" value="+ aggregated_confidence: float [BTREE]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="90" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f4" value="+ observation_count: integer" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="120" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f5" value="+ status: text [BTREE]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="150" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f6" value="+ first_detected_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="180" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p_f7" value="+ last_detected_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_pothole">
+          <mxGeometry y="210" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ENTITY 3: DETECTION -->
+        <mxCell id="ent_detection" value="&lt;b&gt;DETECTION&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff4e6;strokeColor=#d9480f;strokeWidth=2;fontColor=#d9480f;" vertex="1" parent="1">
+          <mxGeometry x="500" y="270" width="300" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f1" value="+ id: uuid [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;fontStyle=1;" vertex="1" parent="ent_detection">
+          <mxGeometry y="30" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f2" value="+ video_run_id: uuid [FK, BTREE]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1864ab;fontStyle=2;" vertex="1" parent="ent_detection">
+          <mxGeometry y="60" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f3" value="+ pothole_id: uuid [FK, BTREE]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#2b8a3e;fontStyle=2;" vertex="1" parent="ent_detection">
+          <mxGeometry y="90" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f4" value="+ model_confidence: float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_detection">
+          <mxGeometry y="120" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f5" value="+ detected_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_detection">
+          <mxGeometry y="150" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f6" value="+ frame_index: integer" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_detection">
+          <mxGeometry y="180" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_f7" value="+ observed_location: geometry(Point, 4326)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_detection">
+          <mxGeometry y="210" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ENTITY 4: EVIDENCE_IMAGE -->
+        <mxCell id="ent_evidence_image" value="&lt;b&gt;EVIDENCE_IMAGE&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#f3f0ff;strokeColor=#6741d9;strokeWidth=2;fontColor=#6741d9;" vertex="1" parent="1">
+          <mxGeometry x="960" y="440" width="280" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_f1" value="+ id: uuid [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;fontStyle=1;" vertex="1" parent="ent_evidence_image">
+          <mxGeometry y="30" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_f2" value="+ detection_id: uuid [FK, BTREE]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#d9480f;fontStyle=2;" vertex="1" parent="ent_evidence_image">
+          <mxGeometry y="60" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_f3" value="+ storage_path: text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_evidence_image">
+          <mxGeometry y="90" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ei_f4" value="+ created_at: timestamptz" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#212529;" vertex="1" parent="ent_evidence_image">
+          <mxGeometry y="120" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONSHIPS WITH CROW'S FOOT CARDINALITY -->
+        <!-- VIDEO_RUN (1) -> (0..N) DETECTION -->
+        <mxCell id="rel_run_det" value="produces" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#1971c2;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;" edge="1" parent="1" source="ent_video_run" target="ent_detection">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- POTHOLE (1) -> (0..N) DETECTION -->
+        <mxCell id="rel_pothole_det" value="groups" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#2b8a3e;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;" edge="1" parent="1" source="ent_pothole" target="ent_detection">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- DETECTION (1) -> (0..N) EVIDENCE_IMAGE -->
+        <mxCell id="rel_det_image" value="has" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#6741d9;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;" edge="1" parent="1" source="ent_detection" target="ent_evidence_image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
