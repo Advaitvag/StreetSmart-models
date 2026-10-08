@@ -49,3 +49,16 @@ runs/benchmark_three/
 /pothole_yolov8_best.pt
 /.directory
 /docs
+
+# --- Go backend (StreetSmart) ---
+/bin/
+/dist/
+backend/bin/
+backend/dist/
+.env
+.env.*
+*.onnx
+*.dll
+.idea/
+.vscode/
+Thumbs.db
