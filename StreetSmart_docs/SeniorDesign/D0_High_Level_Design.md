@@ -1,3 +1,14 @@
+---
+type: deliverable
+date: 2026-10-02
+version: "1.0"
+aliases:
+  - D0
+  - High-Level Design
+tags:
+  - senior-design
+  - design
+---
 # StreetSmart — High-Level System Design (Design D0)
 
 **Team Members:** Advait Vagerwal, Sahil Thakare, Raihan Rafeek  
@@ -43,68 +54,47 @@ The table below specifies the graphical syntax and visual semantics utilized acr
 The D0 Block Diagram provides the highest-level structural view of the StreetSmart platform. It illustrates all seven internal major components, three external systems/dependencies, and the ten formal interfaces connecting them.
 
 ```mermaid
-flowchart LR
-    A[Training Data]
-    B[Model Training]
-    C[("Trained Model")]
-
-    A -->|I1| B
-    B -->|I2| C
-```
-
-```mermaid
 flowchart TD
-
-    %% =========================
-    %% RUNTIME INPUTS
-    %% =========================
-
+    %% Inputs
+    TRAINDATA[/Training Data/]
     VIDEO[/Vehicle Camera Footage/]
     GPS[/GPS Data/]
 
-    %% =========================
-    %% STREETSMART COMPONENTS
-    %% =========================
-
+    %% StreetSmart components
+    TRAINING["Model Training"]
     MODEL[("Trained Model")]
-
     INFERENCE["Model Inference"]
-
     INGESTION["Ingestion Pipeline"]
-
     DATABASE[("PG Database")]
-
     API["Backend API"]
-
     MAP["Current Infrastructure Map"]
 
-    %% =========================
-    %% EXTERNAL SYSTEM
-    %% =========================
-
+    %% External system
     CITY("City Systems")
 
-    %% =========================
-    %% TRAINING FLOW
-    %% =========================
-
+    %% Training flow
+    TRAINDATA -->|I1: Labeled Data| TRAINING
+    TRAINING -->|I2: Model Export| MODEL
     MODEL -->|I3: Model| INFERENCE
 
-    %% =========================
-    %% RUNTIME FLOW
-    %% =========================
-
+    %% Runtime flow
     VIDEO -->|I4: Video| INFERENCE
     GPS -->|I5: Location| INGESTION
-
     INFERENCE -->|I6: Damage Detection| INGESTION
     INGESTION -->|I7: Damage + Location| DATABASE
-
     DATABASE -->|I8: Infrastructure Records| API
-
     API -->|I9: Current Infrastructure Data| MAP
-
     API -.->|I10: System Integration| CITY
+
+    classDef internal fill:#e7f5ff,stroke:#1971c2,color:#1a1a1a
+    classDef external fill:#fff4e6,stroke:#d9480f,stroke-dasharray:5 5,color:#1a1a1a
+    classDef storage fill:#ebfbee,stroke:#2b8a3e,color:#1a1a1a
+    classDef io fill:#f3f0ff,stroke:#6741d9,color:#1a1a1a
+
+    class TRAINING,INFERENCE,INGESTION,API,MAP internal
+    class CITY external
+    class MODEL,DATABASE storage
+    class TRAINDATA,VIDEO,GPS io
 ```
 
 ### Component Overview
@@ -262,6 +252,15 @@ flowchart LR
 
     A -->|"Labeled images + annotations<br/>[raw dataset]"| B
     B -->|"Trained model artifact<br/>[production artifact]"| C
+
+    classDef internal fill:#e7f5ff,stroke:#1971c2,color:#1a1a1a
+    classDef external fill:#fff4e6,stroke:#d9480f,stroke-dasharray:5 5,color:#1a1a1a
+    classDef storage fill:#ebfbee,stroke:#2b8a3e,color:#1a1a1a
+    classDef io fill:#f3f0ff,stroke:#6741d9,color:#1a1a1a
+
+    class B internal
+    class C storage
+    class A io
 ```
 
 ## Flow 2: Runtime Ingestion, Detection, Storage, and Geospatial Visualization Flow
@@ -295,8 +294,18 @@ flowchart TD
     API -->|"Map markers<br/>[map pin]"| MAP
     API -.->|"RFC 7946 GeoJSON<br/>[export file]"| CITY
 
-    style S_IN fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4
-    style S_OUT fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4
+    style S_IN fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4,color:#1a1a1a
+    style S_OUT fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,stroke-dasharray: 4 4,color:#1a1a1a
+
+    classDef internal fill:#e7f5ff,stroke:#1971c2,color:#1a1a1a
+    classDef external fill:#fff4e6,stroke:#d9480f,stroke-dasharray:5 5,color:#1a1a1a
+    classDef storage fill:#ebfbee,stroke:#2b8a3e,color:#1a1a1a
+    classDef io fill:#f3f0ff,stroke:#6741d9,color:#1a1a1a
+
+    class INFER,INGEST,API,MAP internal
+    class CITY external
+    class DB storage
+    class CAM,GPS io
 ```
 
 ### Detailed Stage-by-Stage Walkthrough
@@ -327,11 +336,7 @@ flowchart TD
 
 StreetSmart employs a hybrid architecture combining three classical patterns from the Week 5 syllabus:
 
-1. **Pipeline Architecture Pattern:** Governs the end-to-end data ingestion and computer vision processing flow. Data transitions unidirectionally through sequential, decoupled stages: Video Frame Decoding $
-ightarrow$ ONNX Computer Vision Inference $
-ightarrow$ GPS Spatial Correlation $
-ightarrow$ PII Privacy Redaction $
-ightarrow$ Database Persistence. Each stage operates with strict interface boundaries, ensuring processing errors in one stage (such as a dropped video frame) do not crash downstream stages.
+1. **Pipeline Architecture Pattern:** Governs the end-to-end data ingestion and computer vision processing flow. Data transitions unidirectionally through sequential, decoupled stages: Video Frame Decoding → ONNX Computer Vision Inference → GPS Spatial Correlation → PII Privacy Redaction → Database Persistence. Each stage operates with strict interface boundaries, ensuring processing errors in one stage (such as a dropped video frame) do not crash downstream stages.
 2. **Client-Server Architecture Pattern:** Governs user interaction and external system interoperability. The Current Infrastructure Map acts as a lightweight client running in municipal staff web browsers, while the Backend API operates as the central server exposing HTTPS endpoints. Client applications never connect directly to the database, enforcing security boundaries and query validation.
 3. **Layered / Microservice Architecture Pattern:** Governs internal system structuring by strictly separating the Presentation Layer (React Web Dashboard), Application/API Service Layer (FastAPI REST Service), Persistence Layer (PostgreSQL with PostGIS), and Compute Worker Layer (Inference Engine). Separating the computationally heavy inference engine from the web API prevents deep learning processing from monopolizing web server threads.
 
@@ -346,7 +351,8 @@ The pipeline pattern directly matches the physical and temporal reality of munic
 The architectural separation maps directly to the team's defined roles and technical competencies:
 * **Advait Vagerwal** focuses on machine learning architectures, training pipelines, and ONNX model optimization.
 * **Raihan Rafeek** manages the backend API services, PostgreSQL/PostGIS database design, and inference runtime orchestration.
-* **Sahil Thakare** develops the user-facing web map dashboard, UI/UX design, and the GPS ingestion/redaction validation pipeline.  
+* **Sahil Thakare** develops the user-facing web map dashboard, UI/UX design, and the GPS ingestion/redaction validation pipeline.
+
 Because the components interact via well-defined REST and IPC contracts, team members can build, test, and mock their respective subsystems in parallel without blocking one another.
 
 ### 3. Performance and Timing
@@ -403,7 +409,7 @@ The decision log records pivotal architectural and engineering decisions made du
   1. *Real-Time Edge Inference:* Deploy embedded computing modules (e.g., NVIDIA Jetson Orin Nano, Raspberry Pi with Coral TPU) inside municipal patrol vehicles to perform real-time frame inference as the vehicle drives.
   2. *Live Cellular Video Streaming:* Stream live 1080p video from vehicles over 4G/5G LTE networks to a cloud server for immediate cloud inference.
   3. *Asynchronous Post-Drive Batch Ingestion (Chosen):* Log video and GPS tracks to local onboard storage (SD card/SSD) and ingest footage via an automated batch pipeline when vehicles return to the depot or connect to Wi-Fi.
-* **Evaluation & Rationale (Why Chosen Option Won):** Real-time edge hardware significantly increases per-vehicle deployment costs ($800–$1,500 per vehicle), introduces thermal and power management challenges in municipal vehicles, and risks hardware failure from road vibration. Cellular streaming of 1080p video is economically infeasible due to recurring cellular data bandwidth expenses ($$$/GB). In contrast, municipal road repairs operate on 24- to 72-hour work order cycles; potholes do not disappear over a few hours. Asynchronous batch processing fully satisfies municipal operational needs, easily achieves the timing budget of processing 60 minutes of video in under 20 minutes (**AC-01.1**), and allows the team to utilize existing workstation/server GPU compute without vehicle hardware modifications.
+* **Evaluation & Rationale (Why Chosen Option Won):** Real-time edge hardware significantly increases per-vehicle deployment costs (\$800–\$1,500 per vehicle), introduces thermal and power management challenges in municipal vehicles, and risks hardware failure from road vibration. Cellular streaming of 1080p video is economically infeasible due to recurring cellular data bandwidth expenses (\$\$\$/GB). In contrast, municipal road repairs operate on 24- to 72-hour work order cycles; potholes do not disappear over a few hours. Asynchronous batch processing fully satisfies municipal operational needs, easily achieves the timing budget of processing 60 minutes of video in under 20 minutes (**AC-01.1**), and allows the team to utilize existing workstation/server GPU compute without vehicle hardware modifications.
 * **Traceability:** Aligns with Economic Constraints, Hardware Constraints, and **US-01**.
 
 ---

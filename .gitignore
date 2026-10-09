@@ -31,7 +31,7 @@ runs/.night_sweep_summary_sent
 
 # --- papers / archives ---
 *.pdf
-!SeniorDesign/**/*.pdf
+!StreetSmart_docs/**/*.pdf
 *.zip
 
 # --- heavy RF-DETR checkpoints (only best_* is kept, see models/) ---
@@ -50,3 +50,13 @@ runs/benchmark_three/
 /pothole_yolov8_best.pt
 /.directory
 /docs
+
+# --- Obsidian: per-user state (shared settings in .obsidian/ are tracked) ---
+StreetSmart_docs/.obsidian/workspace*.json
+StreetSmart_docs/.obsidian/graph.json
+StreetSmart_docs/.obsidian/themes/
+StreetSmart_docs/.obsidian/cache
+StreetSmart_docs/.trash/
+# community plugin code is installed per user; only its settings (data.json) are shared
+StreetSmart_docs/.obsidian/plugins/*/*
+!StreetSmart_docs/.obsidian/plugins/*/data.json

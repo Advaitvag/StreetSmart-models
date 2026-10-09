@@ -1,3 +1,14 @@
+---
+type: deliverable
+date: 2026-10-08
+version: "1.0"
+aliases:
+  - D1
+  - Detailed Design
+tags:
+  - senior-design
+  - design
+---
 # StreetSmart: Detailed Design (D1)
 
 **Team Members:** Advait Vagerwal, Sahil Thakare, Raihan Rafeek

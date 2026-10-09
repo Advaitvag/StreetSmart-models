@@ -1,3 +1,11 @@
+---
+type: deliverable
+aliases:
+  - Constraints Essay
+tags:
+  - senior-design
+  - constraints
+---
 # StreetSmart Constraints
 
 **Team Members:** Advait Vagerwal, Sahil Thakare, Raihan Rafeek
