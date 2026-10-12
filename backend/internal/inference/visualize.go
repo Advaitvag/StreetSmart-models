@@ -9,14 +9,17 @@ import (
 	"os"
 )
 
-// SaveVisualization draws a bounding box and confidence label onto an image
+type Prediction struct {
+	X, Y, W, H float32
+	Score      float32
+	Index      int
+}
+
 func SaveVisualization(
 	imagePath string,
 	outputPath string,
-	x, y, w, h float32,
-	confidence float32,
+	predictions []Prediction,
 ) error {
-	// Open and decode original image
 	file, err := os.Open(imagePath)
 	if err != nil {
 		return err
@@ -28,36 +31,49 @@ func SaveVisualization(
 		return err
 	}
 
-	// Make a writeable copy of input image
 	bounds := img.Bounds()
 	canvas := image.NewRGBA(bounds)
 	draw.Draw(canvas, bounds, img, bounds.Min, draw.Src)
 
-	// Inperpret x and y as the box center
-	left := int(x - w/2)
-	top := int(y - h/2)
-	right := int(x + w/2)
-	bottom := int(y + h/2)
-
-	// Use red to make the box easy to spot
-	red := color.RGBA{R: 255, G: 0, B: 0, A: 255}
-
-	// Draw rectangle w 3 pixel border
-	for t := 0; t < 3; t++ {
-		for px := left; px <= right; px++ {
-			setPixel(canvas, px, top+t, red)
-			setPixel(canvas, px, bottom-t, red)
-		}
-		for py := top; py <= bottom; py++ {
-			setPixel(canvas, left+t, py, red)
-			setPixel(canvas, right-t, py, red)
-		}
+	// Cycle through colors so overlapping boxes are easier to distinguish.
+	colors := []color.RGBA{
+		{R: 255, G: 0, B: 0, A: 255},
+		{R: 0, G: 255, B: 0, A: 255},
+		{R: 0, G: 100, B: 255, A: 255},
+		{R: 255, G: 165, B: 0, A: 255},
+		{R: 255, G: 0, B: 255, A: 255},
 	}
 
-	// Save annotated image as JPEG
+	for i, p := range predictions {
+		c := colors[i%len(colors)]
+
+		// Treat x and y as the box center.
+		left := int(p.X - p.W/2)
+		top := int(p.Y - p.H/2)
+		right := int(p.X + p.W/2)
+		bottom := int(p.Y + p.H/2)
+
+		// Draw a 3-pixel border.
+		for t := 0; t < 3; t++ {
+			for px := left; px <= right; px++ {
+				setPixel(canvas, px, top+t, c)
+				setPixel(canvas, px, bottom-t, c)
+			}
+			for py := top; py <= bottom; py++ {
+				setPixel(canvas, left+t, py, c)
+				setPixel(canvas, right-t, py, c)
+			}
+		}
+
+		fmt.Printf(
+			"Box %d: index=%d score=%.4f\n",
+			i+1, p.Index, p.Score,
+		)
+	}
+
 	out, err := os.Create(outputPath)
 	if err != nil {
-		return nil
+		return err
 	}
 	defer out.Close()
 

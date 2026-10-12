@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sort"
 
 	ort "github.com/yalue/onnxruntime_go"
 
@@ -57,31 +58,41 @@ func main() {
 
 	const numCandidates = 8400
 
-	// Find the candidate with the highest value in the fifth output plane.
 	scores := predictions[4*numCandidates : 5*numCandidates]
 
-	bestIndex := 0
-	maxScore := float32(0)
-
-	for i, score := range scores {
-		if score > maxScore {
-			maxScore = score
-			bestIndex = i
-		}
+	indices := make([]int, len(scores))
+	for i := range indices {
+		indices[i] = i
 	}
 
-	// Read the four corresponding values from their separate output planes.
-	x := predictions[bestIndex]
-	y := predictions[numCandidates+bestIndex]
-	w := predictions[2*numCandidates+bestIndex]
-	h := predictions[3*numCandidates+bestIndex]
+	sort.Slice(indices, func(i, j int) bool {
+		return scores[indices[i]] > scores[indices[j]]
+	})
 
-	// Draw the candidate box on a copy of the input image.
+	limit := 10
+	if len(indices) < limit {
+		limit = len(indices)
+	}
+
+	topPredictions := make([]inference.Prediction, 0, limit)
+
+	for rank := 0; rank < limit; rank++ {
+		i := indices[rank]
+
+		topPredictions = append(topPredictions, inference.Prediction{
+			X:     predictions[i],
+			Y:     predictions[numCandidates+i],
+			W:     predictions[2*numCandidates+i],
+			H:     predictions[3*numCandidates+i],
+			Score: scores[i],
+			Index: i,
+		})
+	}
+
 	err = inference.SaveVisualization(
 		"test_inputs/pothole.jpg",
-		"test_inputs/pothole-detection.jpg",
-		x, y, w, h,
-		maxScore,
+		"test_inputs/pothole-top10.jpg",
+		topPredictions,
 	)
 	if err != nil {
 		log.Fatal("Failed to save visualization: ", err)
