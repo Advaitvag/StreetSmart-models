@@ -7,6 +7,8 @@ import (
 	"runtime"
 
 	ort "github.com/yalue/onnxruntime_go"
+
+	"streetsmart-backend/internal/inference"
 )
 
 func libPath() string {
@@ -35,4 +37,12 @@ func main() {
 	defer ort.DestroyEnvironment()
 
 	fmt.Println("ONNX Runtime initialized successfully!")
+
+	detector, err := inference.NewDetector("models/pothole.onnx")
+	if err != nil {
+		log.Fatal("Failed to load detector: ", err)
+	}
+	defer detector.Close()
+
+	fmt.Println("Pothole detector loaded successfully")
 }

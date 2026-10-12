@@ -99,3 +99,20 @@ func NewDetector(modelPath string) (*Detector, error) {
 		outputs: []*ort.Tensor[float32]{output, output80, output40, output20},
 	}, nil
 }
+
+// Destructor function
+func (d *Detector) Close() {
+	if d.session != nil {
+		d.session.Destroy()
+	}
+
+	if d.input != nil {
+		d.input.Destroy()
+	}
+
+	for _, output := range d.outputs {
+		if output != nil {
+			output.Destroy()
+		}
+	}
+}
