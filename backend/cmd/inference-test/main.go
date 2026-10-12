@@ -55,6 +55,38 @@ func main() {
 		log.Fatal("Inference failed: ", err)
 	}
 
+	const numCandidates = 8400
+
+	// Find the candidate with the highest value in the fifth output plane.
+	scores := predictions[4*numCandidates : 5*numCandidates]
+
+	bestIndex := 0
+	maxScore := float32(0)
+
+	for i, score := range scores {
+		if score > maxScore {
+			maxScore = score
+			bestIndex = i
+		}
+	}
+
+	// Read the four corresponding values from their separate output planes.
+	x := predictions[bestIndex]
+	y := predictions[numCandidates+bestIndex]
+	w := predictions[2*numCandidates+bestIndex]
+	h := predictions[3*numCandidates+bestIndex]
+
+	// Draw the candidate box on a copy of the input image.
+	err = inference.SaveVisualization(
+		"test_inputs/pothole.jpg",
+		"test_inputs/pothole-detection.jpg",
+		x, y, w, h,
+		maxScore,
+	)
+	if err != nil {
+		log.Fatal("Failed to save visualization: ", err)
+	}
+
 	fmt.Printf("Inference succeeded! Received %d values.\n", len(predictions))
 	fmt.Printf("First 10 values: %v\n", predictions[:10])
 }
