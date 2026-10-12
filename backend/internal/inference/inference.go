@@ -116,3 +116,16 @@ func (d *Detector) Close() {
 		}
 	}
 }
+
+// Run executes inference using the input tensor's current contents
+func (d *Detector) Run() ([]float32, error) {
+	// Run the model with the input and output tensors attached to
+	// session object
+	if err := d.session.Run(); err != nil {
+		return nil, err
+	}
+
+	// Return raw values from model's primary output tensor
+	// Probably the only head we'll need for now
+	return d.outputs[0].GetData(), nil
+}

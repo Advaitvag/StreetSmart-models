@@ -45,4 +45,12 @@ func main() {
 	defer detector.Close()
 
 	fmt.Println("Pothole detector loaded successfully")
+
+	predictions, err := detector.Run()
+	if err != nil {
+		log.Fatal("Inference failed: ", err)
+	}
+
+	fmt.Printf("Inference succeeded! Received %d values.\n", len(predictions))
+	fmt.Printf("First 10 values: %v\n", predictions[:10])
 }
