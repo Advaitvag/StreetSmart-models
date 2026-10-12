@@ -46,6 +46,10 @@ func main() {
 
 	fmt.Println("Pothole detector loaded successfully")
 
+	if err := detector.LoadImage("test_inputs/pothole.jpg"); err != nil {
+		log.Fatal("Failed to load image: ", err)
+	}
+
 	predictions, err := detector.Run()
 	if err != nil {
 		log.Fatal("Inference failed: ", err)
