@@ -1,0 +1,21 @@
+/* PDF export fixes for Mermaid diagrams (only applies when printing/exporting). */
+@media print {
+  /* keep each diagram on one page instead of splitting it */
+  .mermaid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    text-align: center;
+  }
+
+  /* shrink wide/tall diagrams to fit inside the page margins */
+  .mermaid svg {
+    max-width: 100% !important;
+    max-height: 8.5in !important;
+    height: auto !important;
+  }
+
+  /* labels are measured with the screen font; don't clip them if the print font is wider */
+  .mermaid foreignObject {
+    overflow: visible !important;
+  }
+}

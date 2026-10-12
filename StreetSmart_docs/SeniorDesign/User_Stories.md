@@ -1,3 +1,13 @@
+---
+type: deliverable
+aliases:
+  - User Stories
+  - Assignment 4
+tags:
+  - senior-design
+  - requirements
+---
+
 # Assignment 4 - User Stories and Use Cases
 
 ## Team Members

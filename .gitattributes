@@ -11,3 +11,10 @@
 
 # TensorBoard event files.
 events.out.tfevents.* filter=lfs diff=lfs merge=lfs -text
+
+# Docs: normalize line endings so Windows and Linux edits don't show as whole-file diffs.
+*.md      text eol=lf
+*.drawio  text eol=lf
+*.base    text eol=lf
+*.canvas  text eol=lf
+StreetSmart_docs/.obsidian/*.json text eol=lf

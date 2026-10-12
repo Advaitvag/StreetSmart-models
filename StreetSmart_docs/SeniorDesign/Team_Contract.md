@@ -1,3 +1,13 @@
+---
+type: deliverable
+version: "0.1"
+aliases:
+  - Team Contract
+tags:
+  - senior-design
+  - contract
+---
+
 # Senior Design Team Contract
 
 **Project:** StreetSmart

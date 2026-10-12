@@ -1,0 +1,18 @@
+{
+  "useMarkdownLinks": true,
+  "newLinkFormat": "relative",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "attachments",
+  "newFileLocation": "current",
+  "showUnsupportedFiles": true,
+  "userIgnoreFilters": [
+    "Templates/"
+  ],
+  "propertiesInDocument": "visible",
+  "pdfExportSettings": {
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  }
+}
