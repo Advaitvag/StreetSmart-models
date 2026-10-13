@@ -51,6 +51,20 @@ runs/benchmark_three/
 /.directory
 /docs
 
+# --- Go backend (StreetSmart) ---
+/bin/
+/dist/
+backend/bin/
+backend/dist/
+.env
+.env.*
+*.onnx
+*.dll
+*.so
+*.so.*
+.idea/
+.vscode/
+Thumbs.db
 # --- Obsidian: per-user state (shared settings in .obsidian/ are tracked) ---
 StreetSmart_docs/.obsidian/workspace*.json
 StreetSmart_docs/.obsidian/graph.json
