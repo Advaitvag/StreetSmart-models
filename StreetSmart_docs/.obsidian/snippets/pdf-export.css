@@ -1,4 +1,4 @@
-/* PDF export fixes for Mermaid diagrams (only applies when printing/exporting). */
+/* PDF export fixes for Mermaid diagrams and tables (only applies when printing/exporting). */
 @media print {
   /* keep each diagram on one page instead of splitting it */
   .mermaid {
@@ -17,5 +17,48 @@
   /* labels are measured with the screen font; don't clip them if the print font is wider */
   .mermaid foreignObject {
     overflow: visible !important;
+  }
+
+  /* tables: fit the page width and wrap long cells instead of clipping them */
+  .table-wrapper,
+  .el-table {
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  .markdown-rendered table,
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+  }
+
+  .markdown-rendered th,
+  .markdown-rendered td,
+  th,
+  td {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    vertical-align: top;
+    padding: 3px 5px !important;
+  }
+
+  /* inline code (e.g. `COMPLETED_WITH_WARNINGS`, long signatures) must wrap too */
+  .markdown-rendered td code,
+  .markdown-rendered th code,
+  td code,
+  th code {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  /* don't split a single row across two pages */
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

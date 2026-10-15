@@ -10,6 +10,7 @@
   ],
   "propertiesInDocument": "visible",
   "pdfExportSettings": {
+    "includeName": false,
     "pageSize": "Letter",
     "landscape": false,
     "margin": "0",
