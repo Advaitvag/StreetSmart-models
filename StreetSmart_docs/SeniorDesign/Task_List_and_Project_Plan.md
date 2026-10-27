@@ -43,7 +43,7 @@ tags:
 
 # 1. Task List (Assignment #5)
 
-There are 24 tasks, eight per member. Each takes one to two weeks of working time (5 to 10 working days). T08 and T09 pause for the holiday freeze. We have eight each rather than five for two reasons. The plan covers the rest of Fall, winter break, and all of Spring. And each open design gap from D2 is its own task. The same list is saved as `Tasklist.md` in the root of the team repository (`sahilt19/StreetSmart`).
+There are 24 tasks, eight per member. Each takes one to two weeks of working time (5 to 10 working days). T08 and T09 pause for the holiday freeze. We have eight each rather than five for two reasons. The plan covers the rest of Fall, winter break, and all of Spring. And each open design gap from D2 is its own task. The same list is saved as `Tasklist.md` in the root of the team repository (`Advaitvag/StreetSmart-models`).
 
 Each task is one statement ending with its owner. The points under it give the module, the scope, and how we will know it is done.
 
@@ -240,7 +240,7 @@ Each task is one statement ending with its owner. The points under it give the m
 - Scope: Model Inference through the Current Infrastructure Map.
 - Requirements checked: AC-01.1, AC-01.2, AC-02.1, AC-02.2, US-04, NFR-PRIV-01, and NFR-REL-01.
 - For each requirement, record pass, fail, or an accepted gap with its reason.
-- Publish the test report. It also feeds the final course report (C14).
+- Publish the test report. It also feeds the final course report (C19).
 - Done when: the other two members and the advisor have reviewed the report.
 
 ---
@@ -254,7 +254,7 @@ A milestone is a dated outcome we can check, not a task. `✅` marks completed i
 | ID  | Milestone                                         | Date                   | What it demonstrates                                                                                              | How it is verified                                               | Verified by                              | Status     |
 | --- | ------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- | ---------- |
 | C1 | Topic statement, team bios, and reflective essays | Week 2, ~Sep 4, 2026 | The StreetSmart project topic, a short bio for each member, and each member's individual reflective essay | Submitted and graded | Instructor | ✅ Complete |
-| C2 | Team Formation and Project Description (Assignment 2) | Sep 9, 2026 | Team StreetSmart formed, with our row in the shared Fall 2026 Senior Design Team Table (team name, members and majors, topic area). The team repository, `sahilt19/StreetSmart` (created Sep 2), holds `Project-Description.md` with the team name, members' majors and UC emails, and the topic area "Using Computer Vision to solve civic issues for the City of Cincinnati", plus a `bios/` folder for the Assignment 1 professional bios | Spreadsheet row filled in; the same entries submitted as text on Canvas and graded | Instructor | ✅ Complete |
+| C2 | Team Formation and Project Description (Assignment 2) | Sep 9, 2026 | Team StreetSmart formed, with our row in the shared Fall 2026 Senior Design Team Table (team name, members and majors, topic area). The team repository, `Advaitvag/StreetSmart-models` (created Sep 2), holds `Project-Description.md` with the team name, members' majors and UC emails, and the topic area "Using Computer Vision to solve civic issues for the City of Cincinnati", plus a `bios/` folder for the Assignment 1 professional bios | Spreadsheet row filled in; the same entries submitted as text on Canvas and graded | Instructor | ✅ Complete |
 | C3 | Advisor selection and Constraints Essay           | Week 3, ~Sep 11, 2026 | Eric Jamison confirmed as advisor. The economic, security, ethical, and professional constraints that shape the design | Submitted and graded                                         | Instructor                               | ✅ Complete |
 | C4 | Team Contract                                     | Sep 17, 2026           | Agreed roles, communication, decision-making, and conflict-resolution rules                                       | Signed by all three members; submitted and graded                | Instructor                               | ✅ Complete |
 | C5 | User Stories and Use Cases (Assignment 4)         | ~Sep 25, 2026         | US-01 to US-05, UC-01 and UC-02, and AC-01.1 to AC-02.2 with an INVEST check                                      | Submitted and graded                                             | Instructor                               | ✅ Complete |
@@ -266,14 +266,21 @@ A milestone is a dated outcome we can check, not a task. `✅` marks completed i
 
 ## 2.2 Remaining course deliverables
 
-| ID  | Milestone                                                          | Date                  | What it demonstrates                                                  | How it is verified                                            | Verified by         | Status                                            |
-| --- | ------------------------------------------------------------------ | --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------- | ------------------------------------------------- |
-| C11 | Task List, Milestones, Timeline, and Effort Matrix (this document) | Wed Oct 28, 2026      | A plan with owners, dates, buffer, and risks, built from the design   | PDF submitted; `Tasklist.md` committed to the repository root | Instructor, advisor | Planned                                           |
-| C12 | Oral design presentation | Week 13 or 14: Wed Nov 18 or Wed Nov 25, 2026 | The team explains and defends the problem, the D0 to D2 design, and this plan out loud, and shows progress so far: M1, plus M2 for a Week 14 slot | Delivered in class and graded (15% of the course grade) | Instructor | Planned (the instructor assigns the slot) |
-| C13 | Design report, design notebook, and team assessment (the Week 14 report) | Week 14, Wed Nov 25, 2026 | The full fall design in one report, with progress against Tables 1 and 2: M1 and M2 reached, T01 to T07 status. Each member's dated design notebook. The team's assessment of each member's contribution. | Submitted and graded (15% of the course grade). The report reproduces Tables 1 and 2 with actual dates and hours. Table 2 is the record the syllabus names for adjusting individual grades. | Instructor, advisor | Planned |
-| C14 | CS 5002 final report, demonstration, and showcase                  | Apr 19–23, 2027       | The finished prototype and its test results                           | Live demo plus the T24 test report                            | Instructor, advisor | Planned (dates to be set by the CS 5002 calendar) |
+C11 to C18 are the remaining CS 5001 assignments (Assignments 8 to 15). Each is due at 11:59 pm on the date shown and is worth 100 points.
 
-C12 and C13 come from the Week 1 course roadmap and grading table. The roadmap puts oral presentations in Weeks 13 and 14, and the semester wrap-up in Week 14. Weeks 10 to 12 (test and validation planning, ethics and responsible use, technical communication) are lecture topics with no separate graded deliverable, so they have no milestone. The grading table has no separate progress report, so the Week 14 report that reproduces Tables 1 and 2 is the design report (C13). Work on C12 and C13 comes out of the 3 hours per person per week reserved for course reports (§0), so it is not in Table 2.
+| ID  | Milestone                                                                        | Date             | Verified by            | Status                                            |
+| --- | -------------------------------------------------------------------------------- | ---------------- | ---------------------- | ------------------------------------------------- |
+| C11 | Task List, Milestones, Timeline, and Effort Matrix (Assignment 8, this document) | Wed Oct 28, 2026 | Instructor, advisor    | In progress                                       |
+| C12 | Requirements Document and Technical Specification Document (Assignment 9)        | Fri Oct 30, 2026 | Instructor             | Planned                                           |
+| C13 | Test and Validation Plan Draft (Assignment 10)                                   | Wed Nov 4, 2026  | Instructor             | Planned                                           |
+| C14 | Ethics and Responsible-Use Statement (Assignment 11)                             | Wed Nov 11, 2026 | Instructor             | Planned                                           |
+| C15 | Presentation Draft and Documented Advisor Feedback (Assignment 12)               | Wed Nov 18, 2026 | Instructor, advisor    | Planned                                           |
+| C16 | Team Oral Presentation, Recorded Video, and Peer Reviews (Assignment 13)         | Wed Nov 18, 2026 | Instructor, peer teams | Planned                                           |
+| C17 | Design Report, Design Notebook, and Team and Self Assessment (Assignment 14)     | Wed Dec 2, 2026  | Instructor, advisor    | Planned                                           |
+| C18 | Project Advisor Assessments (Assignment 15)                                      | Tue Dec 8, 2026  | Eric Jamison (advisor) | Planned                                           |
+| C19 | CS 5002 final report, demonstration, and showcase                                | Apr 19–23, 2027  | Instructor, advisor    | Planned (dates to be set by the CS 5002 calendar) |
+
+Work on C11 to C18 comes out of the 3 hours per person per week reserved for course reports (§0), so it is not in Table 2.
 
 ## 2.3 Internal milestones (every one to three weeks)
 
@@ -288,7 +295,7 @@ Major milestones are in **bold** and have a protected block before them.
 | M5      | Ingestion complete          | Fri Jan 8, 2027      | `RecordDetection` merges repeat sightings. The local buffer survives a database outage. A cancelled run resumes from its checkpoint.                 | Integration test stops the database mid-run, then checks for no lost and no duplicate `DETECTION` rows.                                                                               | Advait                                                     |
 | M6      | API serves real data        | Fri Jan 22, 2027     | Bounding-box query, pothole detail, and GeoJSON export return real Supabase data.                                                                    | Responses pass an RFC 7946 validator. Invalid bounding boxes return RFC 7807 400 errors.                                                                                              | Sahil                                                      |
 | **M7**  | **Alpha: video to map**     | **Fri Feb 5, 2027**  | Field-drive video and GPS go in, and potholes appear on the Current Infrastructure Map in a browser. A failed run sends one operator alert.          | Live demo on T11 field data at the advisor meeting.                                                                                                                                   | Eric Jamison (advisor)                                     |
-| M8      | Secured staging deployment  | Fri Feb 19, 2027     | CI builds and deploys Docker images. Map login uses JWT and export uses an API key. The retrained model passes the release gate.                     | Negative tests: a missing token returns 401, the wrong role returns 403, and a revoked key is rejected. CI shows a green run.                                                         | Advait (authentication, CI), Sahil (retrained model) |
+| M8      | Secured staging deployment  | Fri Feb 19, 2027     | CI builds and deploys Docker images. Map login uses JWT and export uses an API key. A retrained model that passes the release gate is published, or the stable model is kept and the reason is recorded. | Negative tests: a missing token returns 401, the wrong role returns 403, and a revoked key is rejected. CI shows a green run. The T18 outcome (new model and manifest, or recorded reason) is in Trained Model Storage or the meeting notes.                                                       | Advait (authentication, CI), Sahil (retrained model) |
 | **M9**  | **Beta: feature complete**  | **Fri Mar 12, 2027** | AC-02.1, AC-02.2, and NFR-PERF-01 measured. Accessibility audit done. Geolocation thresholds locked. Unresolved-location list behaves as documented. | Test report reviewed at the advisor meeting. Failures are logged as GitHub Issues with owners.                                                                                        | Eric Jamison (advisor)                                     |
 | M10     | Release candidate           | Fri Apr 2, 2027      | End-to-end validation against every Must requirement. User guide and runbook done. Database matching rules final.                                    | T24 report: each requirement passes or has a documented, accepted gap.                                                                                                                | All three members, cross-checked                           |
 | **M11** | **Final system frozen**     | **Fri Apr 16, 2027** | The tagged release is demo-ready and documented.                                                                                                     | Clean install from the runbook on a fresh machine. Advisor sign-off.                                                                                                                  | Eric Jamison (advisor)                                     |
@@ -319,12 +326,13 @@ The geolocation chain (T04 → T07 → T09 → T14, with T11) finishes on Jan 29
 | T06 | Develop the privacy filter in the Ingestion Pipeline | Advait | Nov 9 | Nov 18 | 2 d (20%) | Nov 20 | T01 | | R3 |
 | T07 | Develop the video and GPS clock-offset check | Sahil | Nov 16 | Nov 20 | 1 d (17%) | Nov 23 | T04 | | R1 |
 | **M2** | **Detections are geotagged** | | | | | **Nov 20** | T04, T05 | | |
-| **C12** | **Oral design presentation (Week 13 or 14; slot set by the instructor)** | | | | | **Nov 18 or Nov 25** | M1 (and M2 for a Week 14 slot) | | |
-| **C13** | **Design report, design notebook, and team assessment (Week 14 report)** | | | | | **Nov 25** | M1, M2 | | |
+| **C15, C16** | **Presentation draft with advisor feedback; team oral presentation, video, and peer reviews** | | | | | **Nov 18** | M1 | | |
 | — | Thanksgiving (no planned work) | All | Nov 26 | | | Nov 27 | | | R6 |
 | — | **Protected block before M3** (integration, slip recovery) | All | Nov 30 | | 5 d | Dec 4 | | | |
+| **C17** | **Design report, design notebook, and team and self assessment** | | | | | **Dec 2** | M1, M2 | | |
 | **M3** | **Fall vertical slice** | | | | | **Dec 4** | T04, T05, T06, T07 | | |
 | — | Fall finals (no planned work) | All | Dec 7 | | | Dec 11 | | | R6 |
+| **C18** | **Project advisor assessments** | | | | | **Dec 8** | C17 | | |
 | T08 | Develop `RecordDetection` (confidence, matching, lock, duplicate check) | Raihan | Dec 14 | Dec 23 | 2 d (20%) | Jan 5 | T02 | ★ | R5 |
 | T09 | Develop run orchestration in the Ingestion Pipeline | Sahil | Dec 14 | Dec 23 | 2 d (20%) | Jan 5 | T02, T04, T07 | | |
 | T10 | Test Model Inference throughput and publish the time budget | Advait | Dec 14 | Dec 17 | 1 d (20%) | Dec 18 | T05, T06 | | R2 |
@@ -355,7 +363,7 @@ The geolocation chain (T04 → T07 → T09 → T14, with T11) finishes on Jan 29
 | **M10** | **Release candidate** | | | | | **Apr 2** | T22, T23, T24 | | |
 | — | **Protected block before M11** (two weeks: defect fixes only) | All | Apr 5 | | 10 d | Apr 16 | | | |
 | **M11** | **Final system frozen** | | | | | **Apr 16** | M10 | ★ | |
-| **C14** | **CS 5002 final report and showcase** | | | | | **Apr 19–23** | M11 | | |
+| **C19** | **CS 5002 final report and showcase** | | | | | **Apr 19–23** | M11 | | |
 
 ![Figure 1. Gantt view of Table 1](Design_Diagrams/Plan_Gantt.svg)
 
