@@ -1,7 +1,7 @@
 ---
 type: deliverable
-date: 2026-10-26
-version: "0.2"
+date: 2026-10-28
+version: "1.0"
 aliases:
   - Task List
   - Project Plan
@@ -17,8 +17,8 @@ tags:
 **Course:** CS 5001 – Computer Science Senior Design
 **Advisor:** Eric Jamison
 **Assignment:** Assignment 8 – Task Lists (Assignment #5) and Milestones, Timeline, and Effort Matrix (Assignment #6)
-**Document Version:** Draft 0.2
-**Date:** October 26, 2026
+**Document Version:** 1.0
+**Date:** October 28, 2026
 
 ---
 
@@ -240,7 +240,7 @@ Each task is one statement ending with its owner. The points under it give the m
 - Scope: Model Inference through the Current Infrastructure Map.
 - Requirements checked: AC-01.1, AC-01.2, AC-02.1, AC-02.2, US-04, NFR-PRIV-01, and NFR-REL-01.
 - For each requirement, record pass, fail, or an accepted gap with its reason.
-- Publish the test report. It also feeds the final course report (C11).
+- Publish the test report. It also feeds the final course report (C13).
 - Done when: the other two members and the advisor have reviewed the report.
 
 ---
@@ -254,23 +254,25 @@ A milestone is a dated outcome we can check, not a task. `✅` marks completed i
 | ID  | Milestone                                         | Date                   | What it demonstrates                                                                                              | How it is verified                                               | Verified by                              | Status     |
 | --- | ------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- | ---------- |
 | C1  | Team Contract                                     | Sep 17, 2026           | Agreed roles, communication, decision-making, and conflict-resolution rules                                       | Signed by all three members; submitted and graded                | Instructor                               | ✅ Complete |
-| C2  | Constraints Essay                                 | Week 3, ~Sep 11, 2026 | The economic, security, ethical, and professional constraints that shape the design                               | Submitted and graded                                             | Instructor                               | ✅ Complete |
-| C3  | User Stories and Use Cases (Assignment 4)         | ~Sep 25, 2026         | US-01 to US-05, UC-01 and UC-02, and AC-01.1 to AC-02.2 with an INVEST check                                      | Submitted and graded                                             | Instructor                               | ✅ Complete |
-| C4  | D0 High-Level Design                              | ~Oct 2, 2026          | Seven components, interfaces I1 to I10, the data-flow diagram, and five architecture decisions                    | Submitted and graded                                             | Instructor, advisor                      | ✅ Complete |
-| C5  | D1 Detailed Design                                | Oct 8, 2026            | ERD, the weighted-confidence and spatial-matching algorithms, the API contract, and technology choices            | Submitted and graded                                             | Instructor, advisor                      | ✅ Complete |
-| C6  | Baseline prototype artifacts                      | Oct 13, 2026           | Trained YOLO weights (held-out mAP50-95 0.567), the Go/Gin ONNX inference scaffold, and the Android capture app   | PR #2 merged after one-member review; held-out scores in `runs/` | Raihan (reviewed PR #2), Advait (scores) | ✅ Complete |
-| C7  | D2 Detailed Design and peer review (Assignment 7) | Oct 14, 2026           | Data model, behavior, interfaces, and errors for every component; edge-case register; 12 peer-review action items | Draft 1.4 submitted; reviewed by Teams Znerv and Pulse           | Instructor, peer teams                   | ✅ Complete |
-| C8  | Requirements traceability matrix (Week 9)         | Week 9, ~Oct 23, 2026 | Each requirement traced to design elements, and each component traced back to a requirement                       | D2 §4.1 and §4.2                                                 | Instructor                               | ✅ Complete |
+| C2  | Team Formation and Project Description | Sep 9, 2026      | Team name, members with majors, and project topic area entered as our row of the shared Fall 2026 Senior Design Team Table. The team repository holds each member's professional bio (Assignment 1) and `Project-Description.md` with the team name, members' majors and emails, and topic area | Spreadsheet row filled in; the same entries submitted as text on Canvas and graded | Instructor                               | ✅ Complete |
+| C3  | Advisor selection and Constraints Essay           | Week 3, ~Sep 11, 2026 | Eric Jamison confirmed as advisor. The economic, security, ethical, and professional constraints that shape the design | Submitted and graded                                         | Instructor                               | ✅ Complete |
+| C4  | User Stories and Use Cases (Assignment 4)         | ~Sep 25, 2026         | US-01 to US-05, UC-01 and UC-02, and AC-01.1 to AC-02.2 with an INVEST check                                      | Submitted and graded                                             | Instructor                               | ✅ Complete |
+| C5  | D0 High-Level Design                              | ~Oct 2, 2026          | Seven components, interfaces I1 to I10, the data-flow diagram, and five architecture decisions                    | Submitted and graded                                             | Instructor, advisor                      | ✅ Complete |
+| C6  | D1 Detailed Design                                | Oct 8, 2026            | ERD, the weighted-confidence and spatial-matching algorithms, the API contract, and technology choices            | Submitted and graded                                             | Instructor, advisor                      | ✅ Complete |
+| C7  | Baseline prototype artifacts                      | Oct 13, 2026           | Trained YOLO weights (held-out mAP50-95 0.567), the Go/Gin ONNX inference scaffold, and the Android capture app   | PR #2 merged after one-member review; held-out scores in `runs/` | Raihan (reviewed PR #2), Advait (scores) | ✅ Complete |
+| C8  | D2 Detailed Design and peer review (Assignment 7) | Oct 14, 2026           | Data model, behavior, interfaces, and errors for every component; edge-case register; 12 peer-review action items | Draft 1.4 submitted; reviewed by Teams Znerv and Pulse           | Instructor, peer teams                   | ✅ Complete |
+| C9  | Requirements traceability matrix (Week 9)         | Week 9, ~Oct 23, 2026 | Each requirement traced to design elements, and each component traced back to a requirement                       | D2 §4.1 and §4.2                                                 | Instructor                               | ✅ Complete |
 
 ## 2.2 Remaining course deliverables
 
 | ID  | Milestone                                                          | Date                  | What it demonstrates                                                  | How it is verified                                            | Verified by         | Status                                            |
 | --- | ------------------------------------------------------------------ | --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------- | ------------------------------------------------- |
-| C9  | Task List, Milestones, Timeline, and Effort Matrix (this document) | Fri Oct 30, 2026      | A plan with owners, dates, buffer, and risks, built from the design   | PDF submitted; `Tasklist.md` committed to the repository root | Instructor, advisor | Planned                                           |
-| C10 | Week 14 progress report                                            | Week 14, Nov 25, 2026 | Progress against Tables 1 and 2: M1 and M2 reached, T01 to T07 status | Report reproduces Tables 1 and 2 with actual dates and hours  | Instructor, advisor | Planned                                           |
-| C11 | CS 5002 final report, demonstration, and showcase                  | Apr 19–23, 2027       | The finished prototype and its test results                           | Live demo plus the T24 test report                            | Instructor, advisor | Planned (dates to be set by the CS 5002 calendar) |
+| C10 | Task List, Milestones, Timeline, and Effort Matrix (this document) | Wed Oct 28, 2026      | A plan with owners, dates, buffer, and risks, built from the design   | PDF submitted; `Tasklist.md` committed to the repository root | Instructor, advisor | Planned                                           |
+| C11 | Oral design presentation | Week 13 or 14: Wed Nov 18 or Wed Nov 25, 2026 | The team explains and defends the problem, the D0 to D2 design, and this plan out loud, and shows progress so far: M1, plus M2 for a Week 14 slot | Delivered in class and graded (15% of the course grade) | Instructor | Planned (the instructor assigns the slot) |
+| C12 | Design report, design notebook, and team assessment (the Week 14 report) | Week 14, Wed Nov 25, 2026 | The full fall design in one report, with progress against Tables 1 and 2: M1 and M2 reached, T01 to T07 status. Each member's dated design notebook. The team's assessment of each member's contribution. | Submitted and graded (15% of the course grade). The report reproduces Tables 1 and 2 with actual dates and hours. Table 2 is the record the syllabus names for adjusting individual grades. | Instructor, advisor | Planned |
+| C13 | CS 5002 final report, demonstration, and showcase                  | Apr 19–23, 2027       | The finished prototype and its test results                           | Live demo plus the T24 test report                            | Instructor, advisor | Planned (dates to be set by the CS 5002 calendar) |
 
-> **TODO:** Check the Week 1 course deliverable calendar for any other CS 5001 deliverables due between Week 10 and Week 14 (for example, a design presentation, a final design report, or a peer/self evaluation), and add each one here as a dated milestone with what it demonstrates, how it is verified, and by whom. If any are added, also add a matching milestone row to Table 1.
+C11 and C12 come from the Week 1 course roadmap and grading table. The roadmap puts oral presentations in Weeks 13 and 14, and the semester wrap-up in Week 14. Weeks 10 to 12 (test and validation planning, ethics and responsible use, technical communication) are lecture topics with no separate graded deliverable, so they have no milestone. The grading table has no separate progress report, so the Week 14 report that reproduces Tables 1 and 2 is the design report (C12). Work on C11 and C12 comes out of the 3 hours per person per week reserved for course reports (§0), so it is not in Table 2.
 
 ## 2.3 Internal milestones (every one to three weeks)
 
@@ -298,9 +300,11 @@ The gap from M3 (Dec 4) to M4 (Dec 18) includes fall finals week, which has no p
 
 **Columns.** "Work ends" is the planned finish without buffer. "Buffer" is the slack days at the end of the task and their share of its duration. "Finish" is the committed completion date. **★** marks the critical path. "Risks" links to the register in §6. All dates are 2026 for Oct to Dec and 2027 for Jan to Apr.
 
-**Critical path:** T02 → T08 → T12 → T16 → T19 → T24 → M11. The only float on this path is the task buffers and the protected blocks before M7 and M9. The geolocation chain (T04 → T07 → T09 → T14, with T11) finishes on Jan 29, about seven weeks before T24 needs it. We keep that float on purpose, so there is time for a second field drive if R1 or R7 is triggered.
+**Critical path:** T02 → T08 → T12 → T16 → T19 → T24 → M11. It is the longest chain of dependent tasks, at 62 working days with buffers. From T16 onward, the only slack is the task buffers and the protected blocks before M9 and M11. Earlier on the path there are two gaps, and both are real float:
+- **T02 → T08: 13 working days (Nov 9–25).** T08 waits for Raihan, who owns both tasks, to finish T05 on Nov 20. Thanksgiving, the protected block before M3, and finals follow. T02 could finish as late as Nov 25 without moving T08, but any slip past Nov 6 still misses M1.
+- **T12 → T16: 5 working days (Jan 25–29).** T16 cannot start earlier: Sahil, who owns it, is on T13 until Jan 29, and Feb 1–5 is the protected block before M7. T12 could finish as late as Jan 29 without moving T16, but any slip past Jan 22 misses M6 and leaves T13 less time on the real API.
 
-> **TODO:** The claim above that the critical path has no float besides task buffers and protected blocks is not accurate. T12 finishes Jan 22, but T16 does not start until Feb 8, and Jan 25–29 is not a protected block, so there is about one extra week of float between T12 and T16. Either start T16 earlier (for example, Jan 25) so the path is truly tight, or reword this paragraph to state the extra week of float between T12 and T16 explicitly.
+The geolocation chain (T04 → T07 → T09 → T14, with T11) finishes on Jan 29, about seven weeks before T24 needs it. We keep that float on purpose, so there is time for a second field drive if R1 or R7 is triggered.
 
 | ID | Task (short form; full statement in §1) | Owner | Start | Work ends | Buffer | Finish | Depends on | CP | Risks |
 |---|---|---|---|---|---|---|---|---|---|
@@ -313,6 +317,8 @@ The gap from M3 (Dec 4) to M4 (Dec 18) includes fall finals week, which has no p
 | T06 | Develop the privacy filter in the Ingestion Pipeline | Advait | Nov 9 | Nov 20 | 2 d (17%) | Nov 24 | T01 | | R3 |
 | T07 | Develop the video and GPS clock-offset check | Sahil | Nov 16 | Nov 20 | 1 d (17%) | Nov 23 | T04 | | R1 |
 | **M2** | **Detections are geotagged** | | | | | **Nov 20** | T04, T05 | | |
+| **C11** | **Oral design presentation (Week 13 or 14; slot set by the instructor)** | | | | | **Nov 18 or Nov 25** | M1 (and M2 for a Week 14 slot) | | |
+| **C12** | **Design report, design notebook, and team assessment (Week 14 report)** | | | | | **Nov 25** | M1, M2 | | |
 | — | Thanksgiving (no planned work) | All | Nov 26 | | | Nov 27 | | | R6 |
 | — | **Protected block before M3** (integration, slip recovery) | All | Nov 30 | | 5 d | Dec 4 | | | |
 | **M3** | **Fall vertical slice** | | | | | **Dec 4** | T04, T05, T06, T07 | | |
@@ -347,7 +353,11 @@ The gap from M3 (Dec 4) to M4 (Dec 18) includes fall finals week, which has no p
 | **M10** | **Release candidate** | | | | | **Apr 2** | T22, T23, T24 | | |
 | — | **Protected block before M11** (two weeks: defect fixes only) | All | Apr 5 | | 10 d | Apr 16 | | | |
 | **M11** | **Final system frozen** | | | | | **Apr 16** | M10 | ★ | |
-| **C11** | **CS 5002 final report and showcase** | | | | | **Apr 19–23** | M11 | | |
+| **C13** | **CS 5002 final report and showcase** | | | | | **Apr 19–23** | M11 | | |
+
+![Figure 1. Gantt view of Table 1](Design_Diagrams/Plan_Gantt.svg)
+
+**Figure 1. Gantt view of Table 1.** Bars are colored by owner, and the lighter end of each bar is its buffer. Outlined bars (★) are the critical path. Dashed lines are milestones, bold for the major ones. Gray bands are the no-work windows and the protected blocks. The figure is drawn from Table 1 by `Design_Diagrams/plan_gantt.py`, so it changes only when the table does.
 
 **How the main risks show up in the timeline.**
 - **R1 (geolocation accuracy).** The clock-offset check (T07) is in place before the fall demo. We collect real drive data (T11) before classes start, and leave six weeks between T14 and M9. That gap leaves time for a second drive if the first data is poor.
