@@ -65,7 +65,8 @@ def load_plan():
         cells = [c.strip() for c in rest.split("|")]
         tasks.append(dict(
             id=tid, name=short[tid], owner=cells[1], start=parse_date(cells[2]),
-            work_end=parse_date(cells[3]), finish=parse_date(cells[5]), critical="★" in cells[7],
+            work_end=parse_date(cells[3]), half_day="(noon)" in cells[3],
+            finish=parse_date(cells[5]), critical="★" in cells[7],
         ))
     milestones = [(mid, parse_date(d)) for mid, d in re.findall(
         r"^\| \*\*(M\d+)\*\* \|(?:[^|]*\|){5} \*\*([^*]+)\*\* \|", table1, re.M)]
@@ -133,12 +134,17 @@ def main():
     gap = 0.12  # ~2px surface gap between the work and buffer segments
     for i, t in enumerate(tasks):
         color = OWNER_COLOR[t["owner"]]
-        buffer_start = t["work_end"] + timedelta(1)
-        for a, b in segments(t["start"], t["work_end"]):
-            ax.add_patch(Rectangle((num(a), i - bar_h / 2), num(b) - num(a), bar_h,
+        buffer_start = t["work_end"] + timedelta(0 if t["half_day"] else 1)
+        work = [(num(a), num(b)) for a, b in segments(t["start"], t["work_end"])]
+        buffer = [(num(a), num(b)) for a, b in segments(buffer_start, t["finish"], from_start=True)]
+        if t["half_day"]:  # "Jan 21 (noon)": work stops at midday and the buffer takes the afternoon
+            work[-1] = (work[-1][0], work[-1][1] - 0.5)
+            buffer[0] = (buffer[0][0] + 0.5, buffer[0][1])
+        for a, b in work:
+            ax.add_patch(Rectangle((a, i - bar_h / 2), b - a, bar_h,
                                    facecolor=color, lw=0, zorder=3))
-        for a, b in segments(buffer_start, t["finish"], from_start=True):
-            ax.add_patch(Rectangle((num(a) + gap, i - bar_h / 2), num(b) - num(a) - gap, bar_h,
+        for a, b in buffer:
+            ax.add_patch(Rectangle((a + gap, i - bar_h / 2), b - a - gap, bar_h,
                                    facecolor=color, alpha=0.32, lw=0, zorder=3))
         if t["critical"]:
             ax.add_patch(Rectangle((num(t["start"]), i - bar_h / 2 - 0.08),
