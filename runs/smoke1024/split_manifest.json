@@ -1,0 +1,88 @@
+{
+  "built": "2026-10-20T03:14:03.718219+00:00",
+  "pool": "datasets/_upload_PotholesCombined",
+  "seed": 0,
+  "val_frac": 0.1,
+  "test_frac": 0.1,
+  "near_dup_threshold_bits_of_256": 22,
+  "pool_images": 16641,
+  "exact_duplicates_removed": 85,
+  "groups": 10581,
+  "largest_groups": [
+    420,
+    336,
+    260,
+    259,
+    258,
+    184,
+    155,
+    148,
+    144,
+    128
+  ],
+  "near_duplicate_pairs": 7089,
+  "cross_split_links": 0,
+  "cincinnati_matches": 0,
+  "totals": {
+    "train": 13228,
+    "val": 1671,
+    "test": 1657
+  },
+  "boxes": {
+    "train": 27026,
+    "val": 3297,
+    "test": 2821
+  },
+  "per_source": {
+    "BharatPotHole": {
+      "test": 411,
+      "train": 3289,
+      "val": 411
+    },
+    "CuratedRGB": {
+      "train": 261,
+      "val": 34,
+      "test": 33
+    },
+    "HRP4K": {
+      "train": 2157,
+      "test": 270,
+      "val": 270
+    },
+    "PData": {
+      "train": 782,
+      "test": 100,
+      "val": 114
+    },
+    "RDD": {
+      "train": 5072,
+      "val": 634,
+      "test": 634
+    },
+    "Roboflow-YOLOv8": {
+      "train": 240,
+      "val": 30,
+      "test": 30
+    },
+    "dataset-generic": {
+      "train": 1427,
+      "test": 179,
+      "val": 178
+    }
+  },
+  "label_fixes": {
+    "clipped": 639,
+    "polygon_to_box": 363,
+    "duplicate_dropped": 4,
+    "degenerate_dropped": 1
+  },
+  "test_unseen_by_night": 208,
+  "test_unseen_by_night_per_source": {
+    "RDD": 116,
+    "dataset-generic": 51,
+    "CuratedRGB": 1,
+    "Roboflow-YOLOv8": 2,
+    "HRP4K": 34,
+    "PData": 4
+  }
+}

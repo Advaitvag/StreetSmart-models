@@ -1,0 +1,2 @@
+timestamp,model,event,epoch,precision,recall,mAP50,mAP50-95,elapsed_s,exit
+2026-10-21T23:52:40-04:00,smoke1024,start,0,,,,,,

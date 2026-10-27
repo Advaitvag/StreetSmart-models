@@ -18,6 +18,7 @@ Train Ultralytics YOLO detectors on the combined pothole dataset. There are thre
 | `train.py` | One-off / experimental runs | `runs/<model>-<dataset>/` by default |
 | `scripts/night_train.sh` (+ systemd timers) | Unattended long runs that compare architectures | `runs/night-{yolo11s,yolo26s,yolo26m,yolo11m}/` |
 | `scripts/train_nocincinnati.sh` | Fine-tuning the night models on Cincinnati-free data | `runs/clean-{yolo26s,yolo26m}/` |
+| `scripts/train_clean.sh` | **Clean run**: fresh YOLO26m, 200 epochs, Cincinnati-free leak-free split, final test score | `runs/clean200-yolo26m/` |
 | `queue_yolo26s.sh`, `queue_yolo26m.sh` | *Legacy.* Inline `python -c` launchers that produced the 50-epoch runs in `runs/detect/runs/` | superseded by `train.py` |
 
 ## `train.py`
@@ -103,6 +104,40 @@ Same structure as the night script (notifications, metrics CSV, SIGINT checkpoin
 
 > [!warning] Don't trust these runs' logged val metrics
 > Their val split overlaps the night models' training data, so the logged mAP peaks at epoch 1 and then falls. Held-out evaluation shows these fine-tunes score slightly *below* their night starting points. See [[Models_and_Accuracy]].
+
+## Problems with the night and clean-v1 runs
+
+1. **Cincinnati in training and selection.** The night runs trained on `combined_dataset`, which has Cincinnati 311 images with ML-made labels in both train and val. So `best.pt` was also picked partly against those labels.
+2. **Leaky splits.** Augmented copies, clip frames and capture runs sit on both sides of every split (see [[Dataset_Builder]]). Logged val mAP is inflated and the `best.pt` pick is unreliable.
+3. **clean-v1 isn't clean.** `train_nocincinnati.sh` starts from night weights, which already saw Cincinnati and 954 of its val images.
+4. **The held-out eval set leaks too.** The recipe in [[Models_and_Accuracy]] removes only byte-identical images. 834 of its 1,548 images (54%) still have an augmented copy, a frame of the same clip or a near-duplicate in the training data.
+5. **Stops never checkpointed.** A background command of a non-interactive bash starts with SIGINT *ignored*, and Python keeps it ignored. The trap's `kill -INT` did nothing, so every stop ended in SIGKILL after `TimeoutStopSec`: 32 starts but only 22 end rows in `streetsmart_night_metrics.csv`, and repeated "stop signal" log lines. Resume still worked from the last epoch's `last.pt`, but the partial epoch was lost, and a kill during a save could corrupt `last.pt`.
+6. **Off-by-one "done".** `results.csv` epochs are 1-based, but `is_done` accepted `EPOCHS − 1`. A run stopped after epoch 299 of 300 counted as finished.
+
+## Clean run: `scripts/train_clean.sh`
+
+One model, one run, fixing all of the above:
+
+- Data: `datasets/clean_split` (built on first use by `scripts/build_clean_split.py`, see [[Dataset_Builder]]). Train for gradients, val for `best.pt` selection, test only for the final score.
+- Start: stock COCO `yolo26m.pt`, never a night checkpoint. `STREETSMART_INIT=scratch` uses `yolo26m.yaml` with random init instead.
+- 200 epochs, batch 8, 640 px, `patience=0`, seed 0. Otherwise Ultralytics defaults, as in the night runs.
+- No time window. Run it any time; re-running resumes from `last.pt`.
+- **Stopping works.** The Python child catches SIGINT/SIGTERM and stops at the next batch boundary, or right after `last.pt` is written if validation is running, so it never stops mid-save. It exits 130; run the script again to resume. A second Ctrl-C is harmless.
+- Done = 200 epochs **and** the test evaluation. Then `best.pt` is scored (conf 0.001, iou 0.7) on the test split, and on the unseen-by-night subset next to `runs/night-yolo26m/weights/best.pt`. The scores go to `runs/clean200-yolo26m/test_metrics.json` and a notification, and `.done` is written.
+- Logs: `runs/streetsmart_clean200-yolo26m.log`, `runs/streetsmart_clean200-yolo26m_metrics.csv`. The split manifest is copied into the run dir.
+
+| Env var | Default |
+| --- | --- |
+| `STREETSMART_MODEL` / `_INIT` | `yolo26m` / `pretrained` (`scratch` = random init) |
+| `STREETSMART_EPOCHS` / `_BATCH` / `_IMGSZ` | `200` / `8` / `640` |
+| `STREETSMART_NAME` | `clean200-<model>` |
+| `STREETSMART_DEVICE` / `_WORKERS` / `_FRACTION` | `0` / `8` / `1.0` (`<1` only for smoke tests) |
+| `STREETSMART_COMPARE` | `runs/night-yolo26m/weights/best.pt` |
+
+```bash
+nohup scripts/train_clean.sh >>runs/streetsmart_clean200.out 2>&1 &
+kill -INT <script pid>       # stop + checkpoint; run the script again to resume
+```
 
 ## Run history
 

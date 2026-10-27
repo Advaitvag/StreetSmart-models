@@ -66,6 +66,31 @@ Key details:
 > [!warning] The two splits are not compatible
 > Because `combined_dataset` was split by an older script, **954 of the clean val images are in `combined_dataset/train`**. Never evaluate a model trained on `combined_dataset` on the full clean val split. Use the held-out subset in [[Models_and_Accuracy]].
 
+> [!warning] Both splits leak near-identical images between train and val
+> `build_dataset.py` splits image by image, but most sources are not independent images:
+> - Roboflow exports (BharatPotHole, PothRGBD, CuratedRGB, Roboflow-YOLOv8, part of `dataset/`) hold **3 augmented copies of each photo** (`<name>_jpg.rf.<hash>.jpg`). In `_upload_PotholesCombined`, 612 val images have a copy in train.
+> - BharatPotHole is **frames of 85 dashcam clips** (1,342 originals × 3 copies); `dataset/` `G*.JPG` are GoPro sequences; PothRGBD captures are seconds apart.
+> - 24 label files mix polygon and box lines. Ultralytics then reads every line as a polygon, which turns the box lines into wrong boxes.
+>
+> `scripts/build_clean_split.py` fixes all three for training (below).
+
+## Leak-free split (`scripts/build_clean_split.py`)
+
+Re-splits `_upload_PotholesCombined` (both splits pooled) into `datasets/clean_split/{train,val,test}`, 80 / 10 / 10 per source. Whole **groups** go to one split. A group joins images that share file contents, a Roboflow original, a drive (BharatPotHole clips < 2 min apart, GoPro frames < 20 numbers apart, PothRGBD captures < 60 s apart) or a near-duplicate (256-bit dHash, flip-aware, distance ≤ 22; random road pairs are ≥ 43).
+
+- Images are relative symlinks into the pool. Labels are rewritten as clean boxes (polygons → boxes, clipped to [0, 1], degenerate and duplicate boxes dropped).
+- Refuses to build if any image is byte-identical to a file under `cincinnati/` or is named `SR*`.
+- Verifies no group link crosses splits, then writes `data.yaml` (absolute `path`, with `test:`) and `split_manifest.json` (counts, groups, label fixes).
+- Also writes `test_unseen_by_night.txt` / `data_unseen_by_night.yaml`: the test images whose whole group is absent from `combined_dataset/train`. Only on this subset can the night models be compared fairly with new runs.
+- Deterministic for a given pool and `--seed` (default 0). It needs numpy + Pillow, so run it with the venv.
+
+Build of 2026-10-19: 16,641 → 16,556 images (85 exact duplicates dropped) in 10,581 groups. Train 13,228 / val 1,671 / test 1,657. 208 test images are unseen by the night runs (116 RDD, 51 GoPro, 34 HRP4K, 7 other).
+
+```bash
+.venv/bin/python scripts/build_clean_split.py            # -> datasets/clean_split
+.venv/bin/python scripts/build_clean_split.py --force    # rebuild
+```
+
 ## Related
 
 - `docs/BUILDING_THE_DATASET.md`: full per-source credits and licenses

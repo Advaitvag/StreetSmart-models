@@ -1,0 +1,1 @@
+2026-10-21T23:52:40-04:00  [clean training: smoke1024] fresh yolo26m (pretrained) on clean_split | epoch 0/1   batch 4   imgsz 1024 | cos_lr=true scale=0.9 mixup=0.1

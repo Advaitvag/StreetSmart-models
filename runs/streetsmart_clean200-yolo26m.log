@@ -1,0 +1,13 @@
+2026-10-19T23:37:59-04:00  [clean training: clean200-yolo26m] fresh yolo26m (pretrained) on clean_split | epoch 0/200   batch 8
+2026-10-20T02:30:21-04:00  [clean training: clean200-yolo26m] resuming   epoch 11/200   batch 8 | precision 0.6160   recall 0.4586 | mAP50 0.4932   mAP50-95 0.2203
+2026-10-20T02:30:28-04:00  stop signal -> SIGINT clean200-yolo26m (218052), finishing current batch
+2026-10-20T02:30:57-04:00  [clean training: clean200-yolo26m ended] epoch 11 -> 11 / 200   (0h00m, exit 130) | precision   0.6160 -> 0.6160   (Δ +0.0000) | recall      0.4586 -> 0.4586   (Δ +0.0000) | mAP50       0.4932 -> 0.4932   (Δ +0.0000) | mAP50-95    0.2203 -> 0.2203   (Δ +0.0000)
+2026-10-20T02:30:57-04:00  clean200-yolo26m paused before 200 epochs — run again to resume
+2026-10-20T02:36:10-04:00  [clean training: clean200-yolo26m] resuming   epoch 11/200   batch 8 | precision 0.6160   recall 0.4586 | mAP50 0.4932   mAP50-95 0.2203
+2026-10-20T12:58:14-04:00  stop signal -> SIGINT clean200-yolo26m (219709), finishing current batch
+2026-10-20T12:58:17-04:00  [clean training: clean200-yolo26m ended] epoch 11 -> 100 / 200   (10h22m, exit 130) | precision   0.6160 -> 0.7384   (Δ +0.1224) | recall      0.4586 -> 0.5593   (Δ +0.1007) | mAP50       0.4932 -> 0.6138   (Δ +0.1206) | mAP50-95    0.2203 -> 0.3271   (Δ +0.1068)
+2026-10-20T12:58:17-04:00  clean200-yolo26m paused before 200 epochs — run again to resume
+2026-10-21T22:08:12-04:00  [clean training: clean200-yolo26m] resuming   epoch 100/200   batch 8 | precision 0.7384   recall 0.5593 | mAP50 0.6138   mAP50-95 0.3271
+2026-10-21T23:40:02-04:00  stop signal -> SIGINT clean200-yolo26m (702572), finishing current batch
+2026-10-21T23:40:05-04:00  [clean training: clean200-yolo26m ended] epoch 100 -> 116 / 200   (1h31m, exit 130) | precision   0.7384 -> 0.7171   (Δ -0.0213) | recall      0.5593 -> 0.5705   (Δ +0.0112) | mAP50       0.6138 -> 0.6139   (Δ +0.0001) | mAP50-95    0.3271 -> 0.3260   (Δ -0.0011)
+2026-10-21T23:40:05-04:00  clean200-yolo26m paused before 200 epochs — run again to resume

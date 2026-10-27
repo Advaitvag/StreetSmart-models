@@ -19,6 +19,9 @@ This note lists every trained model in the repo and gives the **official accurac
 > - **Cincinnati 311 images.** Their labels were produced by an ML model and may be inaccurate.
 > - **The `metrics/*` columns in any `results.csv`, and the end-of-sweep notifications.** Those were scored on validation splits that either contain Cincinnati images or overlap the training data (see [[#Why the logged numbers can't be reported]]).
 
+> [!warning] These held-out numbers are optimistic (found 2026-10-19)
+> The held-out set below removes only byte-identical training images. **834 of its 1,548 images (54%) still have an augmented Roboflow copy, a frame of the same dashcam clip or a near-duplicate in the training data** (see [[Training#Problems with the night and clean-v1 runs]]). Treat the figures as upper bounds. For a fair comparison, use `datasets/clean_split/data_unseen_by_night.yaml` (208 test images no night run saw, made by `scripts/build_clean_split.py`). New runs from `scripts/train_clean.sh` report on the leak-free `clean_split` test split in `test_metrics.json`.
+
 ## Headline result
 
 **Best model: `runs/night-yolo26m/weights/best.pt`**: YOLO26m, 300 epochs, ~20.4 M parameters (fused).
