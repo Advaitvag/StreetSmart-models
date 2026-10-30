@@ -178,8 +178,25 @@ CON rows are verified by inspection of the named design element, their TC entrie
 | Item | Record |
 | --- | --- |
 | Reviewer | Eric Jamison |
-| Date | Friday, October 30, 2026 (scheduled, draft sent beforehand) |
-| Discussed | Pending. To be filled in after the meeting with what was actually discussed. |
+| Date | Friday, October 30, 2026 |
+| Discussed | Preferred Design 1 (on-device processing on Community Responder vehicles rather than DPS initially); vehicle connectivity constraints (fire trucks have Wi-Fi, responder vehicle connectivity unknown; Wi-Fi + cellular with embedded SIM chip); storing videos in addition to detections (extracting raw video from existing fleet cameras will be difficult); initial human-in-the-loop review of pothole data; matching detections with 311 data; focus on building a working prototype with stakeholder willingness to procure hardware parts. |
 | Changes produced | Pending. Each change will be listed with the section edited and the new version number. |
 
 Items to bring: the matrix (§6), the NFR thresholds, and the MoSCoW lists from the Requirements Document, plus open items A-02, A-07, and A-08 there.
+
+## Advisor Review Notes
+
+- They basically like Design 1
+- Community responder vehicle
+  - Community responders would make more sense initially
+  - Community responders are more active than DPS
+- Wi-Fi enabled devices on fire trucks
+  - Don't know if there's connectivity on the vehicles. Oof.
+- Store videos as well
+  - Wi-Fi and cellular
+  - Embedded SIM chip
+- Initially someone checks the pothole data
+- Match w/ 311 data as well
+- Getting the video is gonna be hard
+- Prototype is what they need
+  - And willing to procure parts for us
