@@ -179,24 +179,16 @@ CON rows are verified by inspection of the named design element, their TC entrie
 | --- | --- |
 | Reviewer | Eric Jamison |
 | Date | Friday, October 30, 2026 |
-| Discussed | Preferred Design 1 (on-device processing on Community Responder vehicles rather than DPS initially); vehicle connectivity constraints (fire trucks have Wi-Fi, responder vehicle connectivity unknown; Wi-Fi + cellular with embedded SIM chip); storing videos in addition to detections (extracting raw video from existing fleet cameras will be difficult); initial human-in-the-loop review of pothole data; matching detections with 311 data; focus on building a working prototype with stakeholder willingness to procure hardware parts. |
+| Discussed | Architecture selection (preference for Design 1 on-device capture and detection); initial deployment on Community Responder vehicles rather than DPS trucks; vehicle network connectivity (Wi-Fi and cellular with embedded SIM); local and server-side video retention alongside detections; initial human-in-the-loop review and correlation with Cincinnati 311 records; focus on delivering a working prototype with stakeholder-funded hardware procurement. |
 | Changes produced | Pending. Each change will be listed with the section edited and the new version number. |
 
 Items to bring: the matrix (§6), the NFR thresholds, and the MoSCoW lists from the Requirements Document, plus open items A-02, A-07, and A-08 there.
 
-## Advisor Review Notes
+## 7.1 Advisor Review Summary
 
-- They basically like Design 1
-- Community responder vehicle
-  - Community responders would make more sense initially
-  - Community responders are more active than DPS
-- Wi-Fi enabled devices on fire trucks
-  - Don't know if there's connectivity on the vehicles. Oof.
-- Store videos as well
-  - Wi-Fi and cellular
-  - Embedded SIM chip
-- Initially someone checks the pothole data
-- Match w/ 311 data as well
-- Getting the video is gonna be hard
-- Prototype is what they need
-  - And willing to procure parts for us
+- **Architecture Selection (Design 1):** Stakeholders favored Design 1 (a dedicated on-device camera, compute, and GPS unit) because extracting raw video directly from existing municipal fleet camera systems poses significant operational difficulty.
+- **Target Fleet (Community Responder Vehicles):** Initial deployment will prioritize Community Responder vehicles over Department of Public Services (DPS) vehicles, as Community Responders operate more actively across city streets and offer higher coverage frequency.
+- **Vehicle Connectivity and Telemetry:** While fire trucks are equipped with Wi-Fi-enabled devices, existing network connectivity on Community Responder vehicles remains unconfirmed. To ensure reliable data offload, the prototype hardware should support both depot Wi-Fi and cellular connectivity via an embedded SIM (eSIM) module.
+- **Video and Detection Storage:** In addition to storing cropped evidence images and GPS coordinates, the system should retain full or segmented video recordings, given the difficulty of acquiring roadway footage from existing city camera systems.
+- **Verification and 311 Integration:** Initial operations will include a human-in-the-loop review step to validate pothole detections before downstream submission, and detected defects will be cross-referenced and matched against existing Cincinnati 311 service request data.
+- **Prototype Scope and Hardware Procurement:** Stakeholders emphasized that a working end-to-end prototype is the primary priority and confirmed their willingness to procure the necessary hardware components for the team.
