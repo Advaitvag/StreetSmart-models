@@ -9,6 +9,8 @@ Git-tracked documentation for StreetSmart. Open this folder (`StreetSmart_docs/`
 - [Constraints Essay](SeniorDesign/Constraints_Essay.md)
 - [D0: High-Level Design](SeniorDesign/D0_High_Level_Design.md)
 - [D1: Detailed Design](SeniorDesign/D1_Detailed_Design.md)
+- [D2: Detailed Design](SeniorDesign/D2_Detailed_Design.md)
+- [Ethics and Responsible-Use Statement](SeniorDesign/Ethics_Statement.md)
 - Diagrams (draw.io SVG): [D0 Block Diagram](SeniorDesign/Design_Diagrams/D0_Block_Diagram.svg), [D0 Data Flow Diagram](SeniorDesign/Design_Diagrams/D0_Data_Flow_Diagram.svg), [D1 Data Model ERD](SeniorDesign/Design_Diagrams/D1_Data_Model_ERD.svg)
 
 ## Meetings

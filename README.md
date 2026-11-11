@@ -84,9 +84,11 @@ and is excluded from the published dataset.
 | `pothrgbd-seg/` | `runs/pothrgbd_seg/` | YOLOv8n-seg | segment |
 | `rfdetr-base/` | `runs/rfdetr_base/` (best EMA checkpoint) | RF-DETR base | detect |
 
-## Licenses
+## Licenses & Ethics
 
-- Code: MIT (`LICENSE`).
+- Code: MIT ([`LICENSE`](LICENSE)).
+- Attribution & Notices: See formal third-party and academic credits in [`NOTICE`](NOTICE).
+- Ethics and Responsible-Use Statement: See full ABET Outcome 4 statement in [`Ethics_Statement.md`](Ethics_Statement.md).
 - Combined dataset: aggregate of independently-licensed sources — ODbL v1.0,
   CC BY 4.0, CC BY-SA 4.0 and MIT depending on the source; project-added files
   (split layout, `data.yaml`, manifests) under CC BY-SA 4.0. Full per-source

@@ -1,0 +1,82 @@
+StreetSmart
+Copyright (c) 2026 Advait Vagerwal, Sahil Thakare, Raihan Rafeek
+University of Cincinnati - CS 5001 Senior Design
+
+This product includes software developed by third parties, open-source libraries,
+and publicly available research datasets.
+
+========================================================================
+Third-Party Software Attribution
+========================================================================
+
+* PyTorch & Torchvision
+  Source: https://github.com/pytorch/pytorch
+  License: BSD-3-Clause
+
+* Microsoft ONNX Runtime & Go Wrapper (onnxruntime_go)
+  Source: https://github.com/microsoft/onnxruntime / https://github.com/yalue/onnxruntime_go
+  License: MIT
+
+* Ultralytics YOLO
+  Source: https://github.com/ultralytics/ultralytics
+  License: AGPL-3.0
+  Note: Used exclusively offline as a standalone training CLI (`train.py`). Architectural
+  isolation via MIT-licensed ONNX runtime guarantees no linking or network bundling
+  into client applications or the Go production backend.
+
+* Gin Web Framework
+  Source: https://github.com/gin-gonic/gin
+  License: MIT
+
+* MongoDB Official Go Driver
+  Source: https://github.com/mongodb/mongo-go-driver
+  License: Apache-2.0
+
+* MapLibre Native & Android SDK
+  Source: https://github.com/maplibre/maplibre-native
+  License: BSD-2-Clause
+
+* Jetpack Compose & AndroidX Libraries
+  Source: https://developer.android.com/jetpack
+  License: Apache-2.0
+
+* Hugging Face Hub Client
+  Source: https://github.com/huggingface/huggingface_hub
+  License: Apache-2.0
+
+========================================================================
+Dataset & Academic Attribution
+========================================================================
+
+* PothRGBD Dataset
+  Yurdakul, E., & Taşdemir, K. (2025). An Enhanced YOLOv8 Model for Real-Time
+  and Accurate Pothole Detection and Measurement. arXiv:2505.04207.
+  License: MIT
+
+* Road Damage Detection Challenge 2022 (RDD2022)
+  Arya, D., Maeda, H., Ghosh, S. K., Toshniwal, D., Mraz, A., Kashiyama, T., & Sekimoto, Y. (2022).
+  Crowdsensing-based Road Damage Detection Challenge 2022. IEEE Big Data.
+  Source: https://github.com/sekilab/RoadDamageDetector
+  License: CC BY-SA 4.0
+
+* Pothole Detection Dataset (Chitholian)
+  Chitholian, A. R. (2021). Pothole Detection Dataset. Roboflow Universe.
+  Source: https://universe.roboflow.com/chitholian/pothole-detection
+  License: Open Database License (ODbL v1.0)
+
+* Curated RGB Road Damage Dataset
+  Mendeley Data. A Curated RGB Dataset for Real-Time Road Damage Detection.
+  License: CC BY 4.0
+
+* BharatPotHole Dataset
+  BharatPotHole Contributors. Indian Roadway Pothole Detection Callset.
+  License: CC BY 4.0
+
+* Roboflow Potholes Detection (`project-ssayl`)
+  Roboflow Community. Potholes Detection Callset.
+  License: CC BY 4.0
+
+* City of Cincinnati 311 Service Requests
+  City of Cincinnati & Cincinnati Area Geographic Information System (CAGIS).
+  Used strictly for internal model ground-truth validation under municipal research guidelines.
+  Not redistributed.
