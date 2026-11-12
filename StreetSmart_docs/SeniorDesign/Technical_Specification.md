@@ -133,54 +133,54 @@ Interface IDs are based on the initial design from D0 with some revisions in D2 
 
 Status: **Designed** = specified in D0, D1, or D2, **In progress** = implementation or training has started, **Planned** = design detail still to be written. Test IDs are provisional until the Week 10 test plan confirms them. No row is ORPHANED.
 
-| Req ID | Description | Design Component (D0/D1/D2) | Status | Test Case |
+| Req ID | Description | Design Component (D0/D1/D2)                                                      | Status | Test Case |
 | ------ | ----------- | --------------------------- | ------ | --------- |
-| REQ-01 | Detect potholes, keep confidence ≥ 0.70 | Model Inference, `DetectionFilter` (D0 I4, I6, D2 §2.5, E-10) | In progress | TC-01 |
-| REQ-02 | Interpolate GPS location within 2 s | Ingestion Pipeline, `GpsSynchronizer` (D0 I5, D2 §1.4 #3, §2.6) | Designed | TC-02 |
-| REQ-03 | Flag `LOCATION_UNRESOLVED`, log in 3 s, never store | Ingestion Pipeline (D0 I5, D1 §3.2, D2 §2.6, E-17) | Designed | TC-03 |
+| REQ-01 | Detect potholes, keep confidence ≥ 0.70 | Model Inference, `DetectionFilter` (D0 I4, I6, D2 §2.5, E-10)                    | In progress | TC-01 |
+| REQ-02 | Interpolate GPS location within 2 s | Ingestion Pipeline, `GpsSynchronizer` (D0 I5, D2 §1.4 #3, §2.6)                  | Designed | TC-02 |
+| REQ-03 | Flag `LOCATION_UNRESOLVED`, log in 3 s, never store | Ingestion Pipeline (D0 I5, D1 §3.2, D2 §2.6, E-17)                               | Designed | TC-03 |
 | REQ-04 | Blur faces and plates before upload | Ingestion privacy step (D0 Decision 5, D2 §2.6, E-15, E-20, D1 `EVIDENCE_IMAGE`) | Designed | TC-04 |
-| REQ-05 | Merge within 5.0 m, `NEEDS_REVIEW` when ambiguous | Database `RecordDetection` (D1 §3.2, D2 §2.8, E-21) | Designed | TC-05 |
-| REQ-06 | Aggregated confidence formula | `internal/scoring` (D1 §3.1, D2 §2.8) | Designed | TC-06 |
-| REQ-07 | Map query endpoint | Backend API (D0 I8, I9, D1 §5.1, D2 §2.9) | Designed | TC-07 |
-| REQ-08 | Pothole detail endpoint | Backend API (D1 §5.1, D2 §2.9) | Designed | TC-08 |
-| REQ-09 | GeoJSON export | Backend API (D0 I10, Decision 4, D2 §2.9) | Designed | TC-09 |
-| REQ-10 | Reject invalid query with 400 | `SpatialQueryValidator`, `ProblemDetails` (D2 §2.9, E-25, E-26) | Designed | TC-10 |
-| REQ-11 | Map display, clusters, filters, record panel | Current Infrastructure Map (D0 I9, D2 §2.7) | Designed | TC-11 |
-| REQ-12 | Run lifecycle and resume | `RunController` (D2 Fig. 2.2, §2.6, E-12, PR-11) | Designed | TC-12 |
-| REQ-13 | Reject runs whose clocks do not overlap | Ingestion Pipeline clock check (D2 §1.4 #3, PR-03, extends `GpsSynchronizer`) | Planned | TC-13 |
-| REQ-14 | One alert per failed run | Notifications (D2 §1.4 #11, E-46 to E-49, section pending, T15) | Planned | TC-14 |
-| REQ-15 | Unresolved list in run summary | Ingestion unresolved list (D2 §2.6, PR-09) | Planned | TC-15 |
-| REQ-16 | Log each export | Backend API, logging (D2 §2.9, §2.12) | Designed | TC-16 |
-| REQ-17 | Signed, expiring image URLs | Backend API, Supabase Storage (D1 §5.3, D2 §2.9) | Designed | TC-17 |
-| NFR-01 | 60 min of video in 1,200 s | Model Inference and Ingestion (D0 §5, D2 §2.5, budget in T10) | Designed | TC-18 |
-| NFR-02 | Export 500 in 5.0 s, reject in 1.0 s | Backend API, GiST index (D1 §2.4, D2 §2.9) | Designed | TC-19 |
-| NFR-03 | Viewport query in 2.0 s | API, request-sequence control (D0 §5, D2 §2.7, E-35) | Designed | TC-20 |
-| NFR-04 | Held-out mAP@0.5 > 0.75 | Model Training and Storage (D2 §2.3, §2.4, E-51) | In progress | TC-21 |
-| NFR-05 | Median location error ≤ 5 m | `GpsSynchronizer`, forward projection (D2 PR-02, T14) | Planned | TC-22 |
-| NFR-06 | Authenticated, role-checked endpoints | `AuthenticateAndAuthorize` (D2 §2.10, E-30 to E-33) | Designed | TC-23 |
-| NFR-07 | Redaction ≥ 95% find rate, none skipped | Privacy step, log sanitizer (D2 §2.6, §2.12, E-44) | Designed | TC-24 |
-| NFR-08 | 4 of 5 users complete task in 60 s | Current Infrastructure Map (D2 §2.7) | Planned | TC-25 |
-| NFR-09 | WCAG 2.1 AA, keyboard, not color alone | Current Infrastructure Map (D0 §6, D2 §2.7 steps 7, 8) | Designed | TC-26 |
-| NFR-10 | No duplicate detections or potholes | Unique key, area lock, transaction (D1 §3.1, D2 §2.8, E-18, E-19, E-22) | Designed | TC-27 |
-| NFR-11 | No record lost in a database outage | Local buffer and replay (D0 I7, D2 §2.6 step 8, E-24) | Designed | TC-28 |
-| NFR-12 | Versioned API paths | `/api/v1` prefix (D1 §5.4, D2 §2.13) | Designed | TC-29 |
-| CON-01 | Economic | Batch design (D0 Decision 1), sampling setting (D2 §2.11) | Designed | TC-30 |
-| CON-02 | Security | Auth and privacy design (D0 Decision 5, D2 §2.10, §2.6) | Designed | TC-31 |
-| CON-03 | Ethical | Confidence and matching (D1 §3.1, §3.2) | Designed | TC-32 |
-| CON-04 | Professional | Build-versus-reuse table (D1 §4) | Designed | TC-33 |
-| CON-05 | Coverage/cost trade-off | Sampling rate setting (D2 §2.5, §2.11, T10) | Planned | TC-34 |
-| CON-06 | Hosting | Docker and Supabase (D1 §6.5, D0 §6) | Designed | TC-35 |
+| REQ-05 | Merge within 5.0 m, `NEEDS_REVIEW` when ambiguous | Database `RecordDetection` (D1 §3.2, D2 §2.8, E-21)                              | Designed | TC-05 |
+| REQ-06 | Aggregated confidence formula | `internal/scoring` (D1 §3.1, D2 §2.8)                                            | Designed | TC-06 |
+| REQ-07 | Map query endpoint | Backend API (D0 I8, I9, D1 §5.1, D2 §2.9)                                        | Designed | TC-07 |
+| REQ-08 | Pothole detail endpoint | Backend API (D1 §5.1, D2 §2.9)                                                   | Designed | TC-08 |
+| REQ-09 | GeoJSON export | Backend API (D0 I10, Decision 4, D2 §2.9)                                        | Designed | TC-09 |
+| REQ-10 | Reject invalid query with 400 | `SpatialQueryValidator`, `ProblemDetails` (D2 §2.9, E-25, E-26)                  | Designed | TC-10 |
+| REQ-11 | Map display, clusters, filters, record panel | Current Infrastructure Map (D0 I9, D2 §2.7)                                      | Designed | TC-11 |
+| REQ-12 | Run lifecycle and resume | `RunController` (D2 Fig. 2.2, §2.6, E-12, PR-11)                                 | Designed | TC-12 |
+| REQ-13 | Reject runs whose clocks do not overlap | Ingestion Pipeline clock check (D2 §1.4 #3, PR-03, extends `GpsSynchronizer`)    | Planned | TC-13 |
+| REQ-14 | One alert per failed run | Notifications (D2 §1.4 #11, E-46 to E-49, T15)                                   | Planned | TC-14 |
+| REQ-15 | Unresolved list in run summary | Ingestion unresolved list (D2 §2.6, PR-09)                                       | Planned | TC-15 |
+| REQ-16 | Log each export | Backend API, logging (D2 §2.9, §2.12)                                            | Designed | TC-16 |
+| REQ-17 | Signed, expiring image URLs | Backend API, Supabase Storage (D1 §5.3, D2 §2.9)                                 | Designed | TC-17 |
+| NFR-01 | 60 min of video in 1,200 s | Model Inference and Ingestion (D0 §5, D2 §2.5, budget in T10)                    | Designed | TC-18 |
+| NFR-02 | Export 500 in 5.0 s, reject in 1.0 s | Backend API, GiST index (D1 §2.4, D2 §2.9)                                       | Designed | TC-19 |
+| NFR-03 | Viewport query in 2.0 s | API, request-sequence control (D0 §5, D2 §2.7, E-35)                             | Designed | TC-20 |
+| NFR-04 | Held-out mAP@0.5 > 0.75 | Model Training and Storage (D2 §2.3, §2.4, E-51)                                 | In progress | TC-21 |
+| NFR-05 | Median location error ≤ 5 m | `GpsSynchronizer`, forward projection (D2 PR-02, T14)                            | Planned | TC-22 |
+| NFR-06 | Authenticated, role-checked endpoints | `AuthenticateAndAuthorize` (D2 §2.10, E-30 to E-33)                              | Designed | TC-23 |
+| NFR-07 | Redaction ≥ 95% find rate, none skipped | Privacy step, log sanitizer (D2 §2.6, §2.12, E-44)                               | Designed | TC-24 |
+| NFR-08 | 4 of 5 users complete task in 60 s | Current Infrastructure Map (D2 §2.7)                                             | Planned | TC-25 |
+| NFR-09 | WCAG 2.1 AA, keyboard, not color alone | Current Infrastructure Map (D0 §6, D2 §2.7 steps 7, 8)                           | Designed | TC-26 |
+| NFR-10 | No duplicate detections or potholes | Unique key, area lock, transaction (D1 §3.1, D2 §2.8, E-18, E-19, E-22)          | Designed | TC-27 |
+| NFR-11 | No record lost in a database outage | Local buffer and replay (D0 I7, D2 §2.6 step 8, E-24)                            | Designed | TC-28 |
+| NFR-12 | Versioned API paths | `/api/v1` prefix (D1 §5.4, D2 §2.13)                                             | Designed | TC-29 |
+| CON-01 | Economic | Batch design (D0 Decision 1), sampling setting (D2 §2.11)                        | Designed | TC-30 |
+| CON-02 | Security | Auth and privacy design (D0 Decision 5, D2 §2.10, §2.6)                          | Designed | TC-31 |
+| CON-03 | Ethical | Confidence and matching (D1 §3.1, §3.2)                                          | Designed | TC-32 |
+| CON-04 | Professional | Build-versus-reuse table (D1 §4)                                                 | Designed | TC-33 |
+| CON-05 | Coverage/cost trade-off | Sampling rate setting (D2 §2.5, §2.11, T10)                                      | Planned | TC-34 |
+| CON-06 | Hosting | Docker and Supabase (D1 §6.5, D0 §6)                                             | Designed | TC-35 |
 
 CON rows are verified by inspection of the named design element, their TC entries are checklist items in the Week 10 plan.
 
 # 7. Advisor Review
 
-| Item | Record |
-| --- | --- |
-| Reviewer | Eric Jamison |
-| Date | Friday, October 30, 2026 |
-| Discussed | Architecture selection (preference for Design 1 on-device capture and detection); initial deployment on Community Responder vehicles rather than DPS trucks; vehicle network connectivity (Wi-Fi and cellular with embedded SIM); local and server-side video retention alongside detections; initial human-in-the-loop review and correlation with Cincinnati 311 records; focus on delivering a working prototype with stakeholder-funded hardware procurement. |
-| Changes produced | Pending. Each change will be listed with the section edited and the new version number. |
+| Item             | Record                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reviewer         | Eric Jamison                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Date             | Friday, October 30, 2026                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Discussed        | Architecture selection (preference for Design 1 on-device capture and detection); initial deployment on Community Responder vehicles rather than DPS trucks; vehicle network connectivity (Wi-Fi and cellular with embedded SIM); local and server-side video retention alongside detections; initial human-in-the-loop review and correlation with Cincinnati 311 records; focus on delivering a working prototype with stakeholder-funded hardware procurement. |
+| Changes produced | Each change will be listed with the section edited and the new version number.                                                                                                                                                                                                                                                                                                                                                                                    |
 
 Items to bring: the matrix (§6), the NFR thresholds, and the MoSCoW lists from the Requirements Document, plus open items A-02, A-07, and A-08 there.
 

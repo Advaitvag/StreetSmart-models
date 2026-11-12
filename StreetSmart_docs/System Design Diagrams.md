@@ -6,6 +6,8 @@
 
 ![Design 1: On-device detection](SeniorDesign/Design_Diagrams/Design1_On_Device_Detection.svg)
 
+**Final version (after the advisor review):** [Design 1: Final Hardware Design and Bill of Materials](Design_1_Hardware_BOM.md). It adds video retention, LTE with an eSIM, and human review before 311 requests.
+
 ### Design 2 (Uses the camera system already on the trucks, which records video and GPS. Videos are extracted manually, or through the system's own Wi-Fi offload if it has one. Then the servers run detection and automate the 311 requests)
 
 **Figure 2: Existing truck cameras.** Video leaves the truck through the camera system's own Wi-Fi offload, or is extracted manually.
