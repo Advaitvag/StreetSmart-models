@@ -4,8 +4,7 @@ CS 5001 Fall Design Presentation, Assignment 13. Deck: `StreetSmart_Presentation
 
 - **Time limit:** 10 minutes presenting, then 5 minutes of questions.
 - **Planned length:** 9:00, which leaves a 60-second buffer.
-- **Presentation slot:** _[fill in once the order is posted]_
-- **Team before us:** _[fill in]_
+- **Presentation slot:** November 25
 
 ## Speaking Roles
 
@@ -40,6 +39,7 @@ Speaking times are within 10 s of each other.
 | | **Total** | | **9:00** | **540** | |
 
 Backup slides for questions:
+
 - B1 (11): original D0
 - B2 (12): D1 data model
 - B3 (13): D2 flow and error paths
