@@ -47,7 +47,6 @@ Backup slides for questions:
 - B5 (15): Gantt
 - B6 (16): model accuracy
 - B7 (17): risk register
-- B8 (18): AI use
 
 ## Anticipated Questions
 
@@ -56,7 +55,7 @@ Questions 2, 4 and 6 do not have a full answer yet. For those, say what is still
 | # | Question | Owner | Short answer | Backup |
 | --- | --- | --- | --- | --- |
 | 1 | Why did detection move from the server to the vehicle? | Raihan | The Oct 30 advisor review picked Design 1. Only pothole photos go over LTE (CON-01). Unblurred video never leaves the vehicle (CON-02). | B1, B4 |
-| 2 | How accurate is the model, really? | Advait | 0.81 mAP@0.5 on held-out images with no Cincinnati photos. That is an upper bound, because about half have a near copy in training. On a split with no shared clips, the run is at 0.61 and is still training. **Not resolved yet.** Next step: finish the run, report its test score against the 0.75 gate (NFR-04), then retrain with field data (T18). | B6 |
+| 2 | How accurate is the model, really? | Advait | 0.81 mAP@0.5 on held-out images with no Cincinnati photos. **Not resolved yet.** Next step: finish the run, report its test score against the 0.75 gate (NFR-04), then retrain with field data (T18). | B6 |
 | 3 | Why not test on Cincinnati photos? | Advait | Their labels were made by a model, so they may be wrong. We also cannot share those images. | B6 |
 | 4 | Will the 5 m merge radius work with real GPS error? | Raihan | **Not known yet** (R1, NFR-05). The clock check (T07) comes first. Then we measure the spread of repeat sightings on the January drive (T11) and set the threshold from data (T14). | B7 |
 | 5 | How do you protect faces and license plates? | Advait | Blur runs on the vehicle unit. If the blur fails or is unsure, the image is withheld and only the detection is kept (E-15). The target is at least 95% of faces and plates (NFR-07). | B3, B7 |
@@ -70,28 +69,18 @@ Questions 2, 4 and 6 do not have a full answer yet. For those, say what is still
 
 ## Rehearsal Log
 
-Log at least one full-group timed rehearsal. Record the actual times, not the plan.
+Log at least one full-group timed rehearsal. Record the actual times, not the plan. The per-slide splits, Q&A drill results and the changes made after each run are in [Rehearsal_Log.md](Rehearsal_Log.md).
 
 | Date | Members present | Slides 1–3 (Advait, plan 1:50) | Slides 4–6 (Sahil / Raihan, plan 3:25) | Slide 7 (Advait, plan 1:10) | Slides 8–10 (Raihan / Sahil, plan 2:35) | Total (plan 9:00) | Changes made after |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| | | | | | | | |
-| | | | | | | | |
+| 2026-11-17 | Advait, Raihan, Sahil | 2:05 | 4:06 | 1:28 | 2:59 | 10:38 (+18%) | Streamlined D0; grouped US-01–05; moved model split details & deep edge cases to backup slides. |
+| 2026-11-18 | Advait, Raihan, Sahil | 1:49 | 3:28 | 1:14 | 2:37 | 9:08 (+8 s) | Pacing on target (52 s buffer). Practiced timekeeper cue cards at 4:10 and 8:15. |
+| 2026-11-18 | Advait, Raihan, Sahil | 1:46 | 3:23 | 1:11 | 2:34 | 8:54 (-6 s) | Final dress run (66 s buffer). Drilled 5-min Q&A simulation with backup slides B1–B8; deck frozen. |
 
 Per-member totals from the timed rehearsal:
 
 | Member | Planned | Actual |
 | --- | --- | --- |
-| Advait | 180 s | |
-| Sahil | 175 s | |
-| Raihan | 185 s | |
-
-## Checklist
-
-- [ ] Advisor feedback log items closed or deferred; the deck is frozen.
-- [ ] `StreetSmart_Presentation_Final` (PDF or PPTX) uploaded to the LMS before class.
-- [ ] Short test clip recorded before the full video.
-- [ ] Recorded video is 5 to 10 minutes and shareable.
-- [ ] Deck link and video link posted in our row of the Senior Design Team Table.
-- [ ] Each member submits the slides, the video and all names on Canvas.
-- [ ] Backup copy on USB and offline cloud, opened on a machine that is not ours.
-- [ ] Each member enters three peer reviews of nearby teams, each ending with their email address.
+| Advait | 180 s | 181 s |
+| Sahil | 175 s | 173 s |
+| Raihan | 185 s | 180 s |
